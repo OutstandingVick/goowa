@@ -32,4 +32,13 @@ describe("fetch-source errors", () => {
     expect(result).toMatchObject({ ok: false, error: { code: "blocked_host" } });
   });
 
+
+  it("maps an aborted request to timeout", async () => {
+    const err = new Error("timed out");
+    err.name = "TimeoutError";
+    ssrfSafeFetch.mockRejectedValue(err);
+    const result = await run("https://slow.example");
+    expect(result).toMatchObject({ ok: false, error: { code: "timeout" } });
+  });
+
 });
