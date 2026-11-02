@@ -25,4 +25,11 @@ describe("fetch-source errors", () => {
     expect(result).toMatchObject({ ok: false, error: { code: "invalid_url" } });
   });
 
+
+  it("maps SSRF rejections to blocked_host", async () => {
+    ssrfSafeFetch.mockRejectedValue(new Error("SSRF blocked: private address"));
+    const result = await run("http://internal.example");
+    expect(result).toMatchObject({ ok: false, error: { code: "blocked_host" } });
+  });
+
 });
