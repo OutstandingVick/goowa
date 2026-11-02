@@ -78,4 +78,17 @@ describe("fetch-source success", () => {
     expect(result.contentHash).toMatch(/^[0-9a-f]{64}$/);
     expect(new Date(result.fetchedAt).toISOString()).toBe(result.fetchedAt);
   });
+
+  it("hashes identical readable text identically across fetches", async () => {
+    const html =
+      "<html><head><title>T</title></head><body><article><p>Stable text for hashing purposes only.</p></article></body></html>";
+    const respond = () =>
+      new Response(html, { headers: { "content-type": "text/html" } });
+    ssrfSafeFetch
+      .mockResolvedValueOnce(respond())
+      .mockResolvedValueOnce(respond());
+    const first = await run("https://example.com/a");
+    const second = await run("https://example.com/a");
+    expect(first.contentHash).toBe(second.contentHash);
+  });
 });
