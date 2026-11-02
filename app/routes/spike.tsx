@@ -1,4 +1,7 @@
-import { useActionMutation, useActionQuery } from "@agent-native/core/client/hooks";
+import {
+  useActionMutation,
+  useActionQuery,
+} from "@agent-native/core/client/hooks";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -12,7 +15,9 @@ export function meta() {
 export default function SpikeRoute() {
   const [text, setText] = useState("hello");
   const ping = useActionMutation("ping");
-  const [urlDraft, setUrlDraft] = useState("https://en.wikipedia.org/wiki/Fact-checking");
+  const [urlDraft, setUrlDraft] = useState(
+    "https://en.wikipedia.org/wiki/Fact-checking",
+  );
   const [url, setUrl] = useState("");
   const source = useActionQuery(
     "fetch-source",
@@ -57,10 +62,7 @@ export default function SpikeRoute() {
             value={urlDraft}
             onChange={(event) => setUrlDraft(event.target.value)}
           />
-          <Button
-            onClick={() => setUrl(urlDraft)}
-            disabled={source.isFetching}
-          >
+          <Button onClick={() => setUrl(urlDraft)} disabled={source.isFetching}>
             Fetch
           </Button>
         </div>

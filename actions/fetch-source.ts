@@ -41,7 +41,11 @@ function fail(
   message: string,
   status?: number,
 ): FetchSourceError {
-  return { ok: false, url, error: { code, message, status } };
+  return {
+    ok: false,
+    url,
+    error: status === undefined ? { code, message } : { code, message, status },
+  };
 }
 
 // Hostname-level guard only; DNS rebinding is out of scope for the spike.
@@ -86,11 +90,19 @@ export default defineAction({
       return fail(url, "invalid_url", "Not a valid URL.");
     }
     if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-      return fail(url, "invalid_url", "Only http and https URLs are supported.");
+      return fail(
+        url,
+        "invalid_url",
+        "Only http and https URLs are supported.",
+      );
     }
 
     if (isPrivateHost(parsed.hostname)) {
-      return fail(url, "invalid_url", "Private and local addresses are not allowed.");
+      return fail(
+        url,
+        "invalid_url",
+        "Private and local addresses are not allowed.",
+      );
     }
 
     let res: Response;
@@ -122,7 +134,11 @@ export default defineAction({
 
     const type = res.headers.get("content-type") ?? "";
     if (!/text\/html|application\/xhtml\+xml/i.test(type)) {
-      return fail(url, "not_html", `Unsupported content type: ${type || "none"}.`);
+      return fail(
+        url,
+        "not_html",
+        `Unsupported content type: ${type || "none"}.`,
+      );
     }
 
     const length = Number(res.headers.get("content-length") ?? 0);
@@ -142,7 +158,11 @@ export default defineAction({
 
     const { title, text } = extractReadable(html, res.url || url);
     if (!text) {
-      return fail(url, "no_readable_text", "No readable text found on the page.");
+      return fail(
+        url,
+        "no_readable_text",
+        "No readable text found on the page.",
+      );
     }
 
     return {
