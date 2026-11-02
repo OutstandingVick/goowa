@@ -19,4 +19,10 @@ describe("fetch-source errors", () => {
     expect(result).toMatchObject({ ok: false, error: { code: "invalid_url" } });
     expect(ssrfSafeFetch).not.toHaveBeenCalled();
   });
+
+  it("rejects non-http schemes", async () => {
+    const result = await run("ftp://example.com/file");
+    expect(result).toMatchObject({ ok: false, error: { code: "invalid_url" } });
+  });
+
 });
