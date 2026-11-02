@@ -59,6 +59,6 @@ Framework: `@agent-native/core` 0.222.2, scaffolded with
   but expect seconds of lag for multi-user.
 - **Production needs Postgres.** PGlite is local only; deploy needs
   `DATABASE_URL` and `pnpm migrate:production`.
-- **fetch-source** blocks private/localhost hostnames by string match only
-  (no DNS-rebinding defense) and does not run JavaScript, so JS-rendered pages
+- **fetch-source** uses the framework's `ssrfSafeFetch` (DNS-aware private
+  address blocking, re-checked per redirect). It does not run JavaScript, so JS-rendered pages
   return little text. Paywalls/bot blocks surface as `http_status` errors.
