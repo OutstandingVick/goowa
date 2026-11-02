@@ -11,6 +11,7 @@ const INITIAL_TOOL_NAMES = [
   "navigate",
   "hello",
   "ping",
+  "fetch-source",
   "provider-api-request",
   "ask-question",
 ];
