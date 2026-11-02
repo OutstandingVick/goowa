@@ -61,3 +61,21 @@ describe("fetch-source errors", () => {
     expect(result).toMatchObject({ ok: false, error: { code: "not_html" } });
   });
 });
+
+describe("fetch-source success", () => {
+  it("returns title, a 2,000-char excerpt, and a sha256 of the full text", async () => {
+    const body = "Claim sentence number one. ".repeat(200);
+    const html = `<html><head><title>Test article</title></head><body><article><h1>Test article</h1><p>${body}</p></article></body></html>`;
+    ssrfSafeFetch.mockResolvedValue(
+      new Response(html, {
+        headers: { "content-type": "text/html; charset=utf-8" },
+      }),
+    );
+    const result = await run("https://example.com/article");
+    expect(result.ok).toBe(true);
+    expect(result.title).toBe("Test article");
+    expect(result.textExcerpt).toHaveLength(2000);
+    expect(result.contentHash).toMatch(/^[0-9a-f]{64}$/);
+    expect(new Date(result.fetchedAt).toISOString()).toBe(result.fetchedAt);
+  });
+});
