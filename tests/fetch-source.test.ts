@@ -48,4 +48,13 @@ describe("fetch-source errors", () => {
     expect(result).toMatchObject({ ok: false, error: { code: "http_status", status: 404 } });
   });
 
+
+  it("rejects non-HTML responses", async () => {
+    ssrfSafeFetch.mockResolvedValue(
+      new Response("{}", { headers: { "content-type": "application/json" } }),
+    );
+    const result = await run("https://example.com/data.json");
+    expect(result).toMatchObject({ ok: false, error: { code: "not_html" } });
+  });
+
 });
