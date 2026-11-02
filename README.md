@@ -35,6 +35,12 @@ pnpm action ping --text hello
 pnpm action fetch-source --url https://en.wikipedia.org/wiki/Fact-checking
 ```
 
+Run the tests:
+
+```bash
+pnpm test
+```
+
 ## Choosing the model
 
 Set `AGENT_ENGINE` and `AGENT_MODEL` in `.env` (see `.env.example`). Supported
