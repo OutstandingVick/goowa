@@ -41,4 +41,11 @@ describe("fetch-source errors", () => {
     expect(result).toMatchObject({ ok: false, error: { code: "timeout" } });
   });
 
+
+  it("returns http_status with the status code for 4xx/5xx", async () => {
+    ssrfSafeFetch.mockResolvedValue(new Response("gone", { status: 404, statusText: "Not Found" }));
+    const result = await run("https://example.com/missing");
+    expect(result).toMatchObject({ ok: false, error: { code: "http_status", status: 404 } });
+  });
+
 });
