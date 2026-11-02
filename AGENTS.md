@@ -17,6 +17,13 @@ Use local docs only (no web research): `pnpm action docs-search --query "<topic>
 
 For custom branding, keep `server/plugins/agent-native-email-branding.ts` aligned: `app.name` appears in transactional email and optional `app.logoUrl` must be an absolute HTTPS URL.
 
+## Goowa actions
+
+| Action | Purpose |
+| --- | --- |
+| `ping` | Echo `{ text }` back as `{ echo, at, calledBy }`; `calledBy` comes from `ctx.caller`. |
+| `fetch-source` | Fetch `{ url }` server-side; returns title, 2,000-char excerpt, sha256 `contentHash`, `fetchedAt`, or `{ ok: false, error: { code, message } }`. |
+
 ## Application state
 
 - `navigation` describes the view and selected ids. Chat is `chat` at `/chat` and `/chat/<threadId>`; the Get started page is `home` at `/home`; `/` opens shared sign-in/signup.
