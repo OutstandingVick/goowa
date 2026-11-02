@@ -10,6 +10,7 @@ const INITIAL_TOOL_NAMES = [
   "view-screen",
   "navigate",
   "hello",
+  "ping",
   "provider-api-request",
   "ask-question",
 ];
