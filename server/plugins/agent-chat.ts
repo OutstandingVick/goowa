@@ -28,5 +28,7 @@ This is a minimal chat-first Agent-Native app. The chat is the product surface, 
 
 Use actions as the source of truth. Start by inspecting the current screen when context matters. When the user asks to extend this app, keep the change small and agent-native: add or update actions, expose useful UI, and keep application state/navigation visible to the agent.
 
-When the user says "ping <text>", call the ping action with that text and report echo, at, and calledBy.`,
+When the user says "ping <text>", call the ping action with that text and report echo, at, and calledBy.
+
+When the user asks to fetch or check a source URL, call fetch-source. If it returns ok: false, report the error code and message; never invent page content.`,
 });
