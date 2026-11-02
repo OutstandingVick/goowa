@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 import { defineAction } from "@agent-native/core/action";
+import { ssrfSafeFetch } from "@agent-native/core/extensions/url-safety";
 import { Readability } from "@mozilla/readability";
 import { parseHTML } from "linkedom";
 import { z } from "zod";
@@ -15,6 +16,7 @@ type FetchSourceError = {
   error: {
     code:
       | "invalid_url"
+      | "blocked_host"
       | "timeout"
       | "network"
       | "http_status"
@@ -46,22 +48,6 @@ function fail(
     url,
     error: status === undefined ? { code, message } : { code, message, status },
   };
-}
-
-// Hostname-level guard only; DNS rebinding is out of scope for the spike.
-function isPrivateHost(hostname: string) {
-  const host = hostname.replace(/^\[|\]$/g, "").toLowerCase();
-  return (
-    host === "localhost" ||
-    host.endsWith(".localhost") ||
-    host.endsWith(".internal") ||
-    host === "::1" ||
-    /^(127|10|0)\./.test(host) ||
-    /^192\.168\./.test(host) ||
-    /^169\.254\./.test(host) ||
-    /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
-    /^f[cd][0-9a-f]{2}:/.test(host)
-  );
 }
 
 function extractReadable(html: string, url: string) {
@@ -97,18 +83,9 @@ export default defineAction({
       );
     }
 
-    if (isPrivateHost(parsed.hostname)) {
-      return fail(
-        url,
-        "invalid_url",
-        "Private and local addresses are not allowed.",
-      );
-    }
-
     let res: Response;
     try {
-      res = await fetch(parsed, {
-        redirect: "follow",
+      res = await ssrfSafeFetch(parsed.toString(), {
         signal: AbortSignal.timeout(TIMEOUT_MS),
         headers: {
           "user-agent": "GoowaBot/0.1 (+source verification)",
@@ -117,10 +94,18 @@ export default defineAction({
       });
     } catch (err) {
       const name = (err as Error)?.name;
+      const message = (err as Error)?.message ?? "";
+      if (message.startsWith("SSRF blocked:")) {
+        return fail(
+          url,
+          "blocked_host",
+          "Private and local addresses are not allowed.",
+        );
+      }
       if (name === "TimeoutError" || name === "AbortError") {
         return fail(url, "timeout", `No response within ${TIMEOUT_MS} ms.`);
       }
-      return fail(url, "network", (err as Error)?.message ?? "Fetch failed.");
+      return fail(url, "network", message || "Fetch failed.");
     }
 
     if (!res.ok) {
