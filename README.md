@@ -1,33 +1,48 @@
-# Chat
+# Goowa
 
-The minimal agent-native starter app — a clean, ChatGPT-style shell with chat at
-the center, durable threads, standard app navigation, auth, live sync, and
-actions. Start here when you want a real browser app to build on without
-committing to a domain template.
+A research editor where an AI agent drafts a document and every factual claim
+becomes an editable claim card, verified against its source. Humans correct
+claims, the agent proposes edits, and only a human can publish.
 
-**Live app: [chat.agent-native.com](https://chat.agent-native.com?utm_source=github&utm_medium=referral&utm_content=chat-readme)**
+Built on [Agent-Native](https://www.agent-native.com/docs/) for the Builder.io
+Agent-Native Hackathon.
 
-Chat is the basic agent-native app starting point. It gives you the app-agent
-loop wired end to end and one example action, so you can add your own UI, data,
-and actions on top.
+**Status: Phase 0** — setup and spike only. See [NOTES.md](NOTES.md).
 
-## Features
+## What's here
 
-- ChatGPT-style shell with a threads list and durable chat history.
-- Auth, live sync, and application state wired out of the box.
-- The action surface the agent and UI share, plus one example action to copy.
-- A minimal, brandable base for any domain app.
+- `actions/ping.ts` — echoes text; reports whether the UI or the agent called it.
+- `actions/fetch-source.ts` — fetches a URL server-side, returns title, a
+  2,000-char readable excerpt, a sha256 of the readable text, or a typed error.
+- `/spike` — page that calls both actions from the UI.
 
-## Develop locally
+The agent chat (`/chat`) calls the same two actions as tools.
 
-Scaffold your own copy and run it:
+## Run locally
+
+Requires Node 22.22+ and pnpm.
 
 ```bash
-npx --yes @agent-native/core@latest create my-app --standalone --template chat
-cd my-app
-corepack enable
 pnpm install
+cp .env.example .env   # add a provider key, e.g. ANTHROPIC_API_KEY
 pnpm dev
 ```
 
-Full docs: [agent-native.com/docs/template-chat](https://agent-native.com/docs/template-chat?utm_source=github&utm_medium=referral&utm_content=chat-readme).
+Try it from the terminal:
+
+```bash
+pnpm action ping --text hello
+pnpm action fetch-source --url https://en.wikipedia.org/wiki/Fact-checking
+```
+
+## Choosing the model
+
+Set `AGENT_ENGINE` and `AGENT_MODEL` in `.env` (see `.env.example`). Supported
+engines: `anthropic`, `ai-sdk:openai`, `ai-sdk:anthropic`, `ai-sdk:google`,
+`ai-sdk:groq`, `ai-sdk:mistral`, `ai-sdk:cohere`, `ai-sdk:openrouter`,
+`ai-sdk:ollama`, `builder`. A default set in Settings › Model takes precedence.
+
+## Deploy
+
+Netlify (config in `netlify.toml`). Needs `DATABASE_URL` (Postgres),
+`BETTER_AUTH_SECRET`, and a provider key in the site's environment.
