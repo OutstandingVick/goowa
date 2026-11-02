@@ -50,5 +50,16 @@ engines: `anthropic`, `ai-sdk:openai`, `ai-sdk:anthropic`, `ai-sdk:google`,
 
 ## Deploy
 
-Netlify (config in `netlify.toml`). Needs `DATABASE_URL` (Postgres),
-`BETTER_AUTH_SECRET`, and a provider key in the site's environment.
+Live: https://goowa.vercel.app (Vercel + Neon Postgres). Follows the
+[Vercel guide](https://www.agent-native.com/docs/vercel/):
+
+```bash
+pnpm migrate:production          # with DATABASE_URL exported
+NITRO_PRESET=vercel pnpm build
+npx vercel deploy --prebuilt --prod
+```
+
+Production env: `DATABASE_URL` (from the Neon integration), `BETTER_AUTH_SECRET`,
+`CRON_SECRET`, `AGENT_ENGINE`, `AGENT_NATIVE_VERCEL_CRON_SCHEDULE` (daily on
+Hobby), and optionally `ACCESS_TOKEN` for MCP clients. Connect Builder.io (or
+add a key) in Settings › Model on the deployed app.

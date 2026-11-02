@@ -54,7 +54,14 @@ Framework: `@agent-native/core` 0.222.2, scaffolded with
   `propose-edit`) rather than an opaque `verify-claims` action that calls a model.
 - **CLI calls report `ctx.caller = "cli"`**, so `ping` says `unknown` there.
 - **Template ships with Builder's analytics IDs and trusted origins** in
-  `netlify.toml`; removed.
+  `netlify.toml`; removed. Netlify is only the template default — we deploy to
+  Vercel (`NITRO_PRESET=vercel`); `netlify.toml` is unused.
+- **Vercel Hobby crons run once a day**, so scheduled automations lag up to
+  24h unless we upgrade or move hosts.
+- **`ACCESS_TOKEN` only authenticates `/mcp`**, not `/_agent-native/actions/*`.
+  Plain HTTP callers need a token minted with `connect`.
+- **Production has its own database**, so the Builder.io connection and users
+  must be set up again there.
 - **Serverless realtime is polling**, not push: fine for one editor + agent,
   but expect seconds of lag for multi-user.
 - **Production needs Postgres.** PGlite is local only; deploy needs
