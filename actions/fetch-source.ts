@@ -44,6 +44,22 @@ function fail(
   return { ok: false, url, error: { code, message, status } };
 }
 
+// Hostname-level guard only; DNS rebinding is out of scope for the spike.
+function isPrivateHost(hostname: string) {
+  const host = hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  return (
+    host === "localhost" ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".internal") ||
+    host === "::1" ||
+    /^(127|10|0)\./.test(host) ||
+    /^192\.168\./.test(host) ||
+    /^169\.254\./.test(host) ||
+    /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
+    /^f[cd][0-9a-f]{2}:/.test(host)
+  );
+}
+
 function extractReadable(html: string, url: string) {
   const { document } = parseHTML(html);
   const article = new Readability(document as unknown as Document).parse();
@@ -71,6 +87,10 @@ export default defineAction({
     }
     if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
       return fail(url, "invalid_url", "Only http and https URLs are supported.");
+    }
+
+    if (isPrivateHost(parsed.hostname)) {
+      return fail(url, "invalid_url", "Private and local addresses are not allowed.");
     }
 
     let res: Response;
