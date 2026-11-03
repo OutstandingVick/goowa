@@ -49,3 +49,19 @@ describe("parseBlocks edge cases", () => {
     expect(parseBlocks("text\n\n\n")).toHaveLength(1);
   });
 });
+
+describe("segmentRange", () => {
+  it("covers the range with no gaps and keeps body text", () => {
+    const para = parseBlocks(BODY)[1]!;
+    const segs = segmentRange(BODY, para.start, para.end, [
+      mark("a", "USDC is one."),
+    ]);
+    expect(segs.map((s) => s.text).join("")).toBe(
+      BODY.slice(para.start, para.end),
+    );
+    for (const s of segs) expect(BODY.slice(s.start, s.end)).toBe(s.text);
+    expect(segs.find((s) => s.claimIds.includes("a"))!.text).toBe(
+      "USDC is one.",
+    );
+  });
+});
