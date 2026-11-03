@@ -52,3 +52,11 @@ export function countByStatus(claims: readonly { status: string }[]) {
   for (const c of claims) counts[asStatus(c.status)] += 1;
   return counts;
 }
+
+/** Smooth scrolling unless the user asked for reduced motion. */
+export function scrollBehavior(): ScrollBehavior {
+  return typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ? "auto"
+    : "smooth";
+}

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { DocumentState } from "@/lib/goowa";
+import { scrollBehavior } from "@/lib/goowa";
 import { selectionOffsets, type BodySelection } from "@/lib/selection";
 
 import { proposalRanges } from "../../../shared/proposals";
@@ -60,7 +61,7 @@ export function Editor({ state }: { state: DocumentState }) {
         `[data-claim-ids~="${CSS.escape(claimId)}"]`,
       ),
     );
-    segs[0]?.scrollIntoView({ block: "center", behavior: "smooth" });
+    segs[0]?.scrollIntoView({ block: "center", behavior: scrollBehavior() });
     for (const el of segs) {
       el.classList.remove("g-pulse");
       void el.offsetWidth; // restart the animation

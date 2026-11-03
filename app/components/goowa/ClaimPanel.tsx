@@ -9,6 +9,7 @@ import {
   type ClaimStatus,
   type Source,
 } from "@/lib/goowa";
+import { scrollBehavior } from "@/lib/goowa";
 import { cn } from "@/lib/utils";
 
 import { ClaimCard } from "./ClaimCard";
@@ -60,7 +61,7 @@ export function ClaimPanel({
       return;
     }
     const el = cards.current.get(activeClaimId);
-    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    el?.scrollIntoView({ block: "nearest", behavior: scrollBehavior() });
     el?.focus({ preventScroll: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeClaimId, filter]);

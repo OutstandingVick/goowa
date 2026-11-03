@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import type { Edit } from "@/lib/goowa";
+import { scrollBehavior } from "@/lib/goowa";
 import { cn } from "@/lib/utils";
 
 import { ActorBadge } from "./ActorBadge";
@@ -34,7 +35,7 @@ export function EditsDrawer({
     if (focusedEditId && open) {
       rows.current
         .get(focusedEditId)
-        ?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        ?.scrollIntoView({ block: "nearest", behavior: scrollBehavior() });
     }
   }, [focusedEditId, open]);
 
