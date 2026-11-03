@@ -69,3 +69,58 @@ Framework: `@agent-native/core` 0.222.2, scaffolded with
 - **fetch-source** uses the framework's `ssrfSafeFetch` (DNS-aware private
   address blocking, re-checked per redirect). It does not run JavaScript, so JS-rendered pages
   return little text. Paywalls/bot blocks surface as `http_status` errors.
+
+# Phase 1 — data model and actions
+
+## Schema (Postgres via Drizzle; `server/db/schema.ts`, migrations in `server/plugins/db.ts`)
+
+- `documents`: id, title, topic, body (plain text/markdown), status
+  (`draft | in_review | published`, a `defineMachine`), createdAt, updatedAt,
+  owner_email, org_id, visibility (framework `ownableColumns`; private by default).
+- `sources`: id, documentId, url, title, textExcerpt, contentHash, fetchedAt,
+  flags (jsonb), error (jsonb, set when `fetch_failed`).
+- `claims`: id, documentId, text, spanStart, spanEnd (UTF-16 offsets into
+  body, half-open), sourceIds, status, confidence (0–1), dependsOn (claim ids),
+  createdBy/updatedBy (`creator_kind`/`updater_kind` in SQL).
+- `edits`: id, documentId, targetType (`document_body | claim`), targetId,
+  spanStart, before, after, reason, proposedBy, state
+  (`proposed | accepted | rejected`, a `defineMachine`), decidedBy (SQL CHECK:
+  only `human`), decidedAt, createdAt.
+
+## Where the framework forced a different design
+
+- **No SQLite.** The framework is Postgres-only (PGlite locally, Neon in prod).
+- **No LLM calls inside actions.** `draft-document` and `extract-claims` take
+  the agent's output (body; claims as exact quotes) instead of calling a model.
+  The agent loop is the LLM. The fixture script drives it with
+  `agent-native agent "<prompt>"`.
+- **"Retry once on invalid output"** is the agent's own retry: validation
+  failures use `goowaErrors.noWrite(...)`, which tells the framework nothing was
+  written. A plain failure on a write action makes the framework block a retry
+  in the same turn, because the write might have applied.
+- **Identity column names.** `created_by`/`updated_by` are reserved for member
+  emails, so the SQL columns are `creator_kind`/`updater_kind`/`proposer_kind`/
+  `decider_kind`.
+- **Raw DB tools.** `sources`, `claims`, `edits` are on the doctor
+  `dbToolScopingDenylist`, and the agent's framework DB tools are pinned to
+  read-only, so the agent can't write `status = 'supported'` with SQL.
+- **`needsApproval` not used** for decide-edit: it would let a human approve
+  the agent accepting, which still makes the agent the decider.
+
+## Permission model
+
+`server/lib/actor.ts`: `frontend` and `cli` are human; `tool`, `mcp`, `a2a`,
+`automation`, `http`, and unknown callers are the agent (fails closed).
+`decide-edit` and `set-document-status` are `agentTool: false`,
+`mcpTool: false`, and call `requireHuman` first. `add-claim`/`update-claim`
+refuse status, confidence, and dependsOn from the agent; an agent's text change
+becomes a proposed edit. Tests: `tests/permissions.test.ts`.
+
+## Limits found
+
+- Ingested sources keep only a 2,000-character excerpt, so drafts and claims
+  can only use the start of each page.
+- `pnpm action` resolves `.js` imports of `.ts` files; `agent-native agent`
+  needs `NODE_OPTIONS=--import tsx` to load the same actions.
+- Production access needs a signed-in user: the static `ACCESS_TOKEN` has no
+  identity, so ownership-scoped actions refuse it.
