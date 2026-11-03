@@ -1,5 +1,5 @@
-import type { Actor } from "./actor.js";
 import type { ClaimStatus } from "../../shared/machines.js";
+import type { Actor } from "./actor.js";
 
 export type ClaimPatch = {
   text?: string;
