@@ -1,25 +1,23 @@
-import HomePage from "@/components/home/HomePage";
+import { Navigate } from "react-router";
+
 import { APP_TITLE } from "@/lib/app-config";
 
-const SEO_TITLE = `${APP_TITLE} - Open Source AI app starter with actions`;
+const SEO_TITLE = `${APP_TITLE} - Research drafts with verified claims`;
 const SEO_DESCRIPTION =
-  "Open Source starter for agent-native apps with durable chat, shared actions, UI state, tools, and a backend your agent can extend.";
+  "An AI agent drafts from your sources, every factual claim is tied to a source, and humans decide what is accepted and published.";
 
+// Chat routes reuse this meta.
 export function meta() {
   return [
     { title: SEO_TITLE },
-    {
-      name: "description",
-      content: SEO_DESCRIPTION,
-    },
+    { name: "description", content: SEO_DESCRIPTION },
     { property: "og:title", content: SEO_TITLE },
     { property: "og:description", content: SEO_DESCRIPTION },
     { name: "twitter:card", content: "summary" },
-    { name: "twitter:title", content: SEO_TITLE },
-    { name: "twitter:description", content: SEO_DESCRIPTION },
   ];
 }
 
+// The template's Get started page is replaced by the documents list.
 export default function HomeRoute() {
-  return <HomePage />;
+  return <Navigate to="/docs" replace />;
 }
