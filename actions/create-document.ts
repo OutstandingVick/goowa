@@ -9,6 +9,7 @@ export default defineAction({
   description:
     "Create an empty Goowa research document (status draft). Returns the new document.",
   errors: goowaErrors,
+  mcpTool: true,
   schema: z.object({
     title: z.string().min(1).describe("Document title"),
     topic: z
