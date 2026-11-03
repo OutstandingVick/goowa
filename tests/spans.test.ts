@@ -160,4 +160,14 @@ describe("remapSpans", () => {
     expect(spans[0]!.end).toBeGreaterThanOrEqual(spans[0]!.start);
     expect(spans[0]!.end).toBeLessThanOrEqual(body.length);
   });
+
+  it("marks a span lost when the edit deletes it entirely", () => {
+    const b = spanOf("b", "It is backed by cash.");
+    const { spans } = remapSpans(
+      BODY,
+      [b],
+      editOf("It is backed by cash. ", ""),
+    );
+    expect(spans[0]!.outcome).toBe("lost");
+  });
 });
