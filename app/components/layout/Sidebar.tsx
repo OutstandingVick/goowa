@@ -16,7 +16,6 @@ import { AgentNativeIcon } from "@agent-native/toolkit/app/shared/AgentNativeIco
 import {
   IconEdit,
   IconFileText,
-  IconHome,
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarLeftExpand,
   IconLoader2,
@@ -32,7 +31,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { APP_TITLE } from "@/lib/app-config";
-import { chatThreadPath, HOME_PATH, threadIdFromPath } from "@/lib/chat-paths";
+import { chatThreadPath, threadIdFromPath } from "@/lib/chat-paths";
 import { cn } from "@/lib/utils";
 
 const CHAT_STORAGE_KEY = "chat";
