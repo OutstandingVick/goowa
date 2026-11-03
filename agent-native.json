@@ -4,6 +4,11 @@
     "firstRun": "off"
   },
   "doctor": {
-    "failOnBuild": false
+    "failOnBuild": false,
+    "dbToolScopingDenylist": {
+      "sources": "Child of documents; read and written only through document-scoped actions that enforce the human-only rules. Kept out of raw db tools so the agent cannot bypass them.",
+      "claims": "Child of documents; read and written only through document-scoped actions that enforce the human-only rules. Kept out of raw db tools so the agent cannot bypass them.",
+      "edits": "Child of documents; read and written only through document-scoped actions that enforce the human-only rules. Kept out of raw db tools so the agent cannot bypass them."
+    }
   }
 }
