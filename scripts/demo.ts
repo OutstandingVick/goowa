@@ -11,7 +11,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const userEmail = process.env.AGENT_USER_EMAIL ?? "dev@local.test";
 // The workspace whose Builder.io connection / provider key the agent uses
 // (Settings › Model). Find it in the audit log or Settings › Organization.
-const orgId = process.env.AGENT_ORG_ID;
+const orgId = process.env.AGENT_ORG_ID ?? "";
 if (!orgId) {
   console.error(
     "Set AGENT_ORG_ID to the workspace id that has a model provider.",

@@ -23,7 +23,7 @@ export function requireHuman(
   what: string,
 ): void {
   if (actorOf(ctx) !== "human") {
-    goowaErrors.fail(`Only a human can ${what}.`, "forbidden", {
+    goowaErrors.noWrite(`Only a human can ${what}.`, "forbidden", {
       statusCode: 403,
     });
   }

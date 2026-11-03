@@ -48,14 +48,14 @@ export default defineAction({
     } else {
       const doc = await loadDocument(args.targetId, "viewer");
       if (!args.before) {
-        return goowaErrors.fail(
+        return goowaErrors.noWrite(
           "document_body edits need `before`: the exact text to replace.",
           "invalid_span",
         );
       }
       const found = locate(doc.body, args.before, args.spanStart ?? 0);
       if (found === null) {
-        return goowaErrors.fail(
+        return goowaErrors.noWrite(
           "`before` is not an exact substring of the current body.",
           "invalid_span",
         );
@@ -65,7 +65,10 @@ export default defineAction({
       spanStart = found;
     }
     if (before === args.after) {
-      return goowaErrors.fail("`after` is identical to `before`.", "conflict");
+      return goowaErrors.noWrite(
+        "`after` is identical to `before`.",
+        "conflict",
+      );
     }
 
     const edit = {

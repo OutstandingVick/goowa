@@ -25,7 +25,7 @@ export default defineAction({
     const doc = await loadDocument(documentId, "editor");
     const from = documentStatus.parseState(doc.status);
     if (!documentStatus.can(from, event)) {
-      return goowaErrors.fail(
+      return goowaErrors.noWrite(
         `Cannot ${event} a ${from} document.`,
         "conflict",
       );
@@ -43,7 +43,7 @@ export default defineAction({
       )
       .returning();
     if (!updated) {
-      return goowaErrors.fail(
+      return goowaErrors.noWrite(
         "The status changed while you were deciding.",
         "conflict",
       );

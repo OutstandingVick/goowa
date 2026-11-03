@@ -25,7 +25,7 @@ export default defineAction({
     requireHuman(ctx, "accept or reject edits");
     const { doc, edit } = await loadEdit(editId, "editor");
     if (!editState.can(editState.parseState(edit.state), decision)) {
-      return goowaErrors.fail(
+      return goowaErrors.noWrite(
         `This edit is already ${edit.state}.`,
         "conflict",
       );
@@ -37,7 +37,7 @@ export default defineAction({
       if (edit.targetType === "claim") {
         const { claim } = await loadClaim(edit.targetId, "editor");
         if (claim.text !== edit.before) {
-          return goowaErrors.fail(
+          return goowaErrors.noWrite(
             "The claim changed after this edit was proposed. Reject it and propose again.",
             "conflict",
           );
@@ -50,7 +50,7 @@ export default defineAction({
       } else {
         const start = locate(doc.body, edit.before, edit.spanStart ?? 0);
         if (start === null) {
-          return goowaErrors.fail(
+          return goowaErrors.noWrite(
             "The text this edit replaces is no longer in the body. Reject it and propose again.",
             "conflict",
           );

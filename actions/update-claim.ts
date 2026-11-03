@@ -30,7 +30,7 @@ export default defineAction({
     const actor = actorOf(ctx);
     const blocked = forbiddenClaimFields(actor, patch);
     if (blocked.length > 0) {
-      return goowaErrors.fail(
+      return goowaErrors.noWrite(
         `Agents cannot set ${blocked.join(", ")} on a claim.`,
         "forbidden",
         { statusCode: 403 },
@@ -45,7 +45,7 @@ export default defineAction({
         (id) => id === claimId || !ids.has(id),
       );
       if (bad.length > 0) {
-        return goowaErrors.fail(
+        return goowaErrors.noWrite(
           `dependsOn has invalid claim ids: ${bad.join(", ")}`,
           "invalid_span",
         );

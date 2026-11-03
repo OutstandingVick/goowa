@@ -23,7 +23,7 @@ export async function loadDocument(
     .from(schema.documents)
     .where(eq(schema.documents.id, documentId))
     .limit(1);
-  if (!doc) return goowaErrors.fail("Document not found.", "not_found");
+  if (!doc) return goowaErrors.noWrite("Document not found.", "not_found");
   return doc;
 }
 
@@ -44,7 +44,7 @@ export async function loadClaim(
     .from(schema.claims)
     .where(eq(schema.claims.id, claimId))
     .limit(1);
-  if (!claim) return goowaErrors.fail("Claim not found.", "not_found");
+  if (!claim) return goowaErrors.noWrite("Claim not found.", "not_found");
   const doc = await loadDocument(claim.documentId, role);
   return { doc, claim };
 }
@@ -58,7 +58,7 @@ export async function loadEdit(
     .from(schema.edits)
     .where(eq(schema.edits.id, editId))
     .limit(1);
-  if (!edit) return goowaErrors.fail("Edit not found.", "not_found");
+  if (!edit) return goowaErrors.noWrite("Edit not found.", "not_found");
   const doc = await loadDocument(edit.documentId, role);
   return { doc, edit };
 }

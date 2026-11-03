@@ -42,13 +42,13 @@ export default defineAction({
   run: async ({ documentId, claims }, ctx) => {
     const doc = await loadDocument(documentId, "editor");
     if (!doc.body) {
-      return goowaErrors.fail(
+      return goowaErrors.noWrite(
         "The document has no body yet. Save a draft first.",
         "conflict",
       );
     }
     if ((await loadClaims(documentId)).length > 0) {
-      return goowaErrors.fail(
+      return goowaErrors.noWrite(
         "Claims were already extracted. Use add-claim for more.",
         "conflict",
       );
@@ -89,8 +89,8 @@ export default defineAction({
       return { start, end: start + claim.quote.length };
     });
     if (problems.length > 0) {
-      return goowaErrors.fail(
-        `No claims saved. Fix these and retry: ${problems.join(" ")}`,
+      return goowaErrors.noWrite(
+        `No claims saved. Fix these and retry: ${problems.join(" ")} Valid source ids: ${[...usable].join(", ") || "none"}.`,
         "invalid_span",
       );
     }

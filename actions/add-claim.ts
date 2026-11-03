@@ -44,7 +44,7 @@ export default defineAction({
       confidence: args.confidence,
     });
     if (blocked.length > 0) {
-      return goowaErrors.fail(
+      return goowaErrors.noWrite(
         `Agents cannot set ${blocked.join(", ")} on a claim.`,
         "forbidden",
         { statusCode: 403 },
@@ -53,7 +53,7 @@ export default defineAction({
     const doc = await loadDocument(args.documentId, "editor");
     const start = locate(doc.body, args.quote, args.spanStart ?? 0);
     if (start === null) {
-      return goowaErrors.fail(
+      return goowaErrors.noWrite(
         "`quote` is not an exact substring of the body.",
         "invalid_span",
       );

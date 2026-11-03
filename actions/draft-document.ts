@@ -24,13 +24,13 @@ export default defineAction({
   run: async ({ documentId, body }) => {
     const doc = await loadDocument(documentId, "editor");
     if (doc.status !== "draft") {
-      return goowaErrors.fail(
+      return goowaErrors.noWrite(
         "Only draft documents can be redrafted.",
         "conflict",
       );
     }
     if ((await loadClaims(documentId)).length > 0) {
-      return goowaErrors.fail(
+      return goowaErrors.noWrite(
         "This document already has claims. Use propose-edit to change the body.",
         "conflict",
       );

@@ -19,7 +19,7 @@ export default defineAction({
   run: async ({ title, topic }, ctx) => {
     const ownerEmail =
       ctx?.userEmail ??
-      goowaErrors.fail("Sign in to create documents.", "forbidden", {
+      goowaErrors.noWrite("Sign in to create documents.", "forbidden", {
         statusCode: 401,
       });
     const doc = {
