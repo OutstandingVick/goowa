@@ -51,8 +51,8 @@ export function ClaimPanel({
   );
 
   // Selecting a claim elsewhere (e.g. its span) scrolls its card into view.
-  // Runs only when the active claim changes, so it never steals focus from
-  // an open editor on re-render.
+  // Runs when the active claim or filter changes (not every render), so it
+  // never steals focus from an open editor.
   useEffect(() => {
     if (!activeClaimId) return;
     if (filter !== "all" && !visible.some((c) => c.id === activeClaimId)) {
@@ -63,7 +63,7 @@ export function ClaimPanel({
     el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     el?.focus({ preventScroll: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeClaimId]);
+  }, [activeClaimId, filter]);
 
   return (
     <section aria-label="Claims" className="flex min-h-0 flex-col">
