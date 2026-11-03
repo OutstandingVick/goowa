@@ -27,6 +27,18 @@ export function Editor({ state }: { state: DocumentState }) {
   useEffect(() => {
     document.title = `${doc.title} · Goowa`;
   }, [doc.title]);
+
+  // Escape clears the active claim (the popover handles its own Escape).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setActiveClaimId(null);
+        setHotClaimIds([]);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
   const bodyRef = useRef<HTMLDivElement>(null);
 
   const proposals = useMemo<ProposalMark[]>(() => {
