@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { DocumentState } from "@/lib/goowa";
 import { selectionOffsets, type BodySelection } from "@/lib/selection";
@@ -22,6 +22,10 @@ export function Editor({ state }: { state: DocumentState }) {
   const [drawerOpen, setDrawerOpen] = useState(pendingEdits.length > 0);
   const [focusedEditId, setFocusedEditId] = useState<string | null>(null);
   const docPane = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    document.title = `${doc.title} · Goowa`;
+  }, [doc.title]);
   const bodyRef = useRef<HTMLDivElement>(null);
 
   const proposals = useMemo<ProposalMark[]>(() => {
