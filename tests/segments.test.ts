@@ -123,3 +123,23 @@ describe("segmentRange clipping", () => {
     expect(segs.find((s) => s.claimIds.length)!.text).toBe("💵 are");
   });
 });
+
+describe("overlapping", () => {
+  const marks = [
+    mark("a", "Stablecoins track the dollar."),
+    mark("b", "USDC is one."),
+  ];
+  it("finds marks a selection touches", () => {
+    const s = BODY.indexOf("dollar. USDC");
+    expect(overlapping(marks, s, s + "dollar. USDC".length)).toEqual([
+      "a",
+      "b",
+    ]);
+  });
+  it("treats touching edges as not overlapping", () => {
+    expect(overlapping(marks, marks[0]!.end, marks[0]!.end + 1)).toEqual([]);
+  });
+  it("finds the mark under a caret", () => {
+    expect(overlapping(marks, marks[1]!.start, marks[1]!.start)).toEqual(["b"]);
+  });
+});
