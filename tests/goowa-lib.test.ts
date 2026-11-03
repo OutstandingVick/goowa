@@ -15,3 +15,25 @@ describe("domainOf", () => {
     expect(domainOf("not a url")).toBe("not a url");
   });
 });
+
+describe("claim status helpers", () => {
+  it("treats unknown status values as unverified", () => {
+    expect(asStatus("supported")).toBe("supported");
+    expect(asStatus("bogus")).toBe("unverified");
+  });
+  it("counts every status, including zeros", () => {
+    expect(
+      countByStatus([
+        { status: "supported" },
+        { status: "weak" },
+        { status: "supported" },
+      ]),
+    ).toEqual({
+      supported: 2,
+      weak: 1,
+      unsupported: 0,
+      unverified: 0,
+      quarantined: 0,
+    });
+  });
+});
