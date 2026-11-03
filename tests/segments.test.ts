@@ -96,3 +96,30 @@ describe("segmentRange overlaps", () => {
     expect(both.claimIds).toEqual(["a"]);
   });
 });
+
+describe("segmentRange clipping", () => {
+  it("clips claims that cross a block boundary to the block", () => {
+    const blocks = parseBlocks(BODY);
+    const crossing = {
+      id: "x",
+      start: blocks[0]!.contentStart + 2,
+      end: blocks[1]!.start + 5,
+    };
+    const head = segmentRange(BODY, blocks[0]!.contentStart, blocks[0]!.end, [
+      crossing,
+    ]);
+    const para = segmentRange(BODY, blocks[1]!.start, blocks[1]!.end, [
+      crossing,
+    ]);
+    expect(head.at(-1)!.claimIds).toEqual(["x"]);
+    expect(para[0]!.claimIds).toEqual(["x"]);
+    expect(para[0]!.text).toBe("Stabl");
+  });
+
+  it("keeps surrogate pairs whole when offsets are correct", () => {
+    const body = "Coins 💵 are dollars.";
+    const m = mark("e", "💵 are", body);
+    const segs = segmentRange(body, 0, body.length, [m]);
+    expect(segs.find((s) => s.claimIds.length)!.text).toBe("💵 are");
+  });
+});
