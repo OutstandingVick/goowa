@@ -7,7 +7,9 @@ claims, the agent proposes edits, and only a human can publish.
 Built on [Agent-Native](https://www.agent-native.com/docs/) for the Builder.io
 Agent-Native Hackathon.
 
-**Status: Phase 1** — data model, actions, and a debug view. See [NOTES.md](NOTES.md).
+**Status: Phase 2** — the editor. See [NOTES.md](NOTES.md).
+
+![Editor overview](docs/screenshots/1-overview.png)
 
 ## What's here
 
@@ -17,7 +19,10 @@ Agent-Native Hackathon.
 - `/spike` — page that calls both actions from the UI.
 - Documents, sources, claims, and edits with the human-only rules
   (see AGENTS.md for the action list).
-- `/debug` and `/debug/:id` — claims, pending edits, Accept/Reject.
+- `/docs/:id` — the editor: colour-coded claim highlights, claim cards,
+  select-to-correct (flag or ask the agent), tracked-change proposals, and a
+  pending edits drawer where only a human can accept.
+- `/debug/:id` — the Phase 1 debug view (hidden from the nav).
 
 ## Demo fixture
 
