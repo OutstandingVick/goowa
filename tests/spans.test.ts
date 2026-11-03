@@ -112,4 +112,27 @@ describe("remapSpans", () => {
       text: "It is fully reserved.",
     });
   });
+
+  it("keeps insertions at a span boundary outside the span", () => {
+    const b = spanOf("b", "It is backed by cash.");
+    const atStart = remapSpans(BODY, [b], {
+      start: b.start,
+      end: b.start,
+      text: "Today, ",
+    });
+    expect(atStart.spans[0]).toMatchObject({
+      outcome: "shifted",
+      text: b.text,
+    });
+    const atEnd = remapSpans(BODY, [b], {
+      start: b.end,
+      end: b.end,
+      text: " Mostly.",
+    });
+    expect(atEnd.spans[0]).toMatchObject({
+      outcome: "unchanged",
+      text: b.text,
+    });
+    check(atEnd.body, atEnd.spans);
+  });
 });
