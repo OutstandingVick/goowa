@@ -85,4 +85,31 @@ describe("remapSpans", () => {
     });
     check(body, spans);
   });
+
+  it("resizes a span when the edit is inside it", () => {
+    const b = spanOf("b", "It is backed by cash.");
+    const { body, spans } = remapSpans(
+      BODY,
+      [b],
+      editOf("cash", "cash reserves"),
+    );
+    expect(spans[0]).toMatchObject({
+      outcome: "resized",
+      text: "It is backed by cash reserves.",
+    });
+    check(body, spans);
+  });
+
+  it("treats replacing a whole span as a resize", () => {
+    const b = spanOf("b", "It is backed by cash.");
+    const { spans } = remapSpans(
+      BODY,
+      [b],
+      editOf("It is backed by cash.", "It is fully reserved."),
+    );
+    expect(spans[0]).toMatchObject({
+      outcome: "resized",
+      text: "It is fully reserved.",
+    });
+  });
 });
