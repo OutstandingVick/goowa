@@ -1,0 +1,99 @@
+import { defineAction } from "@agent-native/core/action";
+import { eq } from "drizzle-orm";
+import { z } from "zod";
+
+import { getDb, schema } from "../server/db/index.js";
+import { actorOf, goowaErrors } from "../server/lib/actor.js";
+import { applyBodyEdit } from "../server/lib/apply-body-edit.js";
+import { forbiddenClaimFields } from "../server/lib/claim-policy.js";
+import { loadClaim, loadClaims, now } from "../server/lib/documents.js";
+import { CLAIM_STATUSES } from "../shared/machines.js";
+
+export default defineAction({
+  description:
+    "Update a claim. Agents may change sourceIds directly; an agent's `text` change becomes a proposed edit for a human to accept. Only humans may set status (including supported), confidence, or dependsOn.",
+  errors: goowaErrors,
+  mcpTool: true,
+  schema: z.object({
+    claimId: z.string().describe("Claim id"),
+    text: z.string().min(1).optional().describe("New claim text"),
+    reason: z
+      .string()
+      .optional()
+      .describe("Why the text changes; used for the proposed edit"),
+    sourceIds: z.array(z.string()).optional().describe("Backing source ids"),
+    status: z.enum(CLAIM_STATUSES).optional().describe("Human only"),
+    confidence: z.number().min(0).max(1).optional().describe("Human only"),
+    dependsOn: z.array(z.string()).optional().describe("Human only"),
+  }),
+  run: async ({ claimId, reason, ...patch }, ctx) => {
+    const actor = actorOf(ctx);
+    const blocked = forbiddenClaimFields(actor, patch);
+    if (blocked.length > 0) {
+      return goowaErrors.fail(
+        `Agents cannot set ${blocked.join(", ")} on a claim.`,
+        "forbidden",
+        { statusCode: 403 },
+      );
+    }
+    const { doc, claim } = await loadClaim(claimId, "editor");
+    const db = getDb();
+
+    if (patch.dependsOn) {
+      const ids = new Set((await loadClaims(doc.id)).map((c) => c.id));
+      const bad = patch.dependsOn.filter(
+        (id) => id === claimId || !ids.has(id),
+      );
+      if (bad.length > 0) {
+        return goowaErrors.fail(
+          `dependsOn has invalid claim ids: ${bad.join(", ")}`,
+          "invalid_span",
+        );
+      }
+    }
+
+    const fields: Partial<typeof schema.claims.$inferInsert> = {};
+    if (patch.sourceIds) fields.sourceIds = patch.sourceIds;
+    if (patch.status) fields.status = patch.status;
+    if (patch.confidence !== undefined) fields.confidence = patch.confidence;
+    if (patch.dependsOn) fields.dependsOn = patch.dependsOn;
+    if (Object.keys(fields).length > 0) {
+      await db
+        .update(schema.claims)
+        .set({ ...fields, updatedBy: actor, updatedAt: now() })
+        .where(eq(schema.claims.id, claimId));
+    }
+
+    let proposedEditId: string | undefined;
+    if (patch.text !== undefined && patch.text !== claim.text) {
+      if (actor === "human") {
+        await applyBodyEdit(
+          doc,
+          { start: claim.spanStart, end: claim.spanEnd, text: patch.text },
+          actor,
+        );
+      } else {
+        proposedEditId = crypto.randomUUID();
+        await db.insert(schema.edits).values({
+          id: proposedEditId,
+          documentId: doc.id,
+          targetType: "claim",
+          targetId: claimId,
+          spanStart: claim.spanStart,
+          before: claim.text,
+          after: patch.text,
+          reason: reason ?? "Claim text change",
+          proposedBy: actor,
+          state: "proposed",
+          createdAt: now(),
+        });
+      }
+    }
+
+    const [updated] = await db
+      .select()
+      .from(schema.claims)
+      .where(eq(schema.claims.id, claimId));
+    return { claim: updated, proposedEditId };
+  },
+});
