@@ -36,6 +36,11 @@ For custom branding, keep `server/plugins/agent-native-email-branding.ts` aligne
 
 Human = `ctx.caller` `frontend` or `cli`; every other caller is the agent (`server/lib/actor.ts`). Pre-write rejections use `goowaErrors.noWrite` so the agent may retry with fixed input.
 
+## Goowa screens
+
+- `/docs` lists documents; `/docs/:id` is the editor. Selected text arrives as hidden context (documentId, selection start/end/text, overlapping claims): answer with `propose-edit`, never with rewritten chat text.
+- Accept/Reject and status changes in the editor are the human's; never claim you did them.
+
 ## Application state
 
 - `navigation` describes the view and selected ids. Chat is `chat` at `/chat` and `/chat/<threadId>`; the Get started page is `home` at `/home`; `/` opens shared sign-in/signup.
