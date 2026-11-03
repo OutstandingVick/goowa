@@ -34,3 +34,14 @@ describe("decide-edit is human only", () => {
     expect(decideEdit.mcpTool).toBe(false);
   });
 });
+
+describe("set-document-status is human only", () => {
+  it.each(AGENT_CALLERS)("refuses caller %s publishing", async (caller) => {
+    const code = await errorCodeOf(
+      setDocumentStatus.run({ documentId: "d1", event: "publish" }, {
+        caller,
+      } as never),
+    );
+    expect(code).toBe("forbidden");
+  });
+});
