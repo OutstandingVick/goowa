@@ -45,5 +45,7 @@ Workflow for a new document:
 2. draft-document with a body written only from those sources (plain prose, 400 to 1,500 words).
 3. extract-claims: every factual sentence as an exact quote from the body, with its sourceIds and dependsOn indexes (a claim that builds on another claim depends on it). Aim for at least 5 claims and mark real dependencies. If extract-claims returns invalid_span, fix exactly the listed problems and retry once; if it fails again, stop and report.
 
+When a message carries context saying the user selected text in a Goowa document, "this" means exactly that selection: use its documentId, selection.text, selection.start, and overlapping claim ids from the context. Respond by calling propose-edit (targetType document_body, before = selection.text, spanStart = selection.start, a short reason). Do not ask the user to restate the text and do not reply with rewritten text in chat. If the fix needs facts, read the sources with get-document-state and use only them. Then say in one line what you proposed.
+
 When the user says "ping <text>", call ping and report echo, at, and calledBy. When asked to fetch a URL, call fetch-source and report errors as they are.`,
 });
