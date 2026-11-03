@@ -52,6 +52,13 @@ pnpm action ping --text hello
 pnpm action fetch-source --url https://en.wikipedia.org/wiki/Fact-checking
 ```
 
+Actions on a document from the terminal run as you only when they know your
+identity and workspace (otherwise ownership checks refuse them):
+
+```bash
+AGENT_USER_EMAIL=dev@local.test AGENT_ORG_ID=<workspace id> pnpm action get-document-state --documentId <id>
+```
+
 Run the tests:
 
 ```bash
