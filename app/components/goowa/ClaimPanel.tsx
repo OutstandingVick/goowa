@@ -42,12 +42,17 @@ export function ClaimPanel({
     const i = indexOf.get(id);
     return i === undefined ? "removed" : `#${i + 1}`;
   };
-  const visible =
-    filter === "all"
-      ? claims
-      : claims.filter((c) => asStatus(c.status) === filter);
+  const visible = useMemo(
+    () =>
+      filter === "all"
+        ? claims
+        : claims.filter((c) => asStatus(c.status) === filter),
+    [claims, filter],
+  );
 
   // Selecting a claim elsewhere (e.g. its span) scrolls its card into view.
+  // Runs only when the active claim changes, so it never steals focus from
+  // an open editor on re-render.
   useEffect(() => {
     if (!activeClaimId) return;
     if (filter !== "all" && !visible.some((c) => c.id === activeClaimId)) {
@@ -57,7 +62,8 @@ export function ClaimPanel({
     const el = cards.current.get(activeClaimId);
     el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     el?.focus({ preventScroll: true });
-  }, [activeClaimId, filter, visible]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeClaimId]);
 
   return (
     <section aria-label="Claims" className="flex min-h-0 flex-col">
