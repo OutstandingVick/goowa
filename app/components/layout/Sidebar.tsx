@@ -15,7 +15,7 @@ import { openCommandMenu } from "@agent-native/toolkit/app/shared";
 import { AgentNativeIcon } from "@agent-native/toolkit/app/shared/AgentNativeIcon";
 import {
   IconEdit,
-  IconFlask,
+  IconFileText,
   IconHome,
   IconLayoutSidebarLeftCollapse,
   IconLayoutSidebarLeftExpand,
@@ -156,11 +156,11 @@ function HomeNavLink({ collapsed }: { collapsed: boolean }) {
 
 function SpikeNavLink({ collapsed }: { collapsed: boolean }) {
   const location = useLocation();
-  const active = location.pathname.startsWith("/debug");
+  const active = location.pathname.startsWith("/docs");
   return (
     <div className="px-2">
       <Link
-        to="/debug"
+        to="/docs"
         aria-current={active ? "page" : undefined}
         aria-label={collapsed ? "Documents" : undefined}
         className={cn(
@@ -171,7 +171,7 @@ function SpikeNavLink({ collapsed }: { collapsed: boolean }) {
             : "h-8 w-full gap-3 rounded-lg px-3 text-sm font-medium",
         )}
       >
-        <IconFlask className="size-4 shrink-0" strokeWidth={1.8} />
+        <IconFileText className="size-4 shrink-0" strokeWidth={1.8} />
         <span className={collapsed ? "sr-only" : "truncate"}>Documents</span>
       </Link>
     </div>
