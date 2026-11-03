@@ -1,5 +1,11 @@
+import { sendToAgentChat } from "@agent-native/core/client/agent-chat";
 import { useActionMutation } from "@agent-native/core/client/hooks";
-import { IconExternalLink, IconLink, IconPencil } from "@tabler/icons-react";
+import {
+  IconExternalLink,
+  IconLink,
+  IconPencil,
+  IconSparkles,
+} from "@tabler/icons-react";
 import { forwardRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { ActorBadge } from "./ActorBadge";
+import { fixContext } from "./SelectionPopover";
 import { StatusBadge, StatusIcon } from "./StatusBadge";
 
 const HUMAN_STATUSES: ClaimStatus[] = ["supported", "weak", "unsupported"];
@@ -246,6 +253,31 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
               size="sm"
               variant="ghost"
               className="ml-auto h-7 px-2 text-xs"
+              title="Ask the agent to propose a fix for this claim"
+              onClick={() =>
+                sendToAgentChat({
+                  message: `Fix claim #${index + 1}.`,
+                  context: fixContext(
+                    claim.documentId,
+                    {
+                      start: claim.spanStart,
+                      end: claim.spanEnd,
+                      text: claim.text,
+                    },
+                    [claim],
+                    "",
+                  ),
+                  submit: true,
+                })
+              }
+            >
+              <IconSparkles className="size-3.5" aria-hidden />
+              Ask agent
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 px-2 text-xs"
               onClick={startEditing}
             >
               <IconPencil className="size-3.5" aria-hidden />
