@@ -28,6 +28,17 @@ export function Editor({ state }: { state: DocumentState }) {
     document.title = `${doc.title} · Goowa`;
   }, [doc.title]);
 
+  // A proposal that arrives live (e.g. from the agent) opens the drawer on it.
+  const seenEdits = useRef(new Set(pendingEdits.map((e) => e.id)));
+  useEffect(() => {
+    const fresh = pendingEdits.filter((e) => !seenEdits.current.has(e.id));
+    for (const e of pendingEdits) seenEdits.current.add(e.id);
+    if (fresh.length > 0) {
+      setDrawerOpen(true);
+      setFocusedEditId(fresh[fresh.length - 1]!.id);
+    }
+  }, [pendingEdits]);
+
   // Escape clears the active claim (the popover handles its own Escape).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
