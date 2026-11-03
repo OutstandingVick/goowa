@@ -135,4 +135,29 @@ describe("remapSpans", () => {
     });
     check(atEnd.body, atEnd.spans);
   });
+
+  it("re-anchors a partially overlapped span whose text survives", () => {
+    const body = "Alpha beta. Gamma delta. Gamma delta.";
+    const s = spanOf("s", "beta. Gamma", body);
+    // Overlaps the span start, but the span text is reinserted elsewhere.
+    const { body: next, spans } = remapSpans(body, [s], {
+      start: 0,
+      end: 8,
+      text: "Zed beta. Gamma ",
+    });
+    expect(spans[0]!.outcome).toBe("reanchored");
+    check(next, spans);
+  });
+
+  it("marks a span lost when an overlapping edit destroys its text", () => {
+    const b = spanOf("b", "It is backed by cash.");
+    const { body, spans } = remapSpans(
+      BODY,
+      [b],
+      editOf("stablecoin. It is", "token, which is"),
+    );
+    expect(spans[0]!.outcome).toBe("lost");
+    expect(spans[0]!.end).toBeGreaterThanOrEqual(spans[0]!.start);
+    expect(spans[0]!.end).toBeLessThanOrEqual(body.length);
+  });
 });
