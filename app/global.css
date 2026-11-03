@@ -1,5 +1,6 @@
 @import "@fontsource-variable/inter";
 
+@import "./goowa.css";
 @import "tailwindcss";
 @import "@agent-native/toolkit/styles.css";
 

@@ -1,0 +1,155 @@
+@import "@fontsource-variable/source-serif-4";
+
+/* Goowa editor tokens. Colour carries status meaning only; every status also
+   has an icon and a label in the UI. */
+:root {
+  --g-supported: 152 55% 34%;
+  --g-supported-bg: 145 60% 93%;
+  --g-weak: 36 90% 38%;
+  --g-weak-bg: 44 95% 90%;
+  --g-unsupported: 0 68% 46%;
+  --g-unsupported-bg: 0 85% 94%;
+  --g-unverified: 220 8% 46%;
+  --g-unverified-bg: 220 14% 93%;
+  --g-quarantined: 272 50% 48%;
+  --g-quarantined-bg: 272 70% 94%;
+  --g-insert: 152 55% 34%;
+  --g-insert-bg: 145 60% 90%;
+  --g-delete: 0 68% 46%;
+  --g-paper: 40 33% 99%;
+}
+
+.dark {
+  --g-supported: 150 50% 58%;
+  --g-supported-bg: 152 40% 18%;
+  --g-weak: 40 90% 60%;
+  --g-weak-bg: 38 60% 18%;
+  --g-unsupported: 0 80% 68%;
+  --g-unsupported-bg: 0 45% 20%;
+  --g-unverified: 220 10% 64%;
+  --g-unverified-bg: 220 8% 22%;
+  --g-quarantined: 272 70% 74%;
+  --g-quarantined-bg: 272 35% 22%;
+  --g-insert: 150 50% 60%;
+  --g-insert-bg: 152 40% 20%;
+  --g-delete: 0 80% 68%;
+  --g-paper: 0 0% 13%;
+}
+
+.g-prose {
+  font-family: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.8;
+  font-optical-sizing: auto;
+  color: hsl(var(--foreground));
+}
+
+.g-prose h2,
+.g-prose h3 {
+  font-family: "Inter Variable", "Inter", sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* A claim highlight: soft tint plus an underline in the status colour, so
+   the text stays readable and colour is never the only cue. */
+.g-claim {
+  --tone: var(--g-unverified);
+  --tone-bg: var(--g-unverified-bg);
+  background: hsl(var(--tone-bg) / 0.7);
+  box-shadow: inset 0 -2px 0 hsl(var(--tone) / 0.8);
+  border-radius: 2px;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.g-claim:hover,
+.g-claim[data-hot="true"] {
+  background: hsl(var(--tone-bg));
+  box-shadow: inset 0 -3px 0 hsl(var(--tone));
+}
+.g-claim[data-active="true"] {
+  background: hsl(var(--tone-bg));
+  box-shadow:
+    inset 0 -3px 0 hsl(var(--tone)),
+    0 0 0 2px hsl(var(--tone) / 0.35);
+}
+.g-claim[data-overlap="true"] {
+  box-shadow: inset 0 -4px 0 hsl(var(--tone));
+}
+
+[data-status="supported"] {
+  --tone: var(--g-supported);
+  --tone-bg: var(--g-supported-bg);
+}
+[data-status="weak"] {
+  --tone: var(--g-weak);
+  --tone-bg: var(--g-weak-bg);
+}
+[data-status="unsupported"] {
+  --tone: var(--g-unsupported);
+  --tone-bg: var(--g-unsupported-bg);
+}
+[data-status="unverified"] {
+  --tone: var(--g-unverified);
+  --tone-bg: var(--g-unverified-bg);
+}
+[data-status="quarantined"] {
+  --tone: var(--g-quarantined);
+  --tone-bg: var(--g-quarantined-bg);
+}
+.g-claim[data-status="quarantined"] {
+  background-image: repeating-linear-gradient(
+    135deg,
+    hsl(var(--tone) / 0.16) 0 4px,
+    transparent 4px 8px
+  );
+}
+
+.g-pulse {
+  animation: g-pulse 1.1s ease-out 1;
+}
+@keyframes g-pulse {
+  0% {
+    box-shadow:
+      inset 0 -3px 0 hsl(var(--tone)),
+      0 0 0 0 hsl(var(--tone) / 0.55);
+  }
+  100% {
+    box-shadow:
+      inset 0 -3px 0 hsl(var(--tone)),
+      0 0 0 10px hsl(var(--tone) / 0);
+  }
+}
+
+/* Tracked changes for pending proposals. */
+.g-del {
+  text-decoration: line-through;
+  text-decoration-color: hsl(var(--g-delete));
+  text-decoration-thickness: 2px;
+  color: hsl(var(--muted-foreground));
+}
+.g-ins {
+  background: hsl(var(--g-insert-bg));
+  color: hsl(var(--foreground));
+  border-radius: 2px;
+  padding: 0 1px;
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--g-insert));
+  text-underline-offset: 3px;
+}
+.g-ins,
+.g-del {
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g-pulse {
+    animation: none;
+  }
+  .g-claim {
+    transition: none;
+  }
+}
