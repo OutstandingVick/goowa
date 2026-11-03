@@ -219,6 +219,11 @@ export function Editor({ state }: { state: DocumentState }) {
           )}
         </aside>
       </div>
+      <p className="sr-only" aria-live="polite">
+        {pendingEdits.length === 1
+          ? "1 pending edit"
+          : `${pendingEdits.length} pending edits`}
+      </p>
       <EditsDrawer
         edits={pendingEdits}
         placedIds={placedIds}
