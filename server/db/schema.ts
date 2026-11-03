@@ -1,9 +1,9 @@
-import { sql } from "drizzle-orm";
-import { integer, jsonb, pgTable, real, text } from "drizzle-orm/pg-core";
 import {
   createSharesTable,
   ownableColumns,
 } from "@agent-native/core/db/schema";
+import { sql } from "drizzle-orm";
+import { integer, jsonb, pgTable, real, text } from "drizzle-orm/pg-core";
 
 // "human" | "agent" columns are named *_kind, not created_by/updated_by: the
 // framework treats those names as member emails (identity columns).
