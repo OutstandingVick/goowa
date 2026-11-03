@@ -59,4 +59,30 @@ describe("remapSpans", () => {
     });
     check(body, spans);
   });
+
+  it("shifts spans after the edit by the length change", () => {
+    const c = spanOf("c", "Circle issues it.");
+    const { body, spans } = remapSpans(
+      BODY,
+      [c],
+      editOf("cash", "cash and short-term Treasuries"),
+    );
+    expect(spans[0]!.outcome).toBe("shifted");
+    expect(spans[0]!.start).toBe(c.start + "and short-term Treasuries ".length);
+    check(body, spans);
+  });
+
+  it("shifts spans left when text before them is deleted", () => {
+    const c = spanOf("c", "Circle issues it.");
+    const { body, spans } = remapSpans(
+      BODY,
+      [c],
+      editOf(" It is backed by cash.", ""),
+    );
+    expect(spans[0]).toMatchObject({
+      outcome: "shifted",
+      text: "Circle issues it.",
+    });
+    check(body, spans);
+  });
 });
