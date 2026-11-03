@@ -77,6 +77,14 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
           #{index + 1}
         </span>
         <StatusBadge status={status} />
+        {claim.spanEnd <= claim.spanStart && (
+          <span
+            className="rounded bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground"
+            title="An accepted edit removed this claim's text from the document."
+          >
+            Not in text
+          </span>
+        )}
         <ConfidenceBar value={claim.confidence} />
       </header>
 
