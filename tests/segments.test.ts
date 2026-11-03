@@ -143,3 +143,28 @@ describe("overlapping", () => {
     expect(overlapping(marks, marks[1]!.start, marks[1]!.start)).toEqual(["b"]);
   });
 });
+
+describe("segmentRange with a proposal spanning two claims", () => {
+  it("tags every piece of the proposal and keeps both claims whole", () => {
+    const para = parseBlocks(BODY)[1]!;
+    const a = mark("a", "Stablecoins track the dollar.");
+    const b = mark("b", "USDC is one.");
+    const p = mark("p", "the dollar. USDC");
+    const segs = segmentRange(BODY, para.start, para.end, [a, b], [p]);
+    expect(
+      segs
+        .filter((s) => s.proposalIds.includes("p"))
+        .map((s) => s.text)
+        .join(""),
+    ).toBe("the dollar. USDC");
+    for (const id of ["a", "b"]) {
+      const m = id === "a" ? a : b;
+      expect(
+        segs
+          .filter((s) => s.claimIds.includes(id))
+          .map((s) => s.text)
+          .join(""),
+      ).toBe(BODY.slice(m.start, m.end));
+    }
+  });
+});
