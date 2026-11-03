@@ -23,6 +23,18 @@ For custom branding, keep `server/plugins/agent-native-email-branding.ts` aligne
 | --- | --- |
 | `ping` | Echo `{ text }` back as `{ echo, at, calledBy }`; `calledBy` comes from `ctx.caller`. |
 | `fetch-source` | Fetch `{ url }` server-side; returns title, 2,000-char excerpt, sha256 `contentHash`, `fetchedAt`, or `{ ok: false, error: { code, message } }`. |
+| `create-document` | New draft document `{ title, topic }`. |
+| `list-documents` | Documents the user can see. |
+| `ingest-sources` | Fetch `urls[]` into sources; failures get the `fetch_failed` flag. |
+| `get-document-state` | Document, sources, claims, and pending edits in one payload. |
+| `draft-document` | Agent saves its draft body (only while there are no claims). |
+| `extract-claims` | Agent saves claims as exact quotes; server computes spans. |
+| `add-claim` / `update-claim` | Agents may change text (becomes a proposal) and sourceIds only. |
+| `propose-edit` | Any caller proposes a body or claim change. |
+| `decide-edit` | **Human only** (hidden from agent and MCP): accept/reject, re-maps spans. |
+| `set-document-status` | **Human only**: submit, publish, reopen. |
+
+Human = `ctx.caller` `frontend` or `cli`; every other caller is the agent (`server/lib/actor.ts`). Pre-write rejections use `goowaErrors.noWrite` so the agent may retry with fixed input.
 
 ## Application state
 
