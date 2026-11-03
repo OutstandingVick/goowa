@@ -2,11 +2,11 @@ import type { ClaimStatus } from "../../shared/machines.js";
 import type { Actor } from "./actor.js";
 
 export type ClaimPatch = {
-  text?: string;
-  sourceIds?: string[];
-  status?: ClaimStatus;
-  confidence?: number;
-  dependsOn?: string[];
+  text?: string | undefined;
+  sourceIds?: string[] | undefined;
+  status?: ClaimStatus | undefined;
+  confidence?: number | undefined;
+  dependsOn?: string[] | undefined;
 };
 
 // Agents may change text (as a proposal) and sourceIds. Status, confidence,
