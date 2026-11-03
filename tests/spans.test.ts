@@ -170,4 +170,30 @@ describe("remapSpans", () => {
     );
     expect(spans[0]!.outcome).toBe("lost");
   });
+
+  it("keeps every span valid across a sequence of edits", () => {
+    let body = BODY;
+    let spans: Span[] = [
+      spanOf("a", "USDC is a stablecoin."),
+      spanOf("b", "It is backed by cash."),
+      spanOf("c", "Circle issues it."),
+    ];
+    const steps: [string, string][] = [
+      ["USDC", "USD Coin (USDC)"],
+      ["cash", "cash and Treasuries"],
+      [" Circle", "\n\nCircle"],
+      ["issues", "mints and redeems"],
+    ];
+    for (const [find, replacement] of steps) {
+      const result = remapSpans(body, spans, editOf(find, replacement, body));
+      body = result.body;
+      spans = result.spans;
+      check(body, spans);
+    }
+    expect(spans.map((s) => s.text)).toEqual([
+      "USD Coin (USDC) is a stablecoin.",
+      "It is backed by cash and Treasuries.",
+      "Circle mints and redeems it.",
+    ]);
+  });
 });
