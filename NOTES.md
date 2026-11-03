@@ -124,3 +124,67 @@ becomes a proposed edit. Tests: `tests/permissions.test.ts`.
   needs `NODE_OPTIONS=--import tsx` to load the same actions.
 - Production access needs a signed-in user: the static `ACCESS_TOKEN` has no
   identity, so ownership-scoped actions refuse it.
+
+# Phase 2 — editable surface
+
+## Editor model
+
+The body is shown as a read view, not a free-typing editor. `shared/segments.ts`
+cuts each block at every claim and proposal boundary; every rendered text
+element carries `data-start`/`data-end` body offsets, so a highlight is exactly
+`body.slice(spanStart, spanEnd)` and `app/lib/selection.ts` maps a DOM
+selection straight back to body offsets. All changes go through actions
+(`propose-edit`, `update-claim`, `add-claim`, `decide-edit`) and the server's
+`applyBodyEdit` re-maps spans; the page re-renders from the new offsets, so
+highlights cannot drift.
+
+- Routes: `/docs` (list + create), `/docs/:id` (editor). `/home` redirects to
+  `/docs`; `/debug` still works but is out of the nav.
+- Live updates: `useDbSync` already refreshes after the in-app agent's tool
+  calls. The editor also opts into `realtime` with a reason and holds
+  `acquireCollabPollBoost()` (2.5 s polling) so MCP agents and other people
+  appear without a refresh.
+- "Ask agent to fix" uses `sendToAgentChat({ message, context, submit })`. The
+  context (hidden from the chat UI) holds documentId, the exact selection and
+  offsets, overlapping claims, and the user's note; the system prompt says a
+  selection is what "this" means and the answer is a `propose-edit` call.
+- No action behaviour or permissions changed. Summary counts, source domains,
+  and proposal placement are computed client-side from `get-document-state`.
+
+## Alignment edge cases found
+
+- **Overlapping claims** split into shared and single-claim segments; the
+  innermost (shortest) claim decides the colour, and a thicker underline marks
+  the overlap.
+- **Claims crossing a heading** are clipped per block; the heading's `## `
+  marker is never rendered but keeps its offsets.
+- **Proposals inside a claim** render as `<del>` inside the claim highlight
+  plus an `<ins>` after it. Selecting inside proposed text snaps to its
+  anchor, because that text is not in the body yet.
+- **Stale proposals** (their `before` text is gone) are not drawn inline; the
+  drawer marks them "Text changed since proposed" and disables Accept.
+- **Claims an accepted edit destroyed** end with an empty span; the card shows
+  "Not in text" and the claim is reset to unverified.
+- **Emoji and other astral characters** work because offsets are JS string
+  indices on both client and server; a selection can never split a surrogate
+  pair because it comes from the DOM.
+- An accepted claim edit resizes the claim and resets it to unverified (its
+  meaning changed), by design.
+
+## What Phase 3 (verification) needs from the UI
+
+- **Verification results** belong on the claim card, under the status row: the
+  verdict, a confidence (the bar is already wired to `claim.confidence`), and
+  which source passages support or contradict it. The highlight colour already
+  follows `status`.
+- **Snippet previews**: each cited source on the card should expand to the
+  matching passage from the source (with the match highlighted), plus
+  fetchedAt and whether the source's `contentHash` changed since ingest.
+- **Quarantine / laundering warnings**: the `quarantined` status already has
+  its own striped purple style and shield icon. A source with
+  `injection_suspected` should show a warning chip on every card that cites
+  it and in the top bar's summary; a claim whose only support is another
+  claim (`dependsOn` chains with no independent source) should get a
+  "circular support" warning on its card and in the drawer.
+- A per-claim "Verify" button and a top-bar "Verify all" would call the Phase
+  3 actions; results should stream in through the same live sync.
