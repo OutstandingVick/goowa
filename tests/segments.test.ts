@@ -65,3 +65,34 @@ describe("segmentRange", () => {
     );
   });
 });
+
+describe("segmentRange overlaps", () => {
+  it("splits overlapping claims into shared and single-claim pieces", () => {
+    const a = mark("a", "Stablecoins track the dollar.");
+    const b = mark("b", "the dollar. USDC");
+    const para = parseBlocks(BODY)[1]!;
+    const segs = segmentRange(BODY, para.start, para.end, [a, b]);
+    const shared = segs.find((s) => s.claimIds.length === 2)!;
+    expect(shared.text).toBe("the dollar.");
+    expect(
+      segs
+        .filter((s) => s.claimIds.includes("a"))
+        .map((s) => s.text)
+        .join(""),
+    ).toBe("Stablecoins track the dollar.");
+  });
+
+  it("tags proposal ranges alongside claims", () => {
+    const para = parseBlocks(BODY)[1]!;
+    const segs = segmentRange(
+      BODY,
+      para.start,
+      para.end,
+      [mark("a", "USDC is one.")],
+      [mark("p", "is one")],
+    );
+    const both = segs.find((s) => s.proposalIds.includes("p"))!;
+    expect(both.text).toBe("is one");
+    expect(both.claimIds).toEqual(["a"]);
+  });
+});
