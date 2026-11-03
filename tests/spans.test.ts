@@ -196,4 +196,15 @@ describe("remapSpans", () => {
       "Circle mints and redeems it.",
     ]);
   });
+
+  it("handles non-ASCII text by JS string offsets", () => {
+    const body =
+      "Le règlement MiCA s’applique depuis 2024. L’euro numérique est distinct.";
+    const s = spanOf("s", "L’euro numérique est distinct.", body);
+    const { body: next, spans } = remapSpans(body, [s], {
+      ...editOf("règlement", "règlement européen", body),
+    });
+    expect(spans[0]!.outcome).toBe("shifted");
+    check(next, spans);
+  });
 });
