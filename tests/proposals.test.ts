@@ -64,3 +64,29 @@ describe("proposalRanges", () => {
     ).toEqual([]);
   });
 });
+
+describe("proposalRanges with changed claims", () => {
+  it("skips a claim edit once the claim's text no longer matches", () => {
+    const claim = {
+      id: "c",
+      spanStart: 0,
+      spanEnd: 23,
+      text: "USDC is backed by gold.",
+    };
+    expect(
+      proposalRanges(
+        BODY,
+        [
+          {
+            id: "e",
+            targetType: "claim",
+            targetId: "c",
+            spanStart: 0,
+            before: "USDC is backed by cash.",
+          },
+        ],
+        [claim],
+      ),
+    ).toEqual([]);
+  });
+});
