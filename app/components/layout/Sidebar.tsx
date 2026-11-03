@@ -156,13 +156,13 @@ function HomeNavLink({ collapsed }: { collapsed: boolean }) {
 
 function SpikeNavLink({ collapsed }: { collapsed: boolean }) {
   const location = useLocation();
-  const active = location.pathname === "/spike";
+  const active = location.pathname.startsWith("/debug");
   return (
     <div className="px-2">
       <Link
-        to="/spike"
+        to="/debug"
         aria-current={active ? "page" : undefined}
-        aria-label={collapsed ? "Spike" : undefined}
+        aria-label={collapsed ? "Documents" : undefined}
         className={cn(
           "flex items-center text-sidebar-accent-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
           active && "bg-sidebar-accent",
@@ -172,7 +172,7 @@ function SpikeNavLink({ collapsed }: { collapsed: boolean }) {
         )}
       >
         <IconFlask className="size-4 shrink-0" strokeWidth={1.8} />
-        <span className={collapsed ? "sr-only" : "truncate"}>Spike</span>
+        <span className={collapsed ? "sr-only" : "truncate"}>Documents</span>
       </Link>
     </div>
   );
