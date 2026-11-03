@@ -33,3 +33,19 @@ describe("parseBlocks", () => {
     expect(BODY.slice(blocks[3]!.start, blocks[3]!.end)).toBe("MiCA applies.");
   });
 });
+
+describe("parseBlocks edge cases", () => {
+  it("joins consecutive lines into one paragraph", () => {
+    const body = "line one\nline two\n\nnext";
+    const blocks = parseBlocks(body);
+    expect(blocks).toHaveLength(2);
+    expect(body.slice(blocks[0]!.start, blocks[0]!.end)).toBe(
+      "line one\nline two",
+    );
+  });
+
+  it("handles an empty body and trailing blank lines", () => {
+    expect(parseBlocks("")).toEqual([]);
+    expect(parseBlocks("text\n\n\n")).toHaveLength(1);
+  });
+});
