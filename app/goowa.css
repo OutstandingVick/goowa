@@ -132,6 +132,7 @@
   color: hsl(var(--muted-foreground));
 }
 .g-ins {
+  margin-left: 0.2em;
   background: hsl(var(--g-insert-bg));
   color: hsl(var(--foreground));
   border-radius: 2px;
