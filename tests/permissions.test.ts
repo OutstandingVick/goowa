@@ -45,3 +45,46 @@ describe("set-document-status is human only", () => {
     expect(code).toBe("forbidden");
   });
 });
+
+describe("agents cannot mark claims supported", () => {
+  it.each(AGENT_CALLERS)(
+    "update-claim refuses status from %s",
+    async (caller) => {
+      const code = await errorCodeOf(
+        updateClaim.run({ claimId: "c1", status: "supported" }, {
+          caller,
+        } as never),
+      );
+      expect(code).toBe("forbidden");
+    },
+  );
+
+  it("add-claim refuses status and confidence from the agent", async () => {
+    const code = await errorCodeOf(
+      addClaim.run(
+        {
+          documentId: "d1",
+          quote: "x",
+          sourceIds: [],
+          dependsOn: [],
+          status: "supported",
+        },
+        { caller: "tool" } as never,
+      ),
+    );
+    expect(code).toBe("forbidden");
+    const code2 = await errorCodeOf(
+      addClaim.run(
+        {
+          documentId: "d1",
+          quote: "x",
+          sourceIds: [],
+          dependsOn: [],
+          confidence: 1,
+        },
+        { caller: "tool" } as never,
+      ),
+    );
+    expect(code2).toBe("forbidden");
+  });
+});
