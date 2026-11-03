@@ -7,7 +7,7 @@ claims, the agent proposes edits, and only a human can publish.
 Built on [Agent-Native](https://www.agent-native.com/docs/) for the Builder.io
 Agent-Native Hackathon.
 
-**Status: Phase 0** — setup and spike only. See [NOTES.md](NOTES.md).
+**Status: Phase 1** — data model, actions, and a debug view. See [NOTES.md](NOTES.md).
 
 ## What's here
 
@@ -15,6 +15,18 @@ Agent-Native Hackathon.
 - `actions/fetch-source.ts` — fetches a URL server-side, returns title, a
   2,000-char readable excerpt, a sha256 of the readable text, or a typed error.
 - `/spike` — page that calls both actions from the UI.
+- Documents, sources, claims, and edits with the human-only rules
+  (see AGENTS.md for the action list).
+- `/debug` and `/debug/:id` — claims, pending edits, Accept/Reject.
+
+## Demo fixture
+
+Runs create → ingest → draft → extract for a stablecoin explainer and checks
+the result (needs a model provider connected in Settings › Model):
+
+```bash
+AGENT_ORG_ID=<workspace id> pnpm demo
+```
 
 The agent chat (`/chat`) calls the same two actions as tools.
 
