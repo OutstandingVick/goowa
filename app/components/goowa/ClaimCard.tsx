@@ -62,8 +62,18 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
       ref={ref}
       data-status={status}
       data-claim-card={claim.id}
-      tabIndex={-1}
+      tabIndex={0}
       onClick={() => onSelect(claim.id)}
+      onKeyDown={(e) => {
+        if (
+          e.target === e.currentTarget &&
+          (e.key === "Enter" || e.key === " ")
+        ) {
+          e.preventDefault();
+          onSelect(claim.id);
+        }
+      }}
+      aria-label={`Claim ${index + 1}, ${STATUS_LABEL[status]}`}
       className={cn(
         "group relative cursor-pointer rounded-lg border bg-card p-4 outline-none transition-[border-color,box-shadow] duration-150",
         "before:absolute before:inset-y-3 before:left-0 before:w-[3px] before:rounded-full before:bg-[hsl(var(--tone))]",
