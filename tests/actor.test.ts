@@ -35,3 +35,16 @@ describe("requireHuman", () => {
     ).not.toThrow();
   });
 });
+
+describe("requireEditable", () => {
+  it("refuses any write to a published document with a typed error", async () => {
+    const { requireEditable } = await import("../server/lib/actor");
+    expect(() => requireEditable({ status: "draft" })).not.toThrow();
+    try {
+      requireEditable({ status: "published" });
+      throw new Error("should have thrown");
+    } catch (err) {
+      expect((err as { errorCode?: string }).errorCode).toBe("published");
+    }
+  });
+});
