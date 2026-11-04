@@ -166,9 +166,9 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
           <p className="font-serif text-[15px] leading-relaxed">{claim.text}</p>
 
           {cited.length > 0 ? (
-            <ul className="mt-3 grid gap-1">
+            <ul className="mt-3 grid grid-cols-[minmax(0,1fr)] gap-1">
               {cited.map((s) => (
-                <li key={s.id} className="text-xs">
+                <li key={s.id} className="min-w-0 text-xs">
                   <div className="flex min-w-0 items-center gap-1.5">
                     <IconLink
                       aria-hidden
