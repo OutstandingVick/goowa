@@ -89,3 +89,15 @@ describe("receiptToMarkdown", () => {
     expect(md.startsWith("# Supply")).toBe(true);
   });
 });
+
+describe("receiptToMarkdown with a claim removed from the text", () => {
+  it("still footnotes it but adds no marker in the body", () => {
+    const lost = {
+      ...receipt,
+      claims: [{ ...receipt.claims[0]!, span: { start: 20, end: 20 } }],
+    } as Receipt;
+    const md = receiptToMarkdown(lost);
+    expect(md).not.toContain("[^1] ");
+    expect(md).toContain("[^1]: supported.");
+  });
+});
