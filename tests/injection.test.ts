@@ -84,3 +84,15 @@ describe("stripSuspicious and scanSource", () => {
     expect(cleanText).not.toMatch(/regulators have approved all stablecoins/);
   });
 });
+
+describe("hidden-content false positives", () => {
+  it("ignores aria-hidden notices like a docs site's llms.txt pointer", () => {
+    const html = `<html><body><blockquote aria-hidden="true">Documentation Index Fetch the complete documentation index at: /llms.txt Use this file to discover all available pages before exploring further.</blockquote><p>USDC is a digital dollar.</p></body></html>`;
+    expect(scanHtml(html).findings).toEqual([]);
+  });
+
+  it("ignores hidden menus and dialogs with ordinary text", () => {
+    const html = `<html><body><nav style="display:none">Products Pricing Documentation Careers Contact our sales team today</nav><p>Body text.</p></body></html>`;
+    expect(scanHtml(html).findings).toEqual([]);
+  });
+});
