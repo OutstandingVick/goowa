@@ -7,6 +7,7 @@ import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { applyBodyEdit } from "../server/lib/apply-body-edit.js";
 import { forbiddenClaimFields } from "../server/lib/claim-policy.js";
 import { loadClaim, loadClaims, now } from "../server/lib/documents.js";
+import { cycleIfDepends } from "../shared/graph.js";
 import { CLAIM_STATUSES } from "../shared/machines.js";
 
 export default defineAction({
@@ -46,7 +47,8 @@ export default defineAction({
     const db = getDb();
 
     if (patch.dependsOn) {
-      const ids = new Set((await loadClaims(doc.id)).map((c) => c.id));
+      const all = await loadClaims(doc.id);
+      const ids = new Set(all.map((c) => c.id));
       const bad = patch.dependsOn.filter(
         (id) => id === claimId || !ids.has(id),
       );
@@ -54,6 +56,15 @@ export default defineAction({
         return goowaErrors.noWrite(
           `dependsOn has invalid claim ids: ${bad.join(", ")}`,
           "invalid_span",
+        );
+      }
+      const cycle = cycleIfDepends(all, claimId, patch.dependsOn);
+      if (cycle) {
+        const label = (id: string) =>
+          `#${all.findIndex((c) => c.id === id) + 1}`;
+        return goowaErrors.noWrite(
+          `That dependency would create a cycle: ${cycle.map(label).join(" → ")}.`,
+          "cycle",
         );
       }
     }
