@@ -107,6 +107,17 @@ export default defineAction({
           state: "proposed",
           createdAt: now(),
         });
+        await logActivity(
+          doc.id,
+          "edit_proposed",
+          actor,
+          "The agent proposed new wording for a claim",
+          {
+            editId: proposedEditId,
+            claimId,
+            after: patch.text,
+          },
+        );
       }
     }
 
