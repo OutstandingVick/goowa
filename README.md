@@ -7,7 +7,7 @@ claims, the agent proposes edits, and only a human can publish.
 Built on [Agent-Native](https://www.agent-native.com/docs/) for the Builder.io
 Agent-Native Hackathon.
 
-**Status: Phase 2** — the editor. See [NOTES.md](NOTES.md).
+**Status: Phase 3** — the verification engine. See [NOTES.md](NOTES.md).
 
 ![Editor overview](docs/screenshots/1-overview.png)
 
@@ -23,6 +23,20 @@ Agent-Native Hackathon.
   select-to-correct (flag or ask the agent), tracked-change proposals, and a
   pending edits drawer where only a human can accept.
 - `/debug/:id` — the Phase 1 debug view (hidden from the nav).
+
+## Verification
+
+Each claim is checked against the full text of its cited sources. Exact
+matches, laundered citations (the source loads but never says it), and changed
+numbers are decided by rules; only paraphrases go to a model, which can only
+choose among real sentences from the source. Prompt-injected pages are
+quarantined on ingest.
+
+```bash
+AGENT_ORG_ID=<workspace id> pnpm verify:fixture   # PASS/FAIL per seeded claim
+```
+
+![Laundered claim](docs/screenshots/4-laundered-card.png)
 
 ## Demo fixture
 
