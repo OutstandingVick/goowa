@@ -14,7 +14,8 @@
     "script": "agent-native script",
     "test": "vitest --run --passWithNoTests",
     "agent-native:doctor": "agent-native doctor",
-    "demo": "tsx scripts/demo.ts"
+    "demo": "tsx scripts/demo.ts",
+    "verify:fixture": "tsx scripts/verify-fixture.ts"
   },
   "dependencies": {
     "@agent-native/agentkit": "^0.222.2",
