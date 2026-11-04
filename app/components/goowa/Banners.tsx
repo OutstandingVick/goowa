@@ -83,9 +83,11 @@ export function AgentAttemptBanner({
 
 /** Published documents are read-only until a human reopens them. */
 export function PublishedBanner({
+  documentId,
   revision,
   publishedAt,
 }: {
+  documentId: string;
   revision: number;
   publishedAt: string | null;
 }) {
@@ -98,6 +100,14 @@ export function PublishedBanner({
       Published revision {revision}
       {publishedAt ? ` on ${new Date(publishedAt).toLocaleString()}` : ""}.
       Read-only until a human reopens it.
+      <a
+        href={`/r/${documentId}`}
+        target="_blank"
+        rel="noreferrer"
+        className="ml-auto shrink-0 font-medium underline underline-offset-2"
+      >
+        View receipt
+      </a>
     </div>
   );
 }
