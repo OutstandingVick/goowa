@@ -10,14 +10,15 @@ import { gateFor } from "../server/lib/gate.js";
 import { createReceipt } from "../server/lib/receipt.js";
 import { applyOverrides } from "../shared/gate.js";
 
-// HUMAN ONLY. Hidden from the agent and MCP; any other caller is refused
-// and the attempt is recorded in the activity feed.
+// HUMAN ONLY. Hidden from the in-app agent. Listed for MCP clients on
+// purpose, so an external agent's attempt reaches this check, is refused with
+// forbidden, and is recorded in the activity feed.
 export default defineAction({
   description:
-    "Publish a document after the publish gate passes. Remaining blockers may be overridden one by one with a reason, except pending proposals and quarantined or injection-flagged sources. Human only.",
+    "Publish a document after the publish gate passes. Remaining blockers may be overridden one by one with a reason, except pending proposals and quarantined or injection-flagged sources. Human only: agents and integrations calling it get forbidden and the attempt is logged.",
   errors: goowaErrors,
   agentTool: false,
-  mcpTool: false,
+  mcpTool: true,
   schema: z.object({
     documentId: z.string().describe("Document id"),
     overrides: z
