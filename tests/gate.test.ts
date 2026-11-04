@@ -126,3 +126,43 @@ describe("evaluateGate warnings", () => {
     expect(g.canPublish).toBe(true);
   });
 });
+
+describe("applyOverrides", () => {
+  const gate = evaluateGate({
+    claims: [
+      claim({ id: "a", verdict: "laundered" }),
+      claim({ id: "q", sourceIds: ["s-bad"] }),
+    ],
+    sources: [ok, bad],
+    pendingEdits: [
+      { id: "e1", targetType: "document_body", targetId: "d", before: "x" },
+    ],
+  });
+
+  it("accepts overrides with reasons for overridable blockers", () => {
+    const r = applyOverrides(gate, [
+      { claimId: "a", reason: "Checked the primary report by hand." },
+    ]);
+    expect(r.accepted.map((a) => a.kind)).toEqual(["claim_laundered"]);
+    expect(r.remaining.map((b) => b.kind)).toEqual([
+      "claim_quarantined",
+      "pending_proposal",
+      "injection_source",
+    ]);
+  });
+
+  it("refuses overrides without a reason", () => {
+    const r = applyOverrides(gate, [{ claimId: "a", reason: "  " }]);
+    expect(r.problems[0]).toMatch(/needs a reason/);
+    expect(r.accepted).toEqual([]);
+  });
+
+  it("refuses to override quarantined sources", () => {
+    const r = applyOverrides(gate, [
+      { claimId: "q", reason: "trust me" },
+      { sourceId: "s-bad", reason: "trust me" },
+    ]);
+    expect(r.problems).toHaveLength(2);
+    expect(r.problems.every((p) => p.startsWith("Cannot override"))).toBe(true);
+  });
+});
