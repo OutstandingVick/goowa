@@ -347,3 +347,92 @@ pending proposals, quarantined claims, or injection-flagged sources.
   are the receipt's timeline as-is; publish events carry the gate result.
 - **Staleness at receipt time**: run `check-staleness` per cited source and
   compare hashes with those recorded at publish.
+
+# Phase 5 — Claim Receipt and MCP
+
+## Receipt (`shared/receipt.ts`, `server/lib/receipt.ts`)
+
+Created inside `publish` after the publish event is logged, stored once per
+(document, revision) in `receipts` (unique; no action updates or deletes it).
+Source text the evidence points into is frozen in `source_snapshots`
+(keyed by content hash), so evidence stays checkable after the live page
+changes. Contents: document (id, title, revision, publishedAt,
+publishedBy "human", body, bodyHash), claims (text, span, effective status,
+verdict + reason + confidence, human status + note, evidence with source URL,
+snippet, offsets, sourceContentHash, verifiedAt/By, overrides + reasons),
+every document source (quarantined ones `excluded: true` and never used as
+evidence), summary (counts by status, overrides, blocked agent publish
+attempts), condensed history, and receiptHash.
+
+### Canonicalisation (`shared/canonical.ts`)
+
+`receiptHash = sha256(canonicalize(receipt without receiptHash))`, lowercase hex.
+
+1. Objects: keys sorted by UTF-16 code unit order (JS default sort), at every depth.
+2. Arrays: order preserved; `undefined` elements become `null`.
+3. Members whose value is `undefined` are dropped.
+4. Primitives are serialised exactly as `JSON.stringify` does (strings escaped
+   per JSON, numbers in shortest round-trip form); NaN/Infinity are rejected.
+5. No whitespace between tokens.
+6. Hash input is the UTF-8 encoding of that string.
+
+`bodyHash = sha256(body)` over the body exactly as stored. The same code runs
+in the browser and on the server (Web Crypto).
+
+### Checks
+
+`verify-receipt` returns `intact | tampered` per check: receipt hash (self
+consistent and equal to the hash stored at publish), body hash, and each
+evidence snippet at its offsets in the frozen source. A body edit fails body +
+receipt; a snippet edit fails that evidence + receipt; a swapped hash fails
+the receipt check ("not the one recorded"). `recheck-receipt-live` re-fetches
+sources, re-runs the pure verification in memory against changed text, and
+reports unchanged / changed_still_supported / changed_no_longer_supported /
+source_unreachable; signed-in checks are stored in `live_checks`. It never
+writes to the receipt, the claims, or the sources.
+
+Public access: `/r/:id`, the three receipt actions, and
+`/fixtures/live-source` are in the auth plugin's `publicPaths`; the actions
+are `requiresAuth: false`, `readOnly`, `publicAgent: { expose, readOnly }`
+(the framework's rule for anonymous calls). They answer only for published
+documents.
+
+`pnpm demo:receipt [baseUrl]`: 11/11 PASS (stable hash; genuine all intact;
+body, snippet, and hash tampering each flagged precisely; override on the
+receipt; quarantined source excluded; live re-check unchanged →
+changed_still_supported → changed_no_longer_supported via the three versions
+of `/fixtures/live-source`; receipt unchanged afterwards).
+
+## MCP permission model
+
+- The framework's auto-mounted `/mcp` (no custom server). Auth is the
+  framework's per-user connect token or OAuth grant (`/mcp/connect`), separate
+  from the user's sign-in, revocable under "Existing connections", and bound
+  to that user's account.
+- Scope: only actions with `mcpTool: true`; cross-app tools
+  (`builtinCrossAppTools: false`) and org administration
+  (`frameworkTools.orgAdministration: false`) are off, and Phase 0 spikes are
+  hidden.
+- Every MCP call has `ctx.caller = "mcp"`, which `actorOf` maps to "agent":
+  the same rules as the in-app agent.
+- `publish` and `decide-edit` are **listed for MCP but refuse** with
+  `forbidden` (chosen over hiding them so external attempts reach the check
+  and are recorded: "Agent attempted to publish · blocked"). They stay hidden
+  from the in-app agent.
+- `check-draft` creates a document from external text, ingests sources
+  (injection scan included), extracts claims (caller-supplied quotes or the
+  rule-based fallback), verifies, and returns counts, blockers, and an
+  absolute editor URL (APP_URL or Vercel's production URL).
+
+## Rough edges for the polish phase
+
+- The app header above the editor is an empty band (framework header with no
+  title); the editor's own top bar sits below it.
+- "Verified by you" appears when a human clicks Verify, which reads oddly next
+  to agent verdicts; consider "Verified (requested by you)".
+- Repeated fixes before accepting proposals leave earlier change sets in the
+  activity feed with "0 rewrites proposed".
+- The Settings › MCP server page still says "App" in places (framework copy).
+- A first agent turn after deploy can take a few seconds (cold start).
+- Rule-based claim extraction in `check-draft` is coarse; external agents
+  should pass `claims`.
