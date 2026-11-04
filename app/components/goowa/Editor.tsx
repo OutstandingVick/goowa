@@ -118,11 +118,13 @@ export function Editor({ state }: { state: DocumentState }) {
           c.reviewState === "needs_review",
       )
       .map((c) => c.id);
-    // Let the new highlights render before animating them.
-    requestAnimationFrame(() => {
+    // Let the new highlights render before animating them. A timeout, not
+    // requestAnimationFrame, which is paused while the page is in the
+    // background (e.g. the agent edits while you look at another tab).
+    window.setTimeout(() => {
       pulseSpan(latest.triggerClaimId);
       playRipple(latest.triggerClaimId, affected);
-    });
+    }, 60);
   }, [state.changeSets, claims, pulseSpan]);
 
   const selectFromCard = useCallback(
