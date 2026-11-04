@@ -109,7 +109,7 @@ export const changeSets = pgTable("change_sets", {
   documentId: text("document_id").notNull(),
   triggerClaimId: text("trigger_claim_id").notNull(),
   triggeredBy: text("trigger_kind").notNull(),
-  // The trigger claim's text before the change, to recompute figures later.
+  // Text of the trigger claim before the change, to recompute figures later.
   triggerBeforeText: text("trigger_before_text"),
   summary: text("summary").notNull(),
   createdAt: text("created_at")
