@@ -7,6 +7,7 @@ import { logActivity } from "../server/lib/activity.js";
 import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { loadDocument, now } from "../server/lib/documents.js";
 import { gateFor } from "../server/lib/gate.js";
+import { createReceipt } from "../server/lib/receipt.js";
 import { applyOverrides } from "../shared/gate.js";
 
 // HUMAN ONLY. Hidden from the agent and MCP; any other caller is refused
@@ -126,6 +127,8 @@ export default defineAction({
         overrides: accepted,
       },
     );
+    // The receipt is built last so its history includes this publish.
+    const receipt = await createReceipt(documentId);
     return {
       id: documentId,
       status: updated.status,
@@ -133,6 +136,8 @@ export default defineAction({
       publishedAt,
       overrides: accepted.length,
       warnings: gate.warnings,
+      receiptHash: receipt.receiptHash,
+      receiptUrl: `/r/${documentId}`,
     };
   },
 });
