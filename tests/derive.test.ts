@@ -65,3 +65,25 @@ describe("deriveRewrite other rules", () => {
     expect(share.changes[0]!.rule).toBe("share");
   });
 });
+
+describe("deriveRewrite leaves other wording alone", () => {
+  it("returns null for sentences with no derived figure", () => {
+    expect(
+      deriveRewrite("Most stablecoins are dollar-denominated.", up),
+    ).toBeNull();
+    expect(
+      deriveRewrite("Visa processed 12% more volume than in 2023.", up),
+    ).toBeNull();
+  });
+
+  it("changes only the derived figure, not other numbers or words", () => {
+    const s =
+      "In 2023 that was a 25% increase from $128 billion, per 3 analysts.";
+    const r = deriveRewrite(s, up)!;
+    expect(r.text).toBe(
+      "In 2023 that was a 56% increase from $128 billion, per 3 analysts.",
+    );
+    const diff = [...s].filter((ch, i) => ch !== r.text[i]).length;
+    expect(diff).toBeLessThanOrEqual(2);
+  });
+});
