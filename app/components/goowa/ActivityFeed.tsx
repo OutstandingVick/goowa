@@ -70,7 +70,7 @@ export function ActivityFeed({ activity }: { activity: Activity[] }) {
             </span>
             <ActorBadge
               actor={a.actor}
-              verb={a.actor === "agent" ? "Agent" : "You"}
+              verb=""
               className="shrink-0"
             />
             <time
