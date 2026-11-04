@@ -1,5 +1,5 @@
 import { assertAccess } from "@agent-native/core/sharing";
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 
 import { getDb, schema } from "../db/index.js";
 import { goowaErrors } from "./actor.js";
@@ -67,24 +67,37 @@ export async function loadEdit(
 export async function getDocumentState(documentId: string) {
   const document = await loadDocument(documentId, "viewer");
   const db = getDb();
-  const [sources, claims, pendingEdits] = await Promise.all([
-    db
-      .select()
-      .from(schema.sources)
-      .where(eq(schema.sources.documentId, documentId))
-      .orderBy(asc(schema.sources.fetchedAt)),
-    loadClaims(documentId),
-    db
-      .select()
-      .from(schema.edits)
-      .where(
-        and(
-          eq(schema.edits.documentId, documentId),
-          eq(schema.edits.state, "proposed"),
-        ),
-      )
-      .orderBy(asc(schema.edits.createdAt)),
-  ]);
+  const [sources, claims, pendingEdits, changeSets, activity] =
+    await Promise.all([
+      db
+        .select()
+        .from(schema.sources)
+        .where(eq(schema.sources.documentId, documentId))
+        .orderBy(asc(schema.sources.fetchedAt)),
+      loadClaims(documentId),
+      db
+        .select()
+        .from(schema.edits)
+        .where(
+          and(
+            eq(schema.edits.documentId, documentId),
+            eq(schema.edits.state, "proposed"),
+          ),
+        )
+        .orderBy(asc(schema.edits.createdAt)),
+      db
+        .select()
+        .from(schema.changeSets)
+        .where(eq(schema.changeSets.documentId, documentId))
+        .orderBy(desc(schema.changeSets.createdAt))
+        .limit(20),
+      db
+        .select()
+        .from(schema.activity)
+        .where(eq(schema.activity.documentId, documentId))
+        .orderBy(desc(schema.activity.createdAt))
+        .limit(100),
+    ]);
   return {
     document,
     // Full text stays server-side. A quarantined source's excerpt is fenced
@@ -98,6 +111,8 @@ export async function getDocumentState(documentId: string) {
     })),
     claims,
     pendingEdits,
+    changeSets,
+    activity,
   };
 }
 
