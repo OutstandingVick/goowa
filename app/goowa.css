@@ -11,6 +11,8 @@
   --g-unsupported-bg: 0 85% 94%;
   --g-unverified: 220 8% 46%;
   --g-unverified-bg: 220 14% 93%;
+  --g-laundered: 0 72% 42%;
+  --g-laundered-bg: 0 85% 95%;
   --g-quarantined: 272 50% 48%;
   --g-quarantined-bg: 272 70% 94%;
   --g-insert: 152 55% 34%;
@@ -28,6 +30,8 @@
   --g-unsupported-bg: 0 45% 20%;
   --g-unverified: 220 10% 64%;
   --g-unverified-bg: 220 8% 22%;
+  --g-laundered: 0 80% 70%;
+  --g-laundered-bg: 0 45% 18%;
   --g-quarantined: 272 70% 74%;
   --g-quarantined-bg: 272 35% 22%;
   --g-insert: 150 50% 60%;
@@ -91,6 +95,17 @@
 [data-status="unsupported"] {
   --tone: var(--g-unsupported);
   --tone-bg: var(--g-unsupported-bg);
+}
+[data-status="laundered"] {
+  --tone: var(--g-laundered);
+  --tone-bg: var(--g-laundered-bg);
+}
+/* Laundered: the citation looks legitimate but does not support the claim. */
+.g-claim[data-status="laundered"] {
+  box-shadow: none;
+  text-decoration: underline dashed hsl(var(--tone));
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
 }
 [data-status="unverified"] {
   --tone: var(--g-unverified);
