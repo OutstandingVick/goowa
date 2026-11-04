@@ -229,6 +229,7 @@ export function Editor({ state }: { state: DocumentState }) {
       </p>
       <EditsDrawer
         edits={pendingEdits}
+        changeSets={state.changeSets}
         placedIds={placedIds}
         labelOf={labelOf}
         open={drawerOpen}

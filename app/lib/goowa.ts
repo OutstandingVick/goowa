@@ -6,6 +6,8 @@ export type DocumentState = ActionResult<"get-document-state">;
 export type Claim = DocumentState["claims"][number];
 export type Source = DocumentState["sources"][number];
 export type Edit = DocumentState["pendingEdits"][number];
+export type ChangeSet = DocumentState["changeSets"][number];
+export type Activity = DocumentState["activity"][number];
 
 export {
   STATUS_LABEL,

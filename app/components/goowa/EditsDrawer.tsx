@@ -1,9 +1,14 @@
 import { useActionMutation } from "@agent-native/core/client/hooks";
-import { IconCheck, IconChevronDown, IconX } from "@tabler/icons-react";
-import { forwardRef, useEffect, useRef } from "react";
+import {
+  IconCheck,
+  IconChevronDown,
+  IconGitBranch,
+  IconX,
+} from "@tabler/icons-react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import type { Edit } from "@/lib/goowa";
+import type { ChangeSet, Edit } from "@/lib/goowa";
 import { scrollBehavior } from "@/lib/goowa";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +16,7 @@ import { ActorBadge } from "./ActorBadge";
 
 type Props = {
   edits: Edit[];
+  changeSets: ChangeSet[];
   placedIds: Set<string>; // edits that still match the body
   labelOf: (claimId: string) => string;
   open: boolean;
@@ -21,6 +27,7 @@ type Props = {
 
 export function EditsDrawer({
   edits,
+  changeSets,
   placedIds,
   labelOf,
   open,
@@ -30,6 +37,46 @@ export function EditsDrawer({
 }: Props) {
   const rows = useRef(new Map<string, HTMLElement>());
   const decide = useActionMutation("decide-edit");
+  const [bulk, setBulk] = useState<string | null>(null);
+
+  // Proposals from one propagation are grouped under their change set.
+  const groups = useMemo(() => {
+    const out: { id: string | null; summary: string | null; edits: Edit[] }[] =
+      [];
+    for (const edit of edits) {
+      const id = edit.changeSetId ?? null;
+      let group = out.find((g) => g.id === id);
+      if (!group) {
+        group = {
+          id,
+          summary: id
+            ? (changeSets.find((c) => c.id === id)?.summary ??
+              "Related changes")
+            : null,
+          edits: [],
+        };
+        out.push(group);
+      }
+      group.edits.push(edit);
+    }
+    // Change sets first, newest proposals inside each.
+    return out.sort((a, b) => Number(b.id !== null) - Number(a.id !== null));
+  }, [edits, changeSets]);
+
+  async function decideAll(
+    list: Edit[],
+    decision: "accept" | "reject",
+    groupId: string | null,
+  ) {
+    setBulk(groupId ?? "loose");
+    try {
+      // One at a time: each accept re-maps spans before the next applies.
+      for (const edit of list)
+        await decide.mutateAsync({ editId: edit.id, decision });
+    } finally {
+      setBulk(null);
+    }
+  }
 
   useEffect(() => {
     if (focusedEditId && open) {
@@ -77,32 +124,80 @@ export function EditsDrawer({
               the agent for a fix.
             </p>
           ) : (
-            <ul className="grid gap-2">
-              {edits.map((edit) => (
-                <EditRow
-                  key={edit.id}
-                  ref={(el) => {
-                    if (el) rows.current.set(edit.id, el);
-                    else rows.current.delete(edit.id);
-                  }}
-                  edit={edit}
-                  stale={!placedIds.has(edit.id)}
-                  target={
-                    edit.targetType === "claim"
-                      ? `Claim ${labelOf(edit.targetId)}`
-                      : "Document text"
-                  }
-                  focused={edit.id === focusedEditId}
-                  busy={
-                    decide.isPending && decide.variables?.editId === edit.id
-                  }
-                  onFocus={() => onFocusEdit(edit.id)}
-                  onDecide={(decision) =>
-                    decide.mutate({ editId: edit.id, decision })
-                  }
-                />
+            <div className="grid gap-4">
+              {groups.map((group) => (
+                <section
+                  key={group.id ?? "loose"}
+                  aria-label={group.summary ?? "Other edits"}
+                >
+                  {group.summary && (
+                    <header className="mb-2 flex flex-wrap items-center gap-2">
+                      <IconGitBranch
+                        className="size-4 text-[hsl(var(--g-weak))]"
+                        aria-hidden
+                      />
+                      <p className="text-sm font-medium">{group.summary}</p>
+                      <div className="ml-auto flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 px-2 text-xs"
+                          disabled={bulk !== null}
+                          onClick={() =>
+                            decideAll(group.edits, "reject", group.id)
+                          }
+                        >
+                          Reject all
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="h-7 px-2 text-xs"
+                          disabled={
+                            bulk !== null ||
+                            group.edits.some((e) => !placedIds.has(e.id))
+                          }
+                          onClick={() =>
+                            decideAll(group.edits, "accept", group.id)
+                          }
+                        >
+                          {bulk === group.id
+                            ? "Applying…"
+                            : `Accept all ${group.edits.length}`}
+                        </Button>
+                      </div>
+                    </header>
+                  )}
+                  <ul className="grid gap-2">
+                    {group.edits.map((edit) => (
+                      <EditRow
+                        key={edit.id}
+                        ref={(el) => {
+                          if (el) rows.current.set(edit.id, el);
+                          else rows.current.delete(edit.id);
+                        }}
+                        edit={edit}
+                        stale={!placedIds.has(edit.id)}
+                        target={
+                          edit.targetType === "claim"
+                            ? `Claim ${labelOf(edit.targetId)}`
+                            : "Document text"
+                        }
+                        focused={edit.id === focusedEditId}
+                        busy={
+                          bulk !== null ||
+                          (decide.isPending &&
+                            decide.variables?.editId === edit.id)
+                        }
+                        onFocus={() => onFocusEdit(edit.id)}
+                        onDecide={(decision) =>
+                          decide.mutate({ editId: edit.id, decision })
+                        }
+                      />
+                    ))}
+                  </ul>
+                </section>
               ))}
-            </ul>
+            </div>
           )}
           {decide.error && (
             <p className="mt-2 text-sm text-destructive">
