@@ -52,6 +52,48 @@ AGENT_ORG_ID=<workspace id> pnpm demo:gate
 
 ![Change set](docs/screenshots/8-change-set.png)
 
+## Claim Receipt
+
+Every published revision ships with an immutable receipt at `/r/<documentId>`,
+readable without signing in: the article with claim highlights, each claim's
+evidence, human decisions and overrides, and a receipt hash. Anyone can
+**verify** it (hashes and every snippet against the source text frozen at
+publish) or **re-check** it against the live sources.
+
+```bash
+AGENT_ORG_ID=<workspace id> pnpm demo:receipt
+```
+
+![Receipt](docs/screenshots/11-receipt-page.png)
+
+## Use Goowa from Claude or Cursor
+
+Goowa is an MCP server at `https://goowa.vercel.app/mcp`. Connect with a
+**personal token, not your password**: open **/mcp/connect** (or Settings ›
+MCP server), create a token, and revoke it there under "Existing connections"
+whenever you like. The token only reaches Goowa's actions, and external agents
+get the same rules as Goowa's own agent: they can check drafts, verify claims,
+propose edits, and read or verify receipts, but `publish` and `decide-edit`
+refuse them and the attempt is logged.
+
+Claude Desktop / Cursor (`claude_desktop_config.json` or `.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "goowa": {
+      "url": "https://goowa.vercel.app/mcp",
+      "headers": { "Authorization": "Bearer <your Goowa token>" }
+    }
+  }
+}
+```
+
+Clients that support remote MCP OAuth (Claude's custom connectors) only need
+the URL; they open a consent page instead of using a token. Try: *"Use
+check-draft on this paragraph with these sources"*. It returns counts,
+blockers, and an editor link where you decide.
+
 ## Demo fixture
 
 Runs create → ingest → draft → extract for a stablecoin explainer and checks
