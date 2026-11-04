@@ -5,6 +5,7 @@ import { z } from "zod";
 import { getDb, schema } from "../server/db/index.js";
 import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { loadClaims, loadDocument, now } from "../server/lib/documents.js";
+import { cycleIfDepends } from "../shared/graph.js";
 import { locate } from "../shared/spans.js";
 
 const extractedClaim = z.object({
@@ -89,6 +90,17 @@ export default defineAction({
       }
       return { start, end: start + claim.quote.length };
     });
+    const batch = claims.map((c, i) => ({
+      id: String(i),
+      dependsOn: c.dependsOn.map(String),
+    }));
+    for (const node of batch) {
+      const cycle = cycleIfDepends(batch, node.id, node.dependsOn);
+      if (cycle) {
+        problems.push(`dependsOn forms a cycle: ${cycle.join(" → ")}.`);
+        break;
+      }
+    }
     if (problems.length > 0) {
       return goowaErrors.noWrite(
         `No claims saved. Fix these and retry: ${problems.join(" ")} Valid source ids: ${[...usable].join(", ") || "none"}.`,
