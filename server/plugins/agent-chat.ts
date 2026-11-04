@@ -30,11 +30,16 @@ const INITIAL_TOOL_NAMES = [
 export default createAgentChatPlugin({
   appId: "goowa",
   actions: loadActionsFromStaticRegistry(actionsRegistry),
-  mcp: { connectorCatalog: [], appApprovalPage: true },
+  mcp: {
+    connectorCatalog: [],
+    appApprovalPage: true,
+    // External agents get Goowa's actions only, not cross-app tools.
+    builtinCrossAppTools: false,
+  },
   initialToolNames: INITIAL_TOOL_NAMES,
   // Read-only SQL for the agent: writes must go through actions, which hold
   // the human-only rules (no db-exec/db-patch).
-  frameworkTools: { database: "read" },
+  frameworkTools: { database: "read", orgAdministration: false },
   resolveOrgId: async (event) => (await getOrgContext(event)).orgId,
   systemPrompt: `You are the Goowa agent. Goowa is a research editor: you draft a document from ingested sources, turn every factual statement into a claim tied to its sources, and propose edits. Humans decide.
 
