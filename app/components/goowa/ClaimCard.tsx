@@ -21,8 +21,10 @@ import {
 import { cn } from "@/lib/utils";
 
 import { ActorBadge } from "./ActorBadge";
+import { QuarantineNotice } from "./QuarantineNotice";
 import { fixContext } from "./SelectionPopover";
 import { StatusBadge, StatusIcon } from "./StatusBadge";
+import { VerdictPanel } from "./VerdictPanel";
 
 const HUMAN_STATUSES = ["supported", "weak", "unsupported"] as const;
 
@@ -105,7 +107,7 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
             Not in text
           </span>
         )}
-        <ConfidenceBar value={claim.confidence} />
+        <ConfidenceBar value={claim.verdictConfidence ?? 0} />
       </header>
 
       {editing ? (
@@ -163,30 +165,32 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
           {cited.length > 0 ? (
             <ul className="mt-3 grid gap-1">
               {cited.map((s) => (
-                <li
-                  key={s.id}
-                  className="flex min-w-0 items-center gap-1.5 text-xs"
-                >
-                  <IconLink
-                    aria-hidden
-                    className="size-3.5 shrink-0 text-muted-foreground"
-                  />
-                  <a
-                    href={s.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="min-w-0 truncate hover:underline"
-                  >
-                    {s.title || s.url}
-                  </a>
-                  <span className="shrink-0 text-muted-foreground">
-                    · {domainOf(s.url)}
-                  </span>
-                  <IconExternalLink
-                    aria-hidden
-                    className="size-3 shrink-0 text-muted-foreground"
-                  />
+                <li key={s.id} className="text-xs">
+                  <div className="flex min-w-0 items-center gap-1.5">
+                    <IconLink
+                      aria-hidden
+                      className="size-3.5 shrink-0 text-muted-foreground"
+                    />
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="min-w-0 truncate hover:underline"
+                    >
+                      {s.title || s.url}
+                    </a>
+                    <span className="shrink-0 text-muted-foreground">
+                      · {domainOf(s.url)}
+                    </span>
+                    <IconExternalLink
+                      aria-hidden
+                      className="size-3 shrink-0 text-muted-foreground"
+                    />
+                  </div>
+                  {s.flags.includes("quarantined") && (
+                    <QuarantineNotice source={s} />
+                  )}
                 </li>
               ))}
             </ul>
@@ -195,6 +199,8 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
               No sources cited.
             </p>
           )}
+
+          <VerdictPanel claim={claim} sources={sources} human={human} />
 
           {claim.dependsOn.length > 0 && (
             <div className="mt-3 flex flex-wrap items-center gap-1.5">
