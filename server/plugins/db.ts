@@ -74,6 +74,21 @@ CREATE INDEX IF NOT EXISTS sources_document_idx ON sources (document_id);
 CREATE INDEX IF NOT EXISTS claims_document_idx ON claims (document_id);
 CREATE INDEX IF NOT EXISTS edits_document_state_idx ON edits (document_id, state)`,
     },
+    {
+      version: 2,
+      name: "goowa-verification",
+      sql: `ALTER TABLE sources ADD COLUMN IF NOT EXISTS full_text TEXT NOT NULL DEFAULT '';
+ALTER TABLE sources ADD COLUMN IF NOT EXISTS injection_findings JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS verdict TEXT CHECK (verdict IN ('supported', 'weak', 'unsupported', 'laundered', 'unverifiable'));
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS verdict_reason TEXT;
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS verdict_confidence REAL CHECK (verdict_confidence >= 0 AND verdict_confidence <= 1);
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS evidence JSONB NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS closest_passage JSONB;
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS verified_at TEXT;
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS verifier_kind TEXT CHECK (verifier_kind IN ('human', 'agent'));
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS verified_fingerprint TEXT;
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS human_note TEXT`,
+    },
   ],
   { table: "goowa_migrations" },
 );
