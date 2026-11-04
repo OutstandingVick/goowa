@@ -68,11 +68,7 @@ export function ActivityFeed({ activity }: { activity: Activity[] }) {
             >
               {a.summary}
             </span>
-            <ActorBadge
-              actor={a.actor}
-              verb=""
-              className="shrink-0"
-            />
+            <ActorBadge actor={a.actor} verb="" className="shrink-0" />
             <time
               className="shrink-0 text-xs tabular-nums text-muted-foreground"
               dateTime={a.createdAt}

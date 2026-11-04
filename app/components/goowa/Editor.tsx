@@ -203,6 +203,7 @@ export function Editor({ state }: { state: DocumentState }) {
             />
             {doc.status === "published" && (
               <PublishedBanner
+                documentId={doc.id}
                 revision={doc.revision}
                 publishedAt={doc.publishedAt}
               />
