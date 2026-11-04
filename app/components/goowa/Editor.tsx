@@ -7,6 +7,7 @@ import { selectionOffsets, type BodySelection } from "@/lib/selection";
 
 import { proposalRanges } from "../../../shared/proposals";
 import { overlapping } from "../../../shared/segments";
+import { AgentAttemptBanner, PublishedBanner } from "./Banners";
 import { ClaimPanel } from "./ClaimPanel";
 import { DocumentView, type ProposalMark } from "./DocumentView";
 import { EditsDrawer } from "./EditsDrawer";
@@ -194,6 +195,16 @@ export function Editor({ state }: { state: DocumentState }) {
           }}
         >
           <div className="mx-auto max-w-[68ch] px-5 py-8 md:px-10 md:py-12">
+            <AgentAttemptBanner
+              activity={state.activity}
+              onReview={() => setGateOpen(true)}
+            />
+            {doc.status === "published" && (
+              <PublishedBanner
+                revision={doc.revision}
+                publishedAt={doc.publishedAt}
+              />
+            )}
             <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
               {doc.topic}
             </p>
