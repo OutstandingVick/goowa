@@ -122,3 +122,30 @@ describe("verifyClaimText snippet check", () => {
     ).toBe("weak");
   });
 });
+
+describe("verifyClaimText source gates", () => {
+  it("does not check claims whose only source is quarantined", async () => {
+    const r = await verifyClaimText(
+      "anything",
+      [{ ...survey, flags: ["injection_suspected", "quarantined"] }],
+      never,
+    );
+    expect(r).toMatchObject({ verdict: "unverifiable" });
+    expect(r.reason).toMatch(/quarantined/);
+  });
+
+  it("treats claims with no sources as unsupported", async () => {
+    expect((await verifyClaimText("anything", [], never)).verdict).toBe(
+      "unsupported",
+    );
+  });
+
+  it("reports an unavailable model as unverifiable, not supported", async () => {
+    const r = await verifyClaimText(
+      "38% of merchants in the 2024 survey accept stablecoins.",
+      [survey],
+      async () => null,
+    );
+    expect(r.verdict).toBe("unverifiable");
+  });
+});
