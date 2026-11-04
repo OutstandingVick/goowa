@@ -36,6 +36,9 @@ export default createAgentChatPlugin({
     appApprovalPage: true,
     // External agents get Goowa's actions only, not cross-app tools.
     builtinCrossAppTools: false,
+    title: "Goowa",
+    description:
+      "Check drafts against their sources: verify claims, propose edits, and read or verify Claim Receipts. Publishing and accepting edits stay with a human.",
   },
   initialToolNames: INITIAL_TOOL_NAMES,
   // Read-only SQL for the agent: writes must go through actions, which hold
