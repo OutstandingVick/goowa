@@ -171,3 +171,21 @@ describe("verifyClaimText deterministic numeric mismatch", () => {
     ).toBe(r.evidence[0]!.snippet);
   });
 });
+
+describe("numeric mismatch evidence sentence", () => {
+  it("quotes the sentence with the conflicting figure, not its neighbour", async () => {
+    const fed: SourceInput = {
+      id: "fed",
+      title: "Fed note",
+      flags: [],
+      text: "BUSD's market cap decreased by over $2 billion. Additionally, USDT differs significantly in that only 45 percent of its supply was issued on Ethereum as of March 1, 2023, with most of the rest issued on Tron.",
+    };
+    const r = await verifyClaimText(
+      "Only 38 percent of USDT's supply was issued on Ethereum as of March 1, 2023.",
+      [fed],
+      never,
+    );
+    expect(r.evidence[0]!.snippet).toMatch(/^Additionally, USDT/);
+    expect(r.reason).toBe("Claim says 38 percent; the source says 45 percent.");
+  });
+});

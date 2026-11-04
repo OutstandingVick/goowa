@@ -10,7 +10,12 @@ import {
   missingNumbers,
   type NumberMention,
 } from "./numbers.js";
-import { rankPassages, type Sentence } from "./retrieval.js";
+import {
+  overlapScore,
+  rankPassages,
+  weightedTokens,
+  type Sentence,
+} from "./retrieval.js";
 
 export type SourceInput = {
   id: string;
@@ -153,12 +158,21 @@ export async function verifyClaimText(
   // 3b. Same topic, different figures: deterministic numeric mismatch. The
   // best passage is clearly about the claim but states other numbers.
   if (best.p.score >= NUMERIC_TOPIC_AT_LEAST) {
+    // The sentence most about the claim that states a figure of the same kind.
+    const missingKinds = new Set(
+      missingNumbers(claim, best.p.text).map((m) => m.kind),
+    );
+    const claimTokens = weightedTokens(claim);
     const sentence =
-      best.p.sentences.find(
-        (x) =>
-          missingNumbers(claim, x.text).length > 0 &&
-          extractNumbers(x.text).length > 0,
-      ) ?? best.p.sentences[0]!;
+      [...best.p.sentences]
+        .filter((x) =>
+          extractNumbers(x.text).some((n) => missingKinds.has(n.kind)),
+        )
+        .sort(
+          (a, b) =>
+            overlapScore(claimTokens, b.text) -
+            overlapScore(claimTokens, a.text),
+        )[0] ?? best.p.sentences[0]!;
     const missing = missingNumbers(claim, best.p.text);
     if (missing.length > 0 && extractNumbers(best.p.text).length > 0) {
       return {
