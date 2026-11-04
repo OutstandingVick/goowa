@@ -52,8 +52,8 @@ describe("publish is human only", () => {
     },
   );
 
-  it("is hidden from the agent and MCP", () => {
+  it("is hidden from the in-app agent but listed for MCP, where it is refused", () => {
     expect(publish.agentTool).toBe(false);
-    expect(publish.mcpTool).toBe(false);
+    expect(publish.mcpTool).toBe(true);
   });
 });
