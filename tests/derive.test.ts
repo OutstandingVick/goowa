@@ -106,3 +106,26 @@ describe("deriveRewrite articles", () => {
     ).toBe("That was a 56% increase from $128 billion.");
   });
 });
+
+describe("formatLike and changedFigure details", () => {
+  it("keeps currency, scale words, grouping, and decimals", async () => {
+    const { formatLike } = await import("../shared/derive");
+    const { extractNumbers } = await import("../shared/verify/numbers");
+    const like = (t: string) => extractNumbers(t)[0]!;
+    expect(formatLike(2e11, like("$160 billion"))).toBe("$200 billion");
+    expect(formatLike(3.125, like("2.5 times"))).toBe("3.1");
+    expect(formatLike(12500, like("1,000 users"))).toBe("12,500");
+    expect(formatLike(56.25, like("25%"))).toBe("56%");
+  });
+
+  it("picks the first figure that changed, ignoring unchanged ones", () => {
+    const f = changedFigure(
+      "In 2024 supply was $160 billion.",
+      "In 2024 supply was $170 billion.",
+    )!;
+    expect([f.before.raw.trim(), f.after.raw.trim()]).toEqual([
+      "$160 billion",
+      "$170 billion",
+    ]);
+  });
+});
