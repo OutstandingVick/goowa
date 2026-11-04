@@ -1,0 +1,52 @@
+{
+  "usdc-exact": {
+    "expect": [
+      "supported"
+    ],
+    "why": "Exact match in Circle's docs"
+  },
+  "usdc-paraphrase": {
+    "expect": [
+      "supported",
+      "weak"
+    ],
+    "why": "Paraphrase; judged by the model"
+  },
+  "dollar-share": {
+    "expect": [
+      "supported"
+    ],
+    "why": "Upstream figure for the dependency chain (exact in BIS)"
+  },
+  "dollarisation": {
+    "expect": [
+      "supported"
+    ],
+    "why": "Downstream of the 99% figure (exact in BIS)"
+  },
+  "dollar-access": {
+    "expect": [
+      "supported"
+    ],
+    "why": "Second claim downstream of the 99% figure (exact in BIS)"
+  },
+  "usdt-numeric": {
+    "expect": [
+      "weak",
+      "unsupported"
+    ],
+    "why": "Numeric mismatch: the Fed note says 45 percent"
+  },
+  "volume-laundered": {
+    "expect": [
+      "laundered"
+    ],
+    "why": "Real, reputable page that never states this figure"
+  },
+  "supply-quarantined": {
+    "expect": [
+      "unverifiable"
+    ],
+    "why": "Only source is quarantined for prompt injection"
+  }
+}
