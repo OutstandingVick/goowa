@@ -123,6 +123,8 @@ function AppContent() {
   const location = useLocation();
   const isChatThread = threadIdFromPath(location.pathname) !== null;
   useCommandMenuShortcut(useCallback(() => setCmdkOpen(true), []));
+  // Public receipt pages stand alone: no app chrome, sidebar, or agent.
+  if (location.pathname.startsWith("/r/")) return <Outlet />;
   return (
     <>
       <CommandMenu
