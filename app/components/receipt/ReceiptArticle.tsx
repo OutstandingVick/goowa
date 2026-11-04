@@ -44,17 +44,24 @@ export function ReceiptArticle({
           if (!claim) return <span key={seg.start}>{seg.text}</span>;
           const status = asStatus(claim.status);
           return (
-            <button
+            <span
               key={seg.start}
-              type="button"
-              className="g-claim text-left [font:inherit]"
+              role="button"
+              tabIndex={0}
+              className="g-claim focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               data-status={status}
               data-active={claim.id === selected ? "true" : undefined}
               aria-label={`Claim ${claim.index}, ${STATUS_LABEL[status]}. Show evidence.`}
               onClick={() => onSelect(claim.id)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelect(claim.id);
+                }
+              }}
             >
               {seg.text}
-            </button>
+            </span>
           );
         });
         return block.kind === "heading" ? (
