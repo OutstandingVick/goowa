@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { asStatus, countByStatus, domainOf } from "../app/lib/goowa";
+import {
+  asStatus,
+  countByStatus,
+  domainOf,
+  effectiveStatus,
+} from "../app/lib/goowa";
 
 describe("domainOf", () => {
   it("strips www and keeps the host", () => {
@@ -30,5 +35,44 @@ describe("claim status helpers", () => {
       unverified: 0,
       quarantined: 0,
     });
+  });
+});
+
+describe("effectiveStatus", () => {
+  const sources = [
+    { id: "ok", flags: [] },
+    { id: "bad", flags: ["injection_suspected", "quarantined"] },
+  ];
+  const claim = (over: object) => ({
+    status: "unverified",
+    verdict: null,
+    sourceIds: ["ok"],
+    ...over,
+  });
+  it("shows the agent verdict when no human status is set", () => {
+    expect(effectiveStatus(claim({ verdict: "laundered" }), sources)).toBe(
+      "laundered",
+    );
+  });
+  it("lets the human status win over the verdict", () => {
+    expect(
+      effectiveStatus(
+        claim({ verdict: "laundered", status: "unsupported" }),
+        sources,
+      ),
+    ).toBe("unsupported");
+  });
+  it("locks claims whose only sources are quarantined", () => {
+    expect(
+      effectiveStatus(
+        claim({ sourceIds: ["bad"], status: "supported" }),
+        sources,
+      ),
+    ).toBe("quarantined");
+  });
+  it("treats unverifiable as unverified", () => {
+    expect(effectiveStatus(claim({ verdict: "unverifiable" }), sources)).toBe(
+      "unverified",
+    );
   });
 });
