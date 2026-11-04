@@ -102,3 +102,27 @@ describe("evaluateGate review, proposals, and stale sources", () => {
     ).toBe(true);
   });
 });
+
+describe("evaluateGate warnings", () => {
+  it("warns about weak and low-confidence claims without blocking", () => {
+    const g = evaluateGate({
+      claims: [
+        claim({ id: "w", verdict: "weak" }),
+        claim({ id: "l", verdictConfidence: 0.4 }),
+      ],
+      sources: [ok],
+      pendingEdits: [],
+    });
+    expect(g.canPublish).toBe(true);
+    expect(g.warnings.map((w) => w.kind)).toEqual(["weak", "low_confidence"]);
+  });
+
+  it("lets a human status clear a verdict blocker", () => {
+    const g = evaluateGate({
+      claims: [claim({ verdict: "laundered", status: "supported" })],
+      sources: [ok],
+      pendingEdits: [],
+    });
+    expect(g.canPublish).toBe(true);
+  });
+});
