@@ -1,10 +1,29 @@
 import { defineAction } from "@agent-native/core/action";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
+import { logActivity } from "../server/lib/activity.js";
 import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { loadClaim, loadDocument, now } from "../server/lib/documents.js";
 import { locate } from "../shared/spans.js";
+
+/** Link a proposal to a change set in the same document, if it exists. */
+async function changeSetLink(changeSetId: string, documentId: string) {
+  const [set] = await getDb()
+    .select()
+    .from(schema.changeSets)
+    .where(
+      and(
+        eq(schema.changeSets.id, changeSetId),
+        eq(schema.changeSets.documentId, documentId),
+      ),
+    )
+    .limit(1);
+  return set
+    ? { changeSetId: set.id, triggeredByClaimId: set.triggerClaimId }
+    : {};
+}
 
 export default defineAction({
   description:
@@ -34,6 +53,12 @@ export default defineAction({
       ),
     after: z.string().describe("Replacement text"),
     reason: z.string().min(1).describe("Why this change is needed"),
+    changeSetId: z
+      .string()
+      .optional()
+      .describe(
+        "When answering a propagation, the change set id from its context so the proposal joins that set",
+      ),
   }),
   run: async (args, ctx) => {
     let documentId: string;
@@ -85,8 +110,18 @@ export default defineAction({
       proposedBy: actorOf(ctx),
       state: "proposed",
       createdAt: now(),
+      ...(args.changeSetId
+        ? await changeSetLink(args.changeSetId, documentId)
+        : {}),
     };
     await getDb().insert(schema.edits).values(edit);
+    await logActivity(
+      documentId,
+      "edit_proposed",
+      edit.proposedBy as "human" | "agent",
+      `${edit.proposedBy === "agent" ? "The agent" : "You"} proposed an edit`,
+      { editId: edit.id, before, after: args.after, reason: args.reason },
+    );
     return edit;
   },
 });
