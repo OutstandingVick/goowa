@@ -169,3 +169,48 @@
     transition: none;
   }
 }
+
+/* Needs review: amber, set by dependency propagation. */
+.g-claim[data-review="needs_review"] {
+  outline: 2px dashed hsl(var(--g-weak) / 0.7);
+  outline-offset: 1px;
+}
+
+/* Ripple: a short travelling highlight from a fixed claim to its dependents. */
+.g-ripple-card {
+  animation: g-ripple-card 520ms ease-out 1 both;
+}
+@keyframes g-ripple-card {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--g-weak) / 0.6);
+    transform: translateX(0);
+  }
+  40% {
+    box-shadow: 0 0 0 6px hsl(var(--g-weak) / 0.35);
+    transform: translateX(-3px);
+  }
+  100% {
+    box-shadow: 0 0 0 10px hsl(var(--g-weak) / 0);
+    transform: translateX(0);
+  }
+}
+.g-ripple-line {
+  stroke: hsl(var(--g-weak));
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-dasharray: var(--len);
+  stroke-dashoffset: var(--len);
+  animation: g-draw 360ms ease-out forwards;
+}
+@keyframes g-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .g-ripple-card,
+  .g-ripple-line {
+    animation: none;
+  }
+}
