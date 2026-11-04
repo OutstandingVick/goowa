@@ -48,6 +48,8 @@ export type VerifyResult = {
 
 /** Below this overlap no passage is about the claim at all. */
 export const LAUNDERED_BELOW = 0.3;
+/** At or above this overlap a passage is about the claim's subject. */
+export const NUMERIC_TOPIC_AT_LEAST = 0.6;
 const MAX_CANDIDATES = 8;
 
 const usable = (s: SourceInput) =>
@@ -138,6 +140,36 @@ export async function verifyClaimText(
       confidence: 1 - (best?.p.score ?? 0),
       reason: "Cited source does not contain or support this claim.",
     };
+  }
+
+  // 3b. Same topic, different figures: deterministic numeric mismatch. The
+  // best passage is clearly about the claim but states other numbers.
+  if (best.p.score >= NUMERIC_TOPIC_AT_LEAST) {
+    const sentence =
+      best.p.sentences.find(
+        (x) =>
+          missingNumbers(claim, x.text).length > 0 &&
+          extractNumbers(x.text).length > 0,
+      ) ?? best.p.sentences[0]!;
+    const missing = missingNumbers(claim, best.p.text);
+    if (missing.length > 0 && extractNumbers(best.p.text).length > 0) {
+      return {
+        ...base,
+        closestPassage: closest,
+        verdict: "weak",
+        confidence: best.p.score,
+        evidence: [
+          {
+            sourceId: best.s.id,
+            snippet: sentence.text,
+            startOffset: sentence.start,
+            endOffset: sentence.end,
+            matchType: "paraphrase",
+          },
+        ],
+        reason: `Claim says ${missing.map((m) => m.raw.trim()).join(", ")}; the source says ${describeNumbers(sentence.text)}.`,
+      };
+    }
   }
 
   // 4. Judgment: the model chooses among real sentences.
