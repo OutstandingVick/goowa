@@ -23,6 +23,8 @@ export const documents = pgTable("documents", {
   topic: text("topic").notNull(),
   body: text("body").notNull().default(""),
   status: text("status").notNull().default("draft"),
+  revision: integer("revision").notNull().default(1),
+  publishedAt: text("published_at"),
   createdAt: text("created_at")
     .notNull()
     .default(sql`now()`),
@@ -76,6 +78,10 @@ export const claims = pgTable("claims", {
   verifiedBy: text("verifier_kind"),
   verifiedFingerprint: text("verified_fingerprint"),
   humanNote: text("human_note"),
+  // Dependency propagation: set when an upstream claim changes.
+  reviewState: text("review_state").notNull().default("ok"),
+  reviewReason: text("review_reason"),
+  lastPropagatedFrom: text("last_propagated_from"),
 });
 
 export const edits = pgTable("edits", {
@@ -91,7 +97,53 @@ export const edits = pgTable("edits", {
   state: text("state").notNull().default("proposed"),
   decidedBy: text("decider_kind"),
   decidedAt: text("decided_at"),
+  changeSetId: text("change_set_id"),
+  triggeredByClaimId: text("triggered_by_claim_id"),
   createdAt: text("created_at")
     .notNull()
     .default(sql`now()`),
+});
+
+export const changeSets = pgTable("change_sets", {
+  id: text("id").primaryKey(),
+  documentId: text("document_id").notNull(),
+  triggerClaimId: text("trigger_claim_id").notNull(),
+  triggeredBy: text("trigger_kind").notNull(),
+  summary: text("summary").notNull(),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`now()`),
+});
+
+export const activity = pgTable("activity", {
+  id: text("id").primaryKey(),
+  documentId: text("document_id").notNull(),
+  kind: text("kind").notNull(),
+  actor: text("actor_kind").notNull(),
+  summary: text("summary").notNull(),
+  data: jsonb("data").$type<Record<string, unknown>>().notNull().default({}),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`now()`),
+});
+
+export const publishOverrides = pgTable("publish_overrides", {
+  id: text("id").primaryKey(),
+  documentId: text("document_id").notNull(),
+  revision: integer("revision").notNull(),
+  claimId: text("claim_id"),
+  sourceId: text("source_id"),
+  kind: text("kind").notNull(),
+  reason: text("reason").notNull(),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`now()`),
+});
+
+export const documentRevisions = pgTable("document_revisions", {
+  id: text("id").primaryKey(),
+  documentId: text("document_id").notNull(),
+  revision: integer("revision").notNull(),
+  body: text("body").notNull(),
+  publishedAt: text("published_at").notNull(),
 });
