@@ -155,7 +155,7 @@ checks.push([
 ]);
 checks.push([
   "second fix recomputes from the original base: 25% → 88%, 2.5 → 3.8 times",
-  pending.some((e) => e.after === EXPECTED.growth.replace("56%", "88%")) &&
+  pending.some((e) => e.after === EXPECTED.growth.replace("a 56%", "an 88%")) &&
     pending.some(
       (e) => e.after === EXPECTED.ratio.replace("3.1 times", "3.8 times"),
     ),

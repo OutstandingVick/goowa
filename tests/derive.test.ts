@@ -87,3 +87,22 @@ describe("deriveRewrite leaves other wording alone", () => {
     expect(diff).toBeLessThanOrEqual(2);
   });
 });
+
+describe("deriveRewrite articles", () => {
+  it("switches a/an when the new figure reads differently", () => {
+    const up240 = changedFigure(UP_OLD, UP_OLD.replace("$160", "$240"))!;
+    expect(
+      deriveRewrite("That was a 25% increase from $128 billion.", up240)!.text,
+    ).toBe("That was an 88% increase from $128 billion.");
+    const up180 = changedFigure(UP_OLD, UP_OLD.replace("$160", "$136"))!;
+    expect(
+      deriveRewrite("It marked an 80% jump from $88.9 billion.", up180)!.text,
+    ).toBe("It marked a 53% jump from $88.9 billion.");
+  });
+
+  it("leaves the article alone when it is still right", () => {
+    expect(
+      deriveRewrite("That was a 25% increase from $128 billion.", up)!.text,
+    ).toBe("That was a 56% increase from $128 billion.");
+  });
+});
