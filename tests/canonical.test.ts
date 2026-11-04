@@ -28,3 +28,28 @@ describe("canonicalize", () => {
     );
   });
 });
+
+describe("hashes", () => {
+  it("sha256Hex matches Node's crypto over UTF-8", async () => {
+    const text = "Total stablecoin supply passed $200 billion — règlement";
+    expect(await sha256Hex(text)).toBe(
+      createHash("sha256").update(text, "utf8").digest("hex"),
+    );
+  });
+
+  it("receiptHashOf ignores the receiptHash field and key order", async () => {
+    const a = await receiptHashOf({
+      document: { id: "d", revision: 1 },
+      claims: [],
+    });
+    const b = await receiptHashOf({
+      claims: [],
+      receiptHash: "anything",
+      document: { revision: 1, id: "d" },
+    });
+    expect(a).toBe(b);
+    expect(
+      await receiptHashOf({ document: { id: "d", revision: 2 }, claims: [] }),
+    ).not.toBe(a);
+  });
+});
