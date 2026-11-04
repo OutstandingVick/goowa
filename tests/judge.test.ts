@@ -149,3 +149,25 @@ describe("verifyClaimText source gates", () => {
     expect(r.verdict).toBe("unverifiable");
   });
 });
+
+describe("verifyClaimText deterministic numeric mismatch", () => {
+  const fed: SourceInput = {
+    id: "fed",
+    title: "Fed note",
+    flags: [],
+    text: "Additionally, USDT differs significantly in that only 45 percent of its supply was issued on Ethereum as of March 1, 2023, with the most of the non-Ethereum-issued USDT having been issued on Tron.",
+  };
+  it("caps a changed figure at weak without calling the model", async () => {
+    const r = await verifyClaimText(
+      "Only 38 percent of USDT's supply was issued on Ethereum as of March 1, 2023.",
+      [fed],
+      never,
+    );
+    expect(r.verdict).toBe("weak");
+    expect(r.usedModel).toBe(false);
+    expect(r.reason).toBe("Claim says 38 percent; the source says 45 percent.");
+    expect(
+      fed.text.slice(r.evidence[0]!.startOffset, r.evidence[0]!.endOffset),
+    ).toBe(r.evidence[0]!.snippet);
+  });
+});

@@ -5,7 +5,11 @@
 
 import type { Verdict } from "../machines.js";
 import { findExact, snippetInSource } from "./match.js";
-import { missingNumbers, extractNumbers } from "./numbers.js";
+import {
+  extractNumbers,
+  missingNumbers,
+  type NumberMention,
+} from "./numbers.js";
 import { rankPassages, type Sentence } from "./retrieval.js";
 
 export type SourceInput = {
@@ -57,9 +61,13 @@ const usable = (s: SourceInput) =>
   !s.flags.includes("fetch_failed") &&
   !s.flags.includes("quarantined");
 
-function describeNumbers(text: string) {
-  const nums = extractNumbers(text).map((n) => n.raw.trim());
-  return nums.length ? nums.join(", ") : "no matching figure";
+/** The source's figures of the same kind as the claim's missing ones. */
+function describeNumbers(text: string, missing: NumberMention[] = []) {
+  const kinds = new Set(missing.map((m) => m.kind));
+  const nums = extractNumbers(text)
+    .filter((n) => kinds.size === 0 || kinds.has(n.kind))
+    .map((n) => n.raw.trim());
+  return nums.length ? [...new Set(nums)].join(", ") : "no matching figure";
 }
 
 export async function verifyClaimText(
@@ -167,7 +175,7 @@ export async function verifyClaimText(
             matchType: "paraphrase",
           },
         ],
-        reason: `Claim says ${missing.map((m) => m.raw.trim()).join(", ")}; the source says ${describeNumbers(sentence.text)}.`,
+        reason: `Claim says ${missing.map((m) => m.raw.trim()).join(", ")}; the source says ${describeNumbers(sentence.text, missing)}.`,
       };
     }
   }
@@ -265,7 +273,7 @@ export async function verifyClaimText(
   const missing = missingNumbers(claim, joined);
   if (missing.length > 0) {
     verdict = "weak";
-    reason = `Claim says ${missing.map((m) => m.raw.trim()).join(", ")}; the supporting passage says ${describeNumbers(joined)}.`;
+    reason = `Claim says ${missing.map((m) => m.raw.trim()).join(", ")}; the supporting passage says ${describeNumbers(joined, missing)}.`;
   }
   return { ...result, verdict, reason };
 }
