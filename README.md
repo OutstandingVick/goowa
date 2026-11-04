@@ -7,7 +7,7 @@ claims, the agent proposes edits, and only a human can publish.
 Built on [Agent-Native](https://www.agent-native.com/docs/) for the Builder.io
 Agent-Native Hackathon.
 
-**Status: Phase 4** — dependency propagation and the publish gate. See [NOTES.md](NOTES.md).
+**Status: Phase 5** — Claim Receipts and MCP. See [NOTES.md](NOTES.md).
 
 ![Editor overview](docs/screenshots/1-overview.png)
 
