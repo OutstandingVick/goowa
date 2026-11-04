@@ -9,6 +9,7 @@ export default createToolkitAuthPlugin({
   // for published documents.
   publicPaths: [
     "/r",
+    "/fixtures/live-source",
     "/_agent-native/actions/get-receipt",
     "/_agent-native/actions/verify-receipt",
     "/_agent-native/actions/recheck-receipt-live",
