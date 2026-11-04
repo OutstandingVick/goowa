@@ -6,6 +6,7 @@ import {
 import { eq } from "drizzle-orm";
 
 import { getDb, schema } from "../db/index.js";
+import { logActivity } from "./activity.js";
 import type { Actor } from "./actor.js";
 import { loadClaims } from "./documents.js";
 import { claimFingerprint, verifyAndStore } from "./verify.js";
@@ -87,6 +88,19 @@ export async function runVerifyDocument(opts: {
   }
 
   const timed = results.filter((r) => r.durationMs !== undefined);
+  if (timed.length > 0) {
+    await logActivity(
+      documentId,
+      "verified",
+      actor,
+      `${actor === "human" ? "You" : "The agent"} verified ${timed.length} claim${timed.length === 1 ? "" : "s"}${skipped ? ` (${skipped} unchanged)` : ""}`,
+      {
+        verified: timed.length,
+        skipped,
+        failed: results.filter((r) => r.error).length,
+      },
+    );
+  }
   return {
     runId: run.id,
     total: claims.length,
