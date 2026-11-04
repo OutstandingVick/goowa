@@ -1,6 +1,12 @@
 import { Fragment, memo, useMemo, type ReactNode } from "react";
 
-import { STATUS_LABEL, asStatus, type Claim, type Edit } from "@/lib/goowa";
+import {
+  STATUS_LABEL,
+  effectiveStatus,
+  type Claim,
+  type Edit,
+  type Source,
+} from "@/lib/goowa";
 
 import type { Mark } from "../../../shared/segments";
 import { parseBlocks, segmentRange } from "../../../shared/segments";
@@ -10,6 +16,7 @@ export type ProposalMark = Mark & { edit: Edit };
 type Props = {
   body: string;
   claims: Claim[];
+  sources: Source[];
   proposals: ProposalMark[];
   activeClaimId: string | null;
   hotClaimIds: string[];
@@ -25,6 +32,7 @@ type Props = {
 export const DocumentView = memo(function DocumentView({
   body,
   claims,
+  sources,
   proposals,
   activeClaimId,
   hotClaimIds,
@@ -66,7 +74,7 @@ export const DocumentView = memo(function DocumentView({
             </span>
           );
           if (claim) {
-            const status = asStatus(claim.status);
+            const status = effectiveStatus(claim, sources);
             node = (
               <span
                 className="g-claim"

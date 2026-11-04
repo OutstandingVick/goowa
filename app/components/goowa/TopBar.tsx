@@ -5,7 +5,9 @@ import {
   STATUS_LABEL,
   STATUS_ORDER,
   countByStatus,
+  effectiveStatus,
   type Claim,
+  type Source,
 } from "@/lib/goowa";
 import { cn } from "@/lib/utils";
 
@@ -27,6 +29,7 @@ type Props = {
   title: string;
   status: string;
   claims: Claim[];
+  sources: Source[];
   pendingCount: number;
   onOpenEdits: () => void;
 };
@@ -35,10 +38,11 @@ export function TopBar({
   title,
   status,
   claims,
+  sources,
   pendingCount,
   onOpenEdits,
 }: Props) {
-  const counts = countByStatus(claims);
+  const counts = countByStatus(claims.map((c) => effectiveStatus(c, sources)));
   const pill = DOC_STATUS[status] ?? DOC_STATUS.draft!;
   return (
     <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-3 md:px-6">

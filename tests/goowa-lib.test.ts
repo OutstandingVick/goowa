@@ -22,16 +22,11 @@ describe("claim status helpers", () => {
     expect(asStatus("bogus")).toBe("unverified");
   });
   it("counts every status, including zeros", () => {
-    expect(
-      countByStatus([
-        { status: "supported" },
-        { status: "weak" },
-        { status: "supported" },
-      ]),
-    ).toEqual({
+    expect(countByStatus(["supported", "weak", "supported"])).toEqual({
       supported: 2,
       weak: 1,
       unsupported: 0,
+      laundered: 0,
       unverified: 0,
       quarantined: 0,
     });

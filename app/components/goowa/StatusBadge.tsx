@@ -3,6 +3,7 @@ import {
   IconCircleDashed,
   IconCircleHalf2,
   IconCircleX,
+  IconLinkOff,
   IconShieldLock,
   type Icon,
 } from "@tabler/icons-react";
@@ -14,6 +15,7 @@ export const STATUS_ICON: Record<ClaimStatus, Icon> = {
   supported: IconCircleCheck,
   weak: IconCircleHalf2,
   unsupported: IconCircleX,
+  laundered: IconLinkOff,
   unverified: IconCircleDashed,
   quarantined: IconShieldLock,
 };

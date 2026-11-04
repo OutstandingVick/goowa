@@ -152,6 +152,7 @@ export function Editor({ state }: { state: DocumentState }) {
         title={doc.title}
         status={doc.status}
         claims={claims}
+        sources={sources}
         pendingCount={pendingEdits.length}
         onOpenEdits={() => setDrawerOpen((open) => !open)}
       />
@@ -182,6 +183,7 @@ export function Editor({ state }: { state: DocumentState }) {
                 <DocumentView
                   body={doc.body}
                   claims={claims}
+                  sources={sources}
                   proposals={proposals}
                   activeClaimId={activeClaimId}
                   hotClaimIds={hotClaimIds}

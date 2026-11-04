@@ -3,8 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   STATUS_LABEL,
   STATUS_ORDER,
-  asStatus,
   countByStatus,
+  effectiveStatus,
   type Claim,
   type ClaimStatus,
   type Source,
@@ -34,7 +34,14 @@ export function ClaimPanel({
 }: Props) {
   const [filter, setFilter] = useState<ClaimStatus | "all">("all");
   const cards = useRef(new Map<string, HTMLElement>());
-  const counts = useMemo(() => countByStatus(claims), [claims]);
+  const statusOf = useMemo(
+    () => new Map(claims.map((c) => [c.id, effectiveStatus(c, sources)])),
+    [claims, sources],
+  );
+  const counts = useMemo(
+    () => countByStatus([...statusOf.values()]),
+    [statusOf],
+  );
   const indexOf = useMemo(
     () => new Map(claims.map((c, i) => [c.id, i])),
     [claims],
@@ -47,8 +54,8 @@ export function ClaimPanel({
     () =>
       filter === "all"
         ? claims
-        : claims.filter((c) => asStatus(c.status) === filter),
-    [claims, filter],
+        : claims.filter((c) => statusOf.get(c.id) === filter),
+    [claims, filter, statusOf],
   );
 
   // Selecting a claim elsewhere (e.g. its span) scrolls its card into view.

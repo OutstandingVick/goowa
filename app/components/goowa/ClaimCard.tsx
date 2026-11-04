@@ -11,7 +11,8 @@ import { forwardRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   STATUS_LABEL,
-  asStatus,
+  effectiveStatus,
+  humanStatus,
   domainOf,
   type Claim,
   type ClaimStatus,
@@ -23,7 +24,7 @@ import { ActorBadge } from "./ActorBadge";
 import { fixContext } from "./SelectionPopover";
 import { StatusBadge, StatusIcon } from "./StatusBadge";
 
-const HUMAN_STATUSES: ClaimStatus[] = ["supported", "weak", "unsupported"];
+const HUMAN_STATUSES = ["supported", "weak", "unsupported"] as const;
 
 type Props = {
   claim: Claim;
@@ -40,7 +41,9 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
   { claim, index, sources, labelOf, active, hot, onSelect, onHoverClaims },
   ref,
 ) {
-  const status = asStatus(claim.status);
+  // Shown status: quarantine, else the human status, else the agent verdict.
+  const status = effectiveStatus(claim, sources);
+  const human = humanStatus(claim);
   const update = useActionMutation("update-claim");
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(claim.text);
