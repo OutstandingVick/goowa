@@ -149,3 +149,38 @@ export const documentRevisions = pgTable("document_revisions", {
   body: text("body").notNull(),
   publishedAt: text("published_at").notNull(),
 });
+
+// Immutable receipt per published revision; never updated or deleted.
+export const receipts = pgTable("receipts", {
+  id: text("id").primaryKey(),
+  documentId: text("document_id").notNull(),
+  revision: integer("revision").notNull(),
+  json: text("json").notNull(),
+  receiptHash: text("receipt_hash").notNull(),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`now()`),
+});
+
+// Source text frozen at publish, so receipt evidence offsets stay checkable.
+export const sourceSnapshots = pgTable("source_snapshots", {
+  id: text("id").primaryKey(),
+  documentId: text("document_id").notNull(),
+  sourceId: text("source_id").notNull(),
+  contentHash: text("content_hash").notNull(),
+  fullText: text("full_text").notNull(),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`now()`),
+});
+
+// Results of re-checking a published receipt against live sources.
+export const liveChecks = pgTable("live_checks", {
+  id: text("id").primaryKey(),
+  documentId: text("document_id").notNull(),
+  revision: integer("revision").notNull(),
+  results: jsonb("results").$type<Record<string, unknown>[]>().notNull(),
+  createdAt: text("created_at")
+    .notNull()
+    .default(sql`now()`),
+});
