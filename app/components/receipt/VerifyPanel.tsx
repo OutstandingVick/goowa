@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import type { Receipt } from "../../../shared/receipt";
 
 /** Demo only: change one evidence snippet before verifying (?tamper=1). */
-function tamperedCopy(receipt: Receipt): Receipt {
+export function tamperedCopy(receipt: Receipt): Receipt {
   const copy = JSON.parse(JSON.stringify(receipt)) as Receipt;
   const ev = copy.claims.flatMap((c) => c.evidence)[0];
   if (ev)
