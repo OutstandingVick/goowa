@@ -38,6 +38,20 @@ AGENT_ORG_ID=<workspace id> pnpm verify:fixture   # PASS/FAIL per seeded claim
 
 ![Laundered claim](docs/screenshots/4-laundered-card.png)
 
+## Propagation and publishing
+
+Fix one claim and everything that depends on it is flagged, re-verified, and
+given code-computed rewrites in one change set. Publishing is human only and
+passes a gate (unsupported, laundered, quarantined, needs-review claims,
+pending proposals); a human can override some blockers with a reason.
+
+```bash
+AGENT_ORG_ID=<workspace id> pnpm demo:propagation
+AGENT_ORG_ID=<workspace id> pnpm demo:gate
+```
+
+![Change set](docs/screenshots/8-change-set.png)
+
 ## Demo fixture
 
 Runs create → ingest → draft → extract for a stablecoin explainer and checks
