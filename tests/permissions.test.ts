@@ -88,3 +88,17 @@ describe("agents cannot mark claims supported", () => {
     expect(code2).toBe("forbidden");
   });
 });
+
+describe("mark-reviewed is human only", async () => {
+  const { default: markReviewed } = await import("../actions/mark-reviewed");
+  it.each(AGENT_CALLERS)("refuses caller %s", async (caller) => {
+    const code = await errorCodeOf(
+      markReviewed.run({ claimId: "c1" }, { caller } as never),
+    );
+    expect(code).toBe("forbidden");
+  });
+  it("is hidden from the agent and MCP", () => {
+    expect(markReviewed.agentTool).toBe(false);
+    expect(markReviewed.mcpTool).toBe(false);
+  });
+});
