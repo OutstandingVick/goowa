@@ -3,13 +3,20 @@ import { and, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
+import { logActivity } from "../server/lib/activity.js";
 import {
   goowaErrors,
   requireHuman,
   requireEditable,
 } from "../server/lib/actor.js";
 import { applyBodyEdit } from "../server/lib/apply-body-edit.js";
-import { loadClaim, loadEdit, now } from "../server/lib/documents.js";
+import {
+  loadClaim,
+  loadClaims,
+  loadEdit,
+  now,
+} from "../server/lib/documents.js";
+import { propagateChange } from "../server/lib/propagate.js";
 import { editState } from "../shared/machines.js";
 import { locate, type TextEdit } from "../shared/spans.js";
 
@@ -37,6 +44,7 @@ export default defineAction({
     }
 
     let applied: Awaited<ReturnType<typeof applyBodyEdit>> | null = null;
+    const changedClaims: { id: string; previousText: string | null }[] = [];
     if (decision === "accept") {
       let range: TextEdit;
       if (edit.targetType === "claim") {
@@ -62,7 +70,18 @@ export default defineAction({
         }
         range = { start, end: start + edit.before.length, text: edit.after };
       }
+      const before = new Map(
+        (await loadClaims(doc.id)).map((c) => [c.id, c.text]),
+      );
       applied = await applyBodyEdit(doc, range, "human");
+      // Claims whose wording changed ripple to their dependents.
+      for (const span of applied.spans) {
+        if (span.outcome !== "resized" && span.outcome !== "lost") continue;
+        changedClaims.push({
+          id: span.id,
+          previousText: before.get(span.id) ?? null,
+        });
+      }
     }
 
     const decided = await getDb()
@@ -85,7 +104,38 @@ export default defineAction({
         "conflict",
       );
     }
+    // The human has now looked at this claim: its review flag is settled.
+    if (edit.targetType === "claim") {
+      await getDb()
+        .update(schema.claims)
+        .set({ reviewState: "ok", reviewReason: null })
+        .where(eq(schema.claims.id, edit.targetId));
+    }
+    await logActivity(
+      doc.id,
+      "edit_decided",
+      "human",
+      `You ${decision === "accept" ? "accepted" : "rejected"} a proposed edit${edit.proposedBy === "agent" ? " from the agent" : ""}`,
+      {
+        editId,
+        decision,
+        changeSetId: edit.changeSetId,
+        before: edit.before,
+        after: edit.after,
+      },
+    );
+    const propagations = [];
+    for (const c of changedClaims) {
+      const p = await propagateChange({
+        claimId: c.id,
+        actor: "human",
+        ownerEmail: ctx?.userEmail ?? "",
+        previousText: c.previousText,
+      });
+      if (p) propagations.push(p);
+    }
     return {
+      propagations,
       edit: decided[0],
       spans: applied?.spans.map(({ id, start, end, outcome }) => ({
         id,
