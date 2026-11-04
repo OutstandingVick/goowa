@@ -15,6 +15,15 @@ export type FigureChange = {
   explanation: string;
 };
 
+/** Figures read aloud starting with a vowel sound: 8…, 11, 18, 80–89, 800… */
+function startsWithVowelSound(figure: string) {
+  const digits = figure.replace(/^[^\d]*/, "").replace(/,/g, "");
+  const whole = digits.match(/^\d+/)?.[0] ?? "";
+  if (whole.startsWith("8")) return true;
+  // 11 and 18 (and 11,000 / 18 million, read "eleven…", "eighteen…").
+  return /^(11|18)$/.test(whole) || /^(11|18)(\d{3})+$/.test(whole);
+}
+
 export type Rewrite = { text: string; changes: FigureChange[] };
 
 /** The upstream figure that changed: same position, different value. */
@@ -157,7 +166,22 @@ export function deriveRewrite(
   // Replace right to left so earlier offsets stay valid.
   let text = sentence;
   for (const c of [...real].sort((a, b) => b.index - a.index)) {
-    text = text.slice(0, c.index) + c.to + text.slice(c.index + c.from.length);
+    let head = text.slice(0, c.index);
+    // Keep the article right before the figure grammatical ("an 88%").
+    const article = /\b(a|an|A|An) $/.exec(head);
+    if (article) {
+      const wantAn = startsWithVowelSound(c.to);
+      const word = article[1]!;
+      const fixed = wantAn
+        ? word[0] === "A"
+          ? "An"
+          : "an"
+        : word[0] === "A"
+          ? "A"
+          : "a";
+      head = head.slice(0, article.index) + fixed + " ";
+    }
+    text = head + c.to + text.slice(c.index + c.from.length);
   }
   return { text, changes: real.map(({ index: _i, ...c }) => c) };
 }
