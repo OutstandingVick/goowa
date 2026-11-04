@@ -89,6 +89,54 @@ ALTER TABLE claims ADD COLUMN IF NOT EXISTS verifier_kind TEXT CHECK (verifier_k
 ALTER TABLE claims ADD COLUMN IF NOT EXISTS verified_fingerprint TEXT;
 ALTER TABLE claims ADD COLUMN IF NOT EXISTS human_note TEXT`,
     },
+    {
+      version: 3,
+      name: "goowa-propagation-and-publish",
+      sql: `ALTER TABLE documents ADD COLUMN IF NOT EXISTS revision INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE documents ADD COLUMN IF NOT EXISTS published_at TEXT;
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS review_state TEXT NOT NULL DEFAULT 'ok' CHECK (review_state IN ('ok', 'needs_review'));
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS review_reason TEXT;
+ALTER TABLE claims ADD COLUMN IF NOT EXISTS last_propagated_from TEXT;
+ALTER TABLE edits ADD COLUMN IF NOT EXISTS change_set_id TEXT;
+ALTER TABLE edits ADD COLUMN IF NOT EXISTS triggered_by_claim_id TEXT;
+CREATE TABLE IF NOT EXISTS change_sets (
+  id TEXT PRIMARY KEY,
+  document_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+  trigger_claim_id TEXT NOT NULL,
+  trigger_kind TEXT NOT NULL CHECK (trigger_kind IN ('human', 'agent')),
+  summary TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (now())
+);
+CREATE TABLE IF NOT EXISTS activity (
+  id TEXT PRIMARY KEY,
+  document_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+  kind TEXT NOT NULL,
+  actor_kind TEXT NOT NULL CHECK (actor_kind IN ('human', 'agent')),
+  summary TEXT NOT NULL,
+  data JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TEXT NOT NULL DEFAULT (now())
+);
+CREATE TABLE IF NOT EXISTS publish_overrides (
+  id TEXT PRIMARY KEY,
+  document_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+  revision INTEGER NOT NULL,
+  claim_id TEXT,
+  source_id TEXT,
+  kind TEXT NOT NULL,
+  reason TEXT NOT NULL CHECK (length(trim(reason)) > 0),
+  created_at TEXT NOT NULL DEFAULT (now())
+);
+CREATE TABLE IF NOT EXISTS document_revisions (
+  id TEXT PRIMARY KEY,
+  document_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+  revision INTEGER NOT NULL,
+  body TEXT NOT NULL,
+  published_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS change_sets_document_idx ON change_sets (document_id, created_at);
+CREATE INDEX IF NOT EXISTS activity_document_idx ON activity (document_id, created_at);
+CREATE INDEX IF NOT EXISTS edits_change_set_idx ON edits (change_set_id)`,
+    },
   ],
   { table: "goowa_migrations" },
 );
