@@ -3,6 +3,7 @@ import { and, asc, eq } from "drizzle-orm";
 
 import { getDb, schema } from "../db/index.js";
 import { goowaErrors } from "./actor.js";
+import { fenceUntrusted, isQuarantined } from "./quarantine.js";
 
 export type DocumentRow = typeof schema.documents.$inferSelect;
 export type SourceRow = typeof schema.sources.$inferSelect;
@@ -84,7 +85,20 @@ export async function getDocumentState(documentId: string) {
       )
       .orderBy(asc(schema.edits.createdAt)),
   ]);
-  return { document, sources, claims, pendingEdits };
+  return {
+    document,
+    // Full text stays server-side. A quarantined source's excerpt is fenced
+    // as untrusted data so no agent reads it as instructions.
+    sources: sources.map(({ fullText, ...source }) => ({
+      ...source,
+      fullTextLength: fullText.length,
+      textExcerpt: isQuarantined(source)
+        ? fenceUntrusted(source.textExcerpt, source.injectionFindings)
+        : source.textExcerpt,
+    })),
+    claims,
+    pendingEdits,
+  };
 }
 
 export function now(): string {
