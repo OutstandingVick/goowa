@@ -1,4 +1,5 @@
-import { IconSend } from "@tabler/icons-react";
+import { useActionMutation } from "@agent-native/core/client/hooks";
+import { IconLockOpen, IconSend } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,7 @@ type Props = {
   sources: Source[];
   pendingCount: number;
   onOpenEdits: () => void;
+  onPublish: () => void;
 };
 
 export function TopBar({
@@ -44,7 +46,9 @@ export function TopBar({
   sources,
   pendingCount,
   onOpenEdits,
+  onPublish,
 }: Props) {
+  const reopen = useActionMutation("set-document-status");
   const counts = countByStatus(claims.map((c) => effectiveStatus(c, sources)));
   const pill = DOC_STATUS[status] ?? DOC_STATUS.draft!;
   return (
@@ -96,10 +100,23 @@ export function TopBar({
             {pendingCount}
           </span>
         </Button>
-        <Button size="sm" disabled title="Publishing arrives in Phase 4">
-          <IconSend className="size-4" aria-hidden />
-          Publish
-        </Button>
+        {status === "published" ? (
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={reopen.isPending}
+            onClick={() => reopen.mutate({ documentId, event: "reopen" })}
+            title="Start a new draft revision"
+          >
+            <IconLockOpen className="size-4" aria-hidden />
+            Reopen
+          </Button>
+        ) : (
+          <Button size="sm" onClick={onPublish}>
+            <IconSend className="size-4" aria-hidden />
+            Publish
+          </Button>
+        )}
       </div>
     </header>
   );

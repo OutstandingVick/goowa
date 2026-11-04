@@ -11,6 +11,7 @@ import { ClaimPanel } from "./ClaimPanel";
 import { DocumentView, type ProposalMark } from "./DocumentView";
 import { EditsDrawer } from "./EditsDrawer";
 import { NeedsClaims, NeedsDraft, NoSources } from "./EmptyStates";
+import { GatePanel } from "./GatePanel";
 import { SelectionPopover } from "./SelectionPopover";
 import { TopBar } from "./TopBar";
 
@@ -23,6 +24,7 @@ export function Editor({ state }: { state: DocumentState }) {
   const [popover, setPopover] = useState<Popover | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(pendingEdits.length > 0);
   const [focusedEditId, setFocusedEditId] = useState<string | null>(null);
+  const [gateOpen, setGateOpen] = useState(false);
   const docPane = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -179,6 +181,7 @@ export function Editor({ state }: { state: DocumentState }) {
         sources={sources}
         pendingCount={pendingEdits.length}
         onOpenEdits={() => setDrawerOpen((open) => !open)}
+        onPublish={() => setGateOpen(true)}
       />
       <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] md:overflow-hidden">
         <div
@@ -245,6 +248,12 @@ export function Editor({ state }: { state: DocumentState }) {
           )}
         </aside>
       </div>
+      <GatePanel
+        documentId={doc.id}
+        open={gateOpen}
+        onOpenChange={setGateOpen}
+        onSelectClaim={selectFromCard}
+      />
       <p className="sr-only" aria-live="polite">
         {pendingEdits.length === 1
           ? "1 pending edit"
