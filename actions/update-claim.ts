@@ -3,10 +3,12 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
+import { logActivity } from "../server/lib/activity.js";
 import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { applyBodyEdit } from "../server/lib/apply-body-edit.js";
 import { forbiddenClaimFields } from "../server/lib/claim-policy.js";
 import { loadClaim, loadClaims, now } from "../server/lib/documents.js";
+import { propagateChange } from "../server/lib/propagate.js";
 import { cycleIfDepends } from "../shared/graph.js";
 import { CLAIM_STATUSES } from "../shared/machines.js";
 
@@ -108,10 +110,51 @@ export default defineAction({
       }
     }
 
+    // A human decision on this claim settles its own review flag.
+    const textChanged =
+      actor === "human" &&
+      patch.text !== undefined &&
+      patch.text !== claim.text;
+    if (actor === "human" && (patch.status || textChanged)) {
+      await db
+        .update(schema.claims)
+        .set({ reviewState: "ok", reviewReason: null })
+        .where(eq(schema.claims.id, claimId));
+    }
+
+    // Changes that alter what this claim says ripple to its dependents.
+    const sourcesChanged =
+      patch.sourceIds !== undefined &&
+      patch.sourceIds.join(",") !== claim.sourceIds.join(",");
+    const statusChanged =
+      patch.status !== undefined && patch.status !== claim.status;
+    let propagation = null;
+    if (textChanged || sourcesChanged || statusChanged) {
+      propagation = await propagateChange({
+        claimId,
+        actor,
+        ownerEmail: ctx?.userEmail ?? "",
+        previousText: textChanged ? claim.text : null,
+      });
+      await logActivity(
+        doc.id,
+        "claim_updated",
+        actor,
+        `${actor === "human" ? "You" : "The agent"} updated a claim (${[
+          textChanged && "text",
+          sourcesChanged && "sources",
+          statusChanged && `status → ${patch.status}`,
+        ]
+          .filter(Boolean)
+          .join(", ")})`,
+        { claimId, note: patch.note ?? null },
+      );
+    }
+
     const [updated] = await db
       .select()
       .from(schema.claims)
       .where(eq(schema.claims.id, claimId));
-    return { claim: updated, proposedEditId };
+    return { claim: updated, proposedEditId, propagation };
   },
 });
