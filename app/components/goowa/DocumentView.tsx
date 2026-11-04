@@ -82,6 +82,13 @@ export const DocumentView = memo(function DocumentView({
                 data-end={seg.end}
                 data-claim-ids={seg.claimIds.join(" ")}
                 data-status={status}
+                data-review={
+                  seg.claimIds.some(
+                    (id) => byId.get(id)?.reviewState === "needs_review",
+                  )
+                    ? "needs_review"
+                    : undefined
+                }
                 data-overlap={seg.claimIds.length > 1 ? "true" : undefined}
                 data-active={
                   seg.claimIds.includes(activeClaimId ?? "")
