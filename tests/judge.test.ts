@@ -189,3 +189,22 @@ describe("numeric mismatch evidence sentence", () => {
     expect(r.reason).toBe("Claim says 38 percent; the source says 45 percent.");
   });
 });
+
+describe("mismatch reasons skip shared figures", () => {
+  it("does not list a year the claim also states", async () => {
+    const src: SourceInput = {
+      id: "s",
+      title: "Tracker",
+      flags: [],
+      text: "Stablecoin supply reached $150 billion at the start of 2024. Most of that supply is in dollars.",
+    };
+    const r = await verifyClaimText(
+      "Stablecoin supply reached $160 billion at the start of 2024.",
+      [src],
+      never,
+    );
+    expect(r.reason).toBe(
+      "Claim says $160 billion; the source says $150 billion.",
+    );
+  });
+});
