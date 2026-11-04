@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import type { DocumentState } from "@/lib/goowa";
 import { scrollBehavior } from "@/lib/goowa";
+import { playRipple } from "@/lib/ripple";
 import { selectionOffsets, type BodySelection } from "@/lib/selection";
 
 import { proposalRanges } from "../../../shared/proposals";
@@ -98,6 +99,28 @@ export function Editor({ state }: { state: DocumentState }) {
       );
     }
   }, []);
+
+  // A change set this tab has not seen yet plays the ripple: the changed
+  // claim pulses and the effect travels to each claim it marked for review.
+  const seenSets = useRef(new Set(state.changeSets.map((c) => c.id)));
+  useEffect(() => {
+    const fresh = state.changeSets.filter((c) => !seenSets.current.has(c.id));
+    for (const c of state.changeSets) seenSets.current.add(c.id);
+    const latest = fresh[0];
+    if (!latest) return;
+    const affected = claims
+      .filter(
+        (c) =>
+          c.lastPropagatedFrom === latest.triggerClaimId &&
+          c.reviewState === "needs_review",
+      )
+      .map((c) => c.id);
+    // Let the new highlights render before animating them.
+    requestAnimationFrame(() => {
+      pulseSpan(latest.triggerClaimId);
+      playRipple(latest.triggerClaimId, affected);
+    });
+  }, [state.changeSets, claims, pulseSpan]);
 
   const selectFromCard = useCallback(
     (claimId: string) => {
