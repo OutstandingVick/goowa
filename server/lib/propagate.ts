@@ -142,7 +142,9 @@ export async function propagateChange(opts: {
 
     // Only direct dependents can be recomputed from the changed figure.
     const rewrite =
-      figure && a.via === trigger.id ? deriveRewrite(claim.text, figure) : null;
+      claimFigure && a.via === trigger.id
+        ? deriveRewrite(claim.text, claimFigure)
+        : null;
     if (rewrite) {
       const editId = crypto.randomUUID();
       const editReason = `${reason}. Recomputed in code: ${rewrite.changes.map((c) => `${c.from} → ${c.to} (${c.explanation})`).join("; ")}.`;

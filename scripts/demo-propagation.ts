@@ -135,6 +135,32 @@ checks.push([
   "cyclic dependsOn edit rejected with a typed error",
   /would create a cycle: #1 → #2 → #1/.test(cycleError),
 ]);
+// A second fix before anyone decides the first proposals: they are
+// superseded and recomputed from the text the dependents still reflect.
+const second = action<{ propagation: { proposals: { after: string }[] } }>(
+  "update-claim",
+  {
+    claimId: upId,
+    text: UPSTREAM_FIXED.replace("$200 billion", "$240 billion"),
+  },
+);
+const pending = action<State>("get-document-state", {
+  documentId: doc.id,
+}).pendingEdits;
+console.log("\nSecond fix ($200B → $240B) before deciding:");
+for (const x of second.propagation.proposals) console.log(`  → ${x.after}`);
+checks.push([
+  "second fix supersedes the first proposals (still exactly 2 pending)",
+  pending.length === 2,
+]);
+checks.push([
+  "second fix recomputes from the original base: 25% → 88%, 2.5 → 3.8 times",
+  pending.some((e) => e.after === EXPECTED.growth.replace("56%", "88%")) &&
+    pending.some(
+      (e) => e.after === EXPECTED.ratio.replace("3.1 times", "3.8 times"),
+    ),
+]);
+
 console.log("");
 for (const [label, ok] of checks)
   console.log(`${ok ? "PASS" : "FAIL"} ${label}`);
