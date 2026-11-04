@@ -15,7 +15,7 @@ function toCalledBy(caller: string | undefined): CalledBy {
 export default defineAction({
   description:
     'Echo text back with a timestamp and who called it. Use when the user says "ping <text>".',
-  mcpTool: true,
+  mcpTool: false,
   schema: z.object({
     text: z.string().describe("Text to echo back"),
   }),
