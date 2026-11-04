@@ -33,3 +33,27 @@ describe("missingNumbers variants", () => {
     expect(missingNumbers(`It was ${claim}.`, snippet)).toEqual([]);
   });
 });
+
+describe("missingNumbers mismatches", () => {
+  it("flags a changed percentage", () => {
+    const missing = missingNumbers(
+      "Adoption reached 45% last year.",
+      "Adoption reached 38% last year.",
+    );
+    expect(missing.map((m) => m.raw)).toEqual(["45%"]);
+  });
+
+  it("flags a changed year and a missing amount", () => {
+    const missing = missingNumbers(
+      "In 2023 reserves were $5 billion.",
+      "In 2022 reserves grew.",
+    );
+    expect(missing.map((m) => m.raw.trim())).toEqual(["2023", "$5 billion"]);
+  });
+
+  it("passes claims with no numbers", () => {
+    expect(
+      missingNumbers("Circle issues USDC.", "Nothing numeric here."),
+    ).toEqual([]);
+  });
+});
