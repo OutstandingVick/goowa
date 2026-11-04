@@ -20,3 +20,16 @@ describe("extractNumbers", () => {
     expect(extractNumbers("COVID-19 and H2 results")).toEqual([]);
   });
 });
+
+describe("missingNumbers variants", () => {
+  it.each([
+    ["40%", "40 percent"],
+    ["40%", "a share of 0.4"],
+    ["0.4", "40%"],
+    ["$1.2B", "1.2 billion dollars"],
+    ["1.2 billion", "$1,200 million"],
+    ["1,000", "1000"],
+  ])('accepts %s matched by "%s"', (claim, snippet) => {
+    expect(missingNumbers(`It was ${claim}.`, snippet)).toEqual([]);
+  });
+});
