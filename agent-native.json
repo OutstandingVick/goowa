@@ -12,7 +12,10 @@
       "change_sets": "Child of documents; read and written only through document-scoped actions that enforce the human-only rules. Kept out of raw db tools so the agent cannot bypass them.",
       "activity": "Child of documents; read and written only through document-scoped actions that enforce the human-only rules. Kept out of raw db tools so the agent cannot bypass them.",
       "publish_overrides": "Child of documents; read and written only through document-scoped actions that enforce the human-only rules. Kept out of raw db tools so the agent cannot bypass them.",
-      "document_revisions": "Child of documents; read and written only through document-scoped actions that enforce the human-only rules. Kept out of raw db tools so the agent cannot bypass them."
+      "document_revisions": "Child of documents; read and written only through document-scoped actions that enforce the human-only rules. Kept out of raw db tools so the agent cannot bypass them.",
+      "receipts": "Child of documents; read and written only through document-scoped actions that enforce the human-only rules. Kept out of raw db tools so the agent cannot bypass them.",
+      "source_snapshots": "Child of documents; read and written only through document-scoped actions that enforce the human-only rules. Kept out of raw db tools so the agent cannot bypass them.",
+      "live_checks": "Child of documents; read and written only through document-scoped actions that enforce the human-only rules. Kept out of raw db tools so the agent cannot bypass them."
     }
   }
 }
