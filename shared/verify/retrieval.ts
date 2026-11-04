@@ -16,35 +16,35 @@ const STOP = new Set(
   ),
 );
 
+const ABBREVIATION =
+  /(?:\b[A-Z]|\b(?:e\.g|i\.e|etc|vs|Mr|Mrs|Ms|Dr|St|No|Fig|Inc|Ltd|Co|Corp|Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec))$/;
+
 /** Sentences with absolute offsets; abbreviations like "U.S." stay intact. */
 export function splitSentences(text: string): Sentence[] {
   const out: Sentence[] = [];
-  const re = /[^.!?]+(?:[.!?]+(?=\s+[A-Z0-9"“(]|\s*$)|$)/g;
-  let pending: Sentence | null = null;
-  for (let m = re.exec(text); m; m = re.exec(text)) {
-    if (!m[0]) {
-      re.lastIndex++;
+  const push = (from: number, to: number) => {
+    while (from < to && /\s/.test(text[from]!)) from++;
+    while (to > from && /\s/.test(text[to - 1]!)) to--;
+    if (to <= from) return;
+    const prev = out[out.length - 1];
+    // Join very short fragments onto the previous sentence.
+    if (prev && to - from < 25) {
+      prev.end = to;
+      prev.text = text.slice(prev.start, to);
+      return;
+    }
+    out.push({ start: from, end: to, text: text.slice(from, to) });
+  };
+  let start = 0;
+  const boundary = /[.!?]+["”’)]*(?=\s+["“(]?[A-Z0-9])/g;
+  for (let m = boundary.exec(text); m; m = boundary.exec(text)) {
+    if (m[0].startsWith(".") && ABBREVIATION.test(text.slice(start, m.index))) {
       continue;
     }
-    const raw = m[0];
-    const lead = raw.length - raw.trimStart().length;
-    const start = m.index + lead;
-    const end = m.index + raw.trimEnd().length;
-    if (end <= start) continue;
-    const s = { start, end, text: text.slice(start, end) };
-    // Join very short fragments (e.g. "Fig. 2") onto the previous sentence.
-    if (pending && s.text.length < 25) {
-      pending = {
-        start: pending.start,
-        end,
-        text: text.slice(pending.start, end),
-      };
-      continue;
-    }
-    if (pending) out.push(pending);
-    pending = s;
+    push(start, m.index + m[0].length);
+    start = m.index + m[0].length;
   }
-  if (pending) out.push(pending);
+  push(start, text.length);
   return out;
 }
 
