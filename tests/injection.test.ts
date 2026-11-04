@@ -47,3 +47,16 @@ describe("scanText", () => {
     );
   });
 });
+
+describe("no false positives on ordinary articles", () => {
+  it.each([
+    "USDC is a digital dollar issued by Circle. It is backed 100% by cash and cash-equivalent assets.",
+    "The Federal Reserve note describes primary and secondary markets for stablecoins. Instructions for redemption are set by each issuer.",
+    "The regulation covers transparency, disclosure, authorisation and supervision of transactions.",
+  ])("does not flag: %s", (text) => {
+    expect(scanText(text)).toEqual([]);
+    expect(
+      scanHtml(`<html><body><p>${text}</p></body></html>`).findings,
+    ).toEqual([]);
+  });
+});
