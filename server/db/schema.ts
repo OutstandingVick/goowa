@@ -5,6 +5,15 @@ import {
 import { sql } from "drizzle-orm";
 import { integer, jsonb, pgTable, real, text } from "drizzle-orm/pg-core";
 
+export type InjectionFinding = { snippet: string; reason: string };
+export type Evidence = {
+  sourceId: string;
+  snippet: string;
+  startOffset: number;
+  endOffset: number;
+  matchType: "exact" | "paraphrase" | "none";
+};
+
 // "human" | "agent" columns are named *_kind, not created_by/updated_by: the
 // framework treats those names as member emails (identity columns).
 
@@ -34,6 +43,12 @@ export const sources = pgTable("sources", {
   fetchedAt: text("fetched_at").notNull(),
   flags: jsonb("flags").$type<string[]>().notNull().default([]),
   error: jsonb("error").$type<{ code: string; message: string } | null>(),
+  // Full readable text with suspicious spans stripped (see injection scan).
+  fullText: text("full_text").notNull().default(""),
+  injectionFindings: jsonb("injection_findings")
+    .$type<InjectionFinding[]>()
+    .notNull()
+    .default([]),
 });
 
 export const claims = pgTable("claims", {
@@ -51,6 +66,16 @@ export const claims = pgTable("claims", {
   updatedAt: text("updated_at")
     .notNull()
     .default(sql`now()`),
+  // Machine verification, kept apart from the human-controlled `status`.
+  verdict: text("verdict"),
+  verdictReason: text("verdict_reason"),
+  verdictConfidence: real("verdict_confidence"),
+  evidence: jsonb("evidence").$type<Evidence[]>().notNull().default([]),
+  closestPassage: jsonb("closest_passage").$type<Evidence | null>(),
+  verifiedAt: text("verified_at"),
+  verifiedBy: text("verifier_kind"),
+  verifiedFingerprint: text("verified_fingerprint"),
+  humanNote: text("human_note"),
 });
 
 export const edits = pgTable("edits", {
