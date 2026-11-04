@@ -76,7 +76,7 @@ get the same rules as Goowa's own agent: they can check drafts, verify claims,
 propose edits, and read or verify receipts, but `publish` and `decide-edit`
 refuse them and the attempt is logged.
 
-Claude Desktop / Cursor (`claude_desktop_config.json` or `.cursor/mcp.json`):
+**Cursor** (`~/.cursor/mcp.json` or `.cursor/mcp.json` in a project):
 
 ```json
 {
@@ -89,8 +89,18 @@ Claude Desktop / Cursor (`claude_desktop_config.json` or `.cursor/mcp.json`):
 }
 ```
 
-Clients that support remote MCP OAuth (Claude's custom connectors) only need
-the URL; they open a consent page instead of using a token. Try: *"Use
+**Claude Desktop / claude.ai**: Customize → Connectors → Add custom connector,
+URL `https://goowa.vercel.app/mcp`, then approve on Goowa's consent page.
+
+**Claude Code**:
+
+```bash
+claude mcp add --transport http goowa https://goowa.vercel.app/mcp
+```
+
+Clients that support remote MCP OAuth (Claude connectors, Claude Code) only
+need the URL; they open a consent page instead of using a token, and the grant
+shows up (and can be revoked) under the same "Existing connections". Try: *"Use
 check-draft on this paragraph with these sources"*. It returns counts,
 blockers, and an editor link where you decide.
 
