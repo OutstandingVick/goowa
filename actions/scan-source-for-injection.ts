@@ -52,7 +52,7 @@ export default defineAction({
       }).catch(() => null);
       const answer =
         verdict?.status === "ok" ? verdict.answers.injection : null;
-      if (answer?.type === "predicate" && answer.value === true) {
+      if (answer?.type === "predicate" && answer.probability >= 0.8) {
         scan.findings.push({
           snippet: text.slice(0, 200),
           reason: "Classifier second opinion: instructions aimed at an AI",
