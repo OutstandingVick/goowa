@@ -125,17 +125,16 @@ export async function createReceipt(documentId: string): Promise<Receipt> {
       bodyHash: await sha256Hex(doc.body),
     },
     claims: receiptClaims,
-    sources: sources
-      .filter((s) => claims.some((c) => c.sourceIds.includes(s.id)))
-      .map((s) => ({
-        id: s.id,
-        url: s.url,
-        title: s.title,
-        contentHash: s.contentHash,
-        fetchedAt: s.fetchedAt,
-        flags: [...s.flags].sort(),
-        excluded: excluded(s),
-      })),
+    // Every source on the document, so quarantined ones are visible too.
+    sources: sources.map((s) => ({
+      id: s.id,
+      url: s.url,
+      title: s.title,
+      contentHash: s.contentHash,
+      fetchedAt: s.fetchedAt,
+      flags: [...s.flags].sort(),
+      excluded: excluded(s),
+    })),
     summary: {
       claims: receiptClaims.length,
       byStatus,
