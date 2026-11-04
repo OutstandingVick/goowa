@@ -62,6 +62,22 @@ export type FetchSourceResult = FetchSourceOk | FetchSourceError;
 /** Raw page and full readable text, for callers that store or scan them. */
 export type FetchedPage = { html: string; fullText: string };
 
+/**
+ * Outside production, let the app fetch its own /fixtures/ pages from the
+ * local dev server (the SSRF guard blocks localhost otherwise).
+ */
+function devFixtureOrigin(url: URL) {
+  const local = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  if (
+    process.env.NODE_ENV === "production" ||
+    !local ||
+    !url.pathname.startsWith("/fixtures/")
+  ) {
+    return undefined;
+  }
+  return { allowedPrivateOrigins: [url.origin] };
+}
+
 export async function fetchSource(
   url: string,
   page?: FetchedPage,
@@ -78,13 +94,17 @@ export async function fetchSource(
 
   let res: Response;
   try {
-    res = await ssrfSafeFetch(parsed.toString(), {
-      signal: AbortSignal.timeout(TIMEOUT_MS),
-      headers: {
-        "user-agent": "GoowaBot/0.1 (+source verification)",
-        accept: "text/html,application/xhtml+xml",
+    res = await ssrfSafeFetch(
+      parsed.toString(),
+      {
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+        headers: {
+          "user-agent": "GoowaBot/0.1 (+source verification)",
+          accept: "text/html,application/xhtml+xml",
+        },
       },
-    });
+      devFixtureOrigin(parsed),
+    );
   } catch (err) {
     const name = (err as Error)?.name;
     const message = (err as Error)?.message ?? "";
