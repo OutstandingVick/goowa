@@ -137,6 +137,11 @@ CREATE INDEX IF NOT EXISTS change_sets_document_idx ON change_sets (document_id,
 CREATE INDEX IF NOT EXISTS activity_document_idx ON activity (document_id, created_at);
 CREATE INDEX IF NOT EXISTS edits_change_set_idx ON edits (change_set_id)`,
     },
+    {
+      version: 4,
+      name: "goowa-change-set-trigger-text",
+      sql: `ALTER TABLE change_sets ADD COLUMN IF NOT EXISTS trigger_before_text TEXT`,
+    },
   ],
   { table: "goowa_migrations" },
 );
