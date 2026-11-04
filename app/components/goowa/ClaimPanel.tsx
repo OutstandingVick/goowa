@@ -46,6 +46,15 @@ export function ClaimPanel({
     () => new Map(claims.map((c, i) => [c.id, i])),
     [claims],
   );
+  const affectsOf = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const c of claims) {
+      for (const parent of c.dependsOn) {
+        map.set(parent, [...(map.get(parent) ?? []), c.id]);
+      }
+    }
+    return map;
+  }, [claims]);
   const labelOf = (id: string) => {
     const i = indexOf.get(id);
     return i === undefined ? "removed" : `#${i + 1}`;
@@ -103,6 +112,7 @@ export function ClaimPanel({
             index={indexOf.get(claim.id) ?? 0}
             sources={sources}
             labelOf={labelOf}
+            affects={affectsOf.get(claim.id) ?? []}
             active={claim.id === activeClaimId}
             hot={hotClaimIds.includes(claim.id)}
             onSelect={onSelect}

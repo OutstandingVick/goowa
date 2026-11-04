@@ -4,6 +4,7 @@ import {
   IconExternalLink,
   IconLink,
   IconPencil,
+  IconRefresh,
   IconSparkles,
 } from "@tabler/icons-react";
 import { forwardRef, useState } from "react";
@@ -33,6 +34,7 @@ type Props = {
   index: number;
   sources: Source[];
   labelOf: (claimId: string) => string;
+  affects: string[]; // ids of claims that depend on this one
   active: boolean;
   hot: boolean;
   onSelect: (claimId: string) => void;
@@ -40,13 +42,24 @@ type Props = {
 };
 
 export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
-  { claim, index, sources, labelOf, active, hot, onSelect, onHoverClaims },
+  {
+    claim,
+    index,
+    sources,
+    labelOf,
+    affects,
+    active,
+    hot,
+    onSelect,
+    onHoverClaims,
+  },
   ref,
 ) {
   // Shown status: quarantine, else the human status, else the agent verdict.
   const status = effectiveStatus(claim, sources);
   const human = humanStatus(claim);
   const update = useActionMutation("update-claim");
+  const markReviewed = useActionMutation("mark-reviewed");
   const [editing, setEditing] = useState(false);
   const [note, setNote] = useState(claim.humanNote ?? "");
   const [draft, setDraft] = useState(claim.text);
@@ -203,30 +216,44 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
             </p>
           )}
 
-          <VerdictPanel claim={claim} sources={sources} human={human} />
-
-          {claim.dependsOn.length > 0 && (
-            <div className="mt-3 flex flex-wrap items-center gap-1.5">
-              <span className="text-xs text-muted-foreground">Depends on</span>
-              {claim.dependsOn.map((id) => (
-                <button
-                  key={id}
-                  type="button"
-                  className="rounded-full border px-2 py-0.5 text-xs tabular-nums hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelect(id);
-                  }}
-                  onMouseEnter={() => onHoverClaims([id])}
-                  onMouseLeave={() => onHoverClaims([])}
-                  onFocus={() => onHoverClaims([id])}
-                  onBlur={() => onHoverClaims([])}
-                >
-                  {labelOf(id)}
-                </button>
-              ))}
+          {claim.reviewState === "needs_review" && (
+            <div
+              data-status="weak"
+              className="mt-3 flex items-start gap-2 rounded-md bg-[hsl(var(--tone-bg))] px-3 py-2 text-xs text-[hsl(var(--tone))]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <IconRefresh className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+              <span className="min-w-0 flex-1">
+                <span className="font-medium">Needs review.</span>{" "}
+                <span className="text-foreground/80">{claim.reviewReason}</span>
+              </span>
+              <button
+                type="button"
+                className="shrink-0 rounded px-1.5 py-0.5 font-medium hover:bg-background/70 disabled:opacity-60"
+                disabled={markReviewed.isPending}
+                onClick={() => markReviewed.mutate({ claimId: claim.id })}
+              >
+                Mark reviewed
+              </button>
             </div>
           )}
+
+          <VerdictPanel claim={claim} sources={sources} human={human} />
+
+          <ClaimChips
+            label="Depends on"
+            ids={claim.dependsOn}
+            labelOf={labelOf}
+            onSelect={onSelect}
+            onHoverClaims={onHoverClaims}
+          />
+          <ClaimChips
+            label="Affects"
+            ids={affects}
+            labelOf={labelOf}
+            onSelect={onSelect}
+            onHoverClaims={onHoverClaims}
+          />
 
           <footer className="mt-3 flex flex-wrap items-center gap-1.5">
             <ActorBadge actor={claim.createdBy} verb="Created" />
@@ -351,5 +378,43 @@ function ConfidenceBar({ value }: { value: number }) {
       </span>
       {pct}%
     </span>
+  );
+}
+
+function ClaimChips({
+  label,
+  ids,
+  labelOf,
+  onSelect,
+  onHoverClaims,
+}: {
+  label: string;
+  ids: string[];
+  labelOf: (claimId: string) => string;
+  onSelect: (claimId: string) => void;
+  onHoverClaims: (claimIds: string[]) => void;
+}) {
+  if (ids.length === 0) return null;
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-1.5">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      {ids.map((id) => (
+        <button
+          key={id}
+          type="button"
+          className="rounded-full border px-2 py-0.5 text-xs tabular-nums hover:bg-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect(id);
+          }}
+          onMouseEnter={() => onHoverClaims([id])}
+          onMouseLeave={() => onHoverClaims([])}
+          onFocus={() => onHoverClaims([id])}
+          onBlur={() => onHoverClaims([])}
+        >
+          {labelOf(id)}
+        </button>
+      ))}
+    </div>
   );
 }
