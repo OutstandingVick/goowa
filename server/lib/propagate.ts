@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 import { changedFigure, deriveRewrite } from "../../shared/derive.js";
 import { downstream } from "../../shared/graph.js";
@@ -61,6 +61,37 @@ export async function propagateChange(opts: {
     ? `changed from ${figure.before.raw.trim()} to ${figure.after.raw.trim()}`
     : "changed";
 
+  // Earlier proposals from this trigger that nobody decided are superseded.
+  // The dependents they target still reflect the text before that earlier
+  // change, so recompute from it.
+  const superseded = await db
+    .select({ edit: schema.edits, set: schema.changeSets })
+    .from(schema.edits)
+    .innerJoin(
+      schema.changeSets,
+      eq(schema.edits.changeSetId, schema.changeSets.id),
+    )
+    .where(
+      and(
+        eq(schema.edits.documentId, trigger.documentId),
+        eq(schema.edits.triggeredByClaimId, trigger.id),
+        eq(schema.edits.state, "proposed"),
+      ),
+    );
+  const baseTextFor = new Map<string, string>();
+  for (const row of superseded) {
+    if (row.set.triggerBeforeText)
+      baseTextFor.set(row.edit.targetId, row.set.triggerBeforeText);
+  }
+  if (superseded.length > 0) {
+    await db.delete(schema.edits).where(
+      inArray(
+        schema.edits.id,
+        superseded.map((r) => r.edit.id),
+      ),
+    );
+  }
+
   const changeSetId = crypto.randomUUID();
   const result: PropagationResult = {
     changeSetId,
@@ -78,7 +109,12 @@ export async function propagateChange(opts: {
       a.via === trigger.id
         ? label(trigger.id)
         : `${label(a.via)} (via ${label(trigger.id)})`;
-    const reason = `Depends on claim ${via}, which ${a.via === trigger.id ? what : "may change"}`;
+    const base = baseTextFor.get(claim.id);
+    const claimFigure = base ? changedFigure(base, trigger.text) : figure;
+    const claimWhat = claimFigure
+      ? `changed from ${claimFigure.before.raw.trim()} to ${claimFigure.after.raw.trim()}`
+      : what;
+    const reason = `Depends on claim ${via}, which ${a.via === trigger.id ? claimWhat : "may change"}`;
     await db
       .update(schema.claims)
       .set({
@@ -146,6 +182,7 @@ export async function propagateChange(opts: {
     documentId: trigger.documentId,
     triggerClaimId: trigger.id,
     triggeredBy: opts.actor,
+    triggerBeforeText: opts.previousText ?? null,
     summary: result.summary,
     createdAt: now(),
   });
