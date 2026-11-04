@@ -53,6 +53,7 @@ describe("no false positives on ordinary articles", () => {
     "USDC is a digital dollar issued by Circle. It is backed 100% by cash and cash-equivalent assets.",
     "The Federal Reserve note describes primary and secondary markets for stablecoins. Instructions for redemption are set by each issuer.",
     "The regulation covers transparency, disclosure, authorisation and supervision of transactions.",
+    "Issuers always include a redemption policy and always state their reserve mix.",
   ])("does not flag: %s", (text) => {
     expect(scanText(text)).toEqual([]);
     expect(

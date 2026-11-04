@@ -29,7 +29,7 @@ const PHRASES: { re: RegExp; reason: string }[] = [
   },
   { re: /\bnew instructions?:/i, reason: "Injects new instructions" },
   {
-    re: /\b(?:you must|always) (?:say|state|write|claim|cite|include)\b/i,
+    re: /\byou must (?:always )?(?:say|state|write|claim|cite|include)\b/i,
     reason: "Dictates what an AI must write",
   },
   {
