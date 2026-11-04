@@ -88,7 +88,7 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
       }}
       aria-label={`Claim ${index + 1}, ${STATUS_LABEL[status]}`}
       className={cn(
-        "group relative cursor-pointer rounded-lg border bg-card p-4 outline-none transition-[border-color,box-shadow] duration-150",
+        "group relative min-w-0 cursor-pointer rounded-lg border bg-card p-4 outline-none transition-[border-color,box-shadow] duration-150",
         "before:absolute before:inset-y-3 before:left-0 before:w-[3px] before:rounded-full before:bg-[hsl(var(--tone))]",
         active &&
           "border-[hsl(var(--tone))] shadow-[0_0_0_3px_hsl(var(--tone)/0.15)]",

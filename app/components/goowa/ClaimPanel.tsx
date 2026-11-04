@@ -91,7 +91,7 @@ export function ClaimPanel({
           </FilterChip>
         ))}
       </div>
-      <div className="grid gap-3">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3">
         {visible.map((claim) => (
           <ClaimCard
             key={claim.id}
