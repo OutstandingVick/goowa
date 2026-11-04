@@ -142,6 +142,36 @@ CREATE INDEX IF NOT EXISTS edits_change_set_idx ON edits (change_set_id)`,
       name: "goowa-change-set-trigger-text",
       sql: `ALTER TABLE change_sets ADD COLUMN IF NOT EXISTS trigger_before_text TEXT`,
     },
+    {
+      version: 5,
+      name: "goowa-receipts",
+      sql: `CREATE TABLE IF NOT EXISTS receipts (
+  id TEXT PRIMARY KEY,
+  document_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+  revision INTEGER NOT NULL,
+  json TEXT NOT NULL,
+  receipt_hash TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (now()),
+  UNIQUE (document_id, revision)
+);
+CREATE TABLE IF NOT EXISTS source_snapshots (
+  id TEXT PRIMARY KEY,
+  document_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+  source_id TEXT NOT NULL,
+  content_hash TEXT NOT NULL,
+  full_text TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (now()),
+  UNIQUE (source_id, content_hash)
+);
+CREATE TABLE IF NOT EXISTS live_checks (
+  id TEXT PRIMARY KEY,
+  document_id TEXT NOT NULL REFERENCES documents(id) ON DELETE CASCADE,
+  revision INTEGER NOT NULL,
+  results JSONB NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (now())
+);
+CREATE INDEX IF NOT EXISTS live_checks_document_idx ON live_checks (document_id, created_at)`,
+    },
   ],
   { table: "goowa_migrations" },
 );
