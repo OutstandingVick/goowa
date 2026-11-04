@@ -149,6 +149,7 @@ export function Editor({ state }: { state: DocumentState }) {
   return (
     <div className="flex h-full min-h-0 flex-col bg-[hsl(var(--g-paper))]">
       <TopBar
+        documentId={doc.id}
         title={doc.title}
         status={doc.status}
         claims={claims}

@@ -12,6 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 
 import { StatusIcon } from "./StatusBadge";
+import { VerifyAllButton } from "./VerifyAllButton";
 
 const DOC_STATUS: Record<string, { label: string; className: string }> = {
   draft: { label: "Draft", className: "bg-muted text-muted-foreground" },
@@ -26,6 +27,7 @@ const DOC_STATUS: Record<string, { label: string; className: string }> = {
 };
 
 type Props = {
+  documentId: string;
   title: string;
   status: string;
   claims: Claim[];
@@ -35,6 +37,7 @@ type Props = {
 };
 
 export function TopBar({
+  documentId,
   title,
   status,
   claims,
@@ -74,6 +77,7 @@ export function TopBar({
         ))}
       </p>
       <div className="ml-auto flex items-center gap-2">
+        <VerifyAllButton documentId={documentId} />
         <Button
           size="sm"
           variant="outline"
