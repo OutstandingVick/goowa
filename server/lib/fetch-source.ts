@@ -59,7 +59,13 @@ function extractReadable(html: string, url: string) {
 
 export type FetchSourceResult = FetchSourceOk | FetchSourceError;
 
-export async function fetchSource(url: string): Promise<FetchSourceResult> {
+/** Raw page and full readable text, for callers that store or scan them. */
+export type FetchedPage = { html: string; fullText: string };
+
+export async function fetchSource(
+  url: string,
+  page?: FetchedPage,
+): Promise<FetchSourceResult> {
   let parsed: URL;
   try {
     parsed = new URL(url);
@@ -133,6 +139,10 @@ export async function fetchSource(url: string): Promise<FetchSourceResult> {
     return fail(url, "no_readable_text", "No readable text found on the page.");
   }
 
+  if (page) {
+    page.html = html;
+    page.fullText = text;
+  }
   return {
     ok: true,
     url: res.url || url,
