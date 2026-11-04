@@ -16,14 +16,15 @@ export function ActorBadge({
   const Icon = isAgent ? IconSparkles : IconUser;
   return (
     <span
-      title={`${verb} by ${isAgent ? "the agent" : "a human"}`}
+      title={`${verb || "By"} ${verb ? "by " : ""}${isAgent ? "the agent" : "a human"}`}
       className={cn(
         "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[11px] text-muted-foreground",
         className,
       )}
     >
       <Icon aria-hidden className="size-3" strokeWidth={2} />
-      {verb} by {isAgent ? "agent" : "human"}
+      {verb ? `${verb} by ` : ""}
+      {isAgent ? "agent" : "human"}
     </span>
   );
 }
