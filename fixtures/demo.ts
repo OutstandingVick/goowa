@@ -12,3 +12,13 @@ export const demo = {
     "https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica",
   ],
 } as const;
+
+/**
+ * The verification fixture (one claim per verdict, including an injected
+ * source this app hosts) lives in ./verify-fixture.ts with expected verdicts
+ * in ./expected.json. Run it with `pnpm verify:fixture`.
+ */
+export {
+  CLAIMS as verifyClaims,
+  SOURCES as verifySources,
+} from "./verify-fixture.js";
