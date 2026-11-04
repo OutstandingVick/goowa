@@ -92,6 +92,8 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
         active &&
           "border-[hsl(var(--tone))] shadow-[0_0_0_3px_hsl(var(--tone)/0.15)]",
         hot && !active && "border-[hsl(var(--tone)/0.6)]",
+        status === "laundered" &&
+          "border-[hsl(var(--g-laundered)/0.5)] bg-[hsl(var(--g-laundered-bg)/0.45)]",
       )}
     >
       <header className="mb-2 flex items-center gap-2">
