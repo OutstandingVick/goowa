@@ -11,6 +11,15 @@ export default defineAction({
     "Get the Claim Receipt for a published document (latest revision unless revision is given): the published body, every claim with its verdict, evidence snippets and offsets, human decisions and overrides, sources with content hashes, a summary, the history, and receiptHash.",
   errors: goowaErrors,
   mcpTool: true,
+  // Public: signed-out visitors of /r/:id can call it (framework rule:
+  // anonymous calls need requiresAuth false, readOnly, and publicAgent).
+  requiresAuth: false,
+  publicAgent: {
+    expose: true,
+    readOnly: true,
+    requiresAuth: false,
+    title: "Get a Claim Receipt",
+  },
   readOnly: true,
   http: { method: "GET" },
   schema: z.object({

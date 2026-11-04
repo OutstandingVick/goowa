@@ -16,13 +16,23 @@ type LiveStatus =
   | "changed_no_longer_supported"
   | "source_unreachable";
 
-// Public, read-only with respect to the receipt and the published document:
-// results go to live_checks only.
+// Public and read-only with respect to the receipt and the published
+// document. Signed-in checks are recorded in live_checks.
 export default defineAction({
   description:
     "Re-check a published receipt against the live sources: re-fetch each cited source, compare its content hash with the one in the receipt, and re-verify claims whose source changed. Reports per claim unchanged, changed_still_supported, changed_no_longer_supported, or source_unreachable. Never modifies the receipt.",
   errors: goowaErrors,
   mcpTool: true,
+  // Public: signed-out visitors of /r/:id can call it (framework rule:
+  // anonymous calls need requiresAuth false, readOnly, and publicAgent).
+  requiresAuth: false,
+  publicAgent: {
+    expose: true,
+    readOnly: true,
+    requiresAuth: false,
+    title: "Re-check a receipt against live sources",
+  },
+  readOnly: true,
   schema: z.object({
     documentId: z.string().describe("Document id"),
     claimId: z.string().optional().describe("Only re-check this claim"),
@@ -136,13 +146,15 @@ export default defineAction({
     }
 
     const checkedAt = new Date().toISOString();
-    await getDb().insert(schema.liveChecks).values({
-      id: crypto.randomUUID(),
-      documentId,
-      revision: receipt.document.revision,
-      results,
-      createdAt: checkedAt,
-    });
+    // Signed-in checks are recorded; anonymous ones are computed, not stored.
+    if (ctx?.userEmail)
+      await getDb().insert(schema.liveChecks).values({
+        id: crypto.randomUUID(),
+        documentId,
+        revision: receipt.document.revision,
+        results,
+        createdAt: checkedAt,
+      });
     return {
       documentId,
       revision: receipt.document.revision,

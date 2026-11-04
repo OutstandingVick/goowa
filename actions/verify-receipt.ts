@@ -11,6 +11,15 @@ export default defineAction({
     "Verify a Claim Receipt: recompute receiptHash and bodyHash, compare with the hash recorded at publish, and check every evidence snippet against the source text frozen at publish. Each check is intact or tampered.",
   errors: goowaErrors,
   mcpTool: true,
+  // Public: signed-out visitors of /r/:id can call it (framework rule:
+  // anonymous calls need requiresAuth false, readOnly, and publicAgent).
+  requiresAuth: false,
+  publicAgent: {
+    expose: true,
+    readOnly: true,
+    requiresAuth: false,
+    title: "Verify a Claim Receipt",
+  },
   readOnly: true,
   schema: z.object({
     receiptJson: z
