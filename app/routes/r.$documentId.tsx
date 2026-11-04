@@ -95,6 +95,8 @@ export default function ReceiptRoute() {
             {receipt.summary.claims} claims · {supported} supported ·{" "}
             {receipt.summary.overrides} override
             {receipt.summary.overrides === 1 ? "" : "s"}
+            {receipt.summary.agentPublishAttemptsBlocked > 0 &&
+              ` · ${receipt.summary.agentPublishAttemptsBlocked} agent publish attempt${receipt.summary.agentPublishAttemptsBlocked === 1 ? "" : "s"} blocked`}
           </p>
           <div className="flex flex-wrap items-center gap-2 md:ml-auto">
             <button
