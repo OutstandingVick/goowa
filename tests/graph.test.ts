@@ -24,3 +24,16 @@ describe("downstream", () => {
     expect(downstream(nodes, "other")).toEqual([]);
   });
 });
+
+describe("cycleIfDepends", () => {
+  it("returns the cycle path for an edit that would loop", () => {
+    expect(cycleIfDepends(nodes, "up", ["c"])).toEqual(["up", "c", "a", "up"]);
+  });
+  it("rejects self-dependence", () => {
+    expect(cycleIfDepends(nodes, "a", ["a"])).toEqual(["a", "a"]);
+  });
+  it("allows acyclic edits", () => {
+    expect(cycleIfDepends(nodes, "c", ["a", "b"])).toBeNull();
+    expect(cycleIfDepends(nodes, "other", ["c"])).toBeNull();
+  });
+});
