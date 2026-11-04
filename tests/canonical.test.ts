@@ -53,3 +53,12 @@ describe("hashes", () => {
     ).not.toBe(a);
   });
 });
+
+describe("canonicalize arrays", () => {
+  it("serialises undefined array elements as null, like JSON", () => {
+    expect(canonicalize([1, undefined, { b: 2, a: 1 }])).toBe(
+      '[1,null,{"a":1,"b":2}]',
+    );
+    expect(canonicalize([1, undefined])).toBe(JSON.stringify([1, undefined]));
+  });
+});
