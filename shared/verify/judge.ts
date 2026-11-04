@@ -67,10 +67,19 @@ const usable = (s: SourceInput) =>
   !s.flags.includes("quarantined");
 
 /** The source's figures of the same kind as the claim's missing ones. */
-function describeNumbers(text: string, missing: NumberMention[] = []) {
+function describeNumbers(
+  text: string,
+  missing: NumberMention[] = [],
+  claim = "",
+) {
   const kinds = new Set(missing.map((m) => m.kind));
+  // Figures the claim also states (a shared year, say) are not the conflict.
+  const shared = extractNumbers(claim);
   const nums = extractNumbers(text)
     .filter((n) => kinds.size === 0 || kinds.has(n.kind))
+    .filter(
+      (n) => !shared.some((c) => c.value === n.value && c.kind === n.kind),
+    )
     .map((n) => n.raw.trim());
   return nums.length ? [...new Set(nums)].join(", ") : "no matching figure";
 }
@@ -189,7 +198,7 @@ export async function verifyClaimText(
             matchType: "paraphrase",
           },
         ],
-        reason: `Claim says ${missing.map((m) => m.raw.trim()).join(", ")}; the source says ${describeNumbers(sentence.text, missing)}.`,
+        reason: `Claim says ${missing.map((m) => m.raw.trim()).join(", ")}; the source says ${describeNumbers(sentence.text, missing, claim)}.`,
       };
     }
   }
@@ -287,7 +296,7 @@ export async function verifyClaimText(
   const missing = missingNumbers(claim, joined);
   if (missing.length > 0) {
     verdict = "weak";
-    reason = `Claim says ${missing.map((m) => m.raw.trim()).join(", ")}; the supporting passage says ${describeNumbers(joined, missing)}.`;
+    reason = `Claim says ${missing.map((m) => m.raw.trim()).join(", ")}; the supporting passage says ${describeNumbers(joined, missing, claim)}.`;
   }
   return { ...result, verdict, reason };
 }
