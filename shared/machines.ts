@@ -34,7 +34,18 @@ export type ClaimStatus = (typeof CLAIM_STATUSES)[number];
 
 export const SOURCE_FLAGS = [
   "injection_suspected",
+  "quarantined",
   "stale",
   "fetch_failed",
 ] as const;
+
+/** Machine verification result; separate from the human `status`. */
+export const VERDICTS = [
+  "supported",
+  "weak",
+  "unsupported",
+  "laundered",
+  "unverifiable",
+] as const;
+export type Verdict = (typeof VERDICTS)[number];
 export type SourceFlag = (typeof SOURCE_FLAGS)[number];
