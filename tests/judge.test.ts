@@ -61,3 +61,26 @@ describe("verifyClaimText deterministic paths", () => {
     expect(r.closestPassage?.sourceId).toBe("circle");
   });
 });
+
+describe("verifyClaimText numeric guard", () => {
+  it("never marks a changed percentage supported, even if the model says so", async () => {
+    const r = await verifyClaimText(
+      "In the 2024 survey, 45% of merchants said they accept stablecoin payments.",
+      [survey],
+      answering("supports"),
+    );
+    expect(r.verdict).toBe("weak");
+    expect(r.reason).toContain("45%");
+    expect(r.reason).toContain("38%");
+  });
+
+  it("supports a paraphrase whose figures match", async () => {
+    const r = await verifyClaimText(
+      "38% of merchants in the 2024 survey accept stablecoins.",
+      [survey],
+      answering("supports"),
+    );
+    expect(r.verdict).toBe("supported");
+    expect(r.evidence[0]!.matchType).toBe("paraphrase");
+  });
+});
