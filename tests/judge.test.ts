@@ -84,3 +84,41 @@ describe("verifyClaimText numeric guard", () => {
     expect(r.evidence[0]!.matchType).toBe("paraphrase");
   });
 });
+
+describe("verifyClaimText snippet check", () => {
+  it("downgrades to unverifiable when the model picks no real sentence", async () => {
+    const bogus: Judge = async () => ({
+      support: "supports",
+      evidenceIds: ["S99"],
+      confidence: 0.9,
+    });
+    const r = await verifyClaimText(
+      "38% of merchants in the 2024 survey accept stablecoins.",
+      [survey],
+      bogus,
+    );
+    expect(r.verdict).toBe("unverifiable");
+    expect(r.reason).toBe("Model cited text not in source.");
+  });
+
+  it("maps the model saying no support to laundered", async () => {
+    const r = await verifyClaimText(
+      "Card payments at checkout fell sharply in the 2024 survey.",
+      [survey],
+      answering("does_not_support"),
+    );
+    expect(r.verdict).toBe("laundered");
+  });
+
+  it("maps contradiction to unsupported and partial to weak", async () => {
+    const claim =
+      "Card payments remained the most common method at checkout in 2024.";
+    expect(
+      (await verifyClaimText(claim, [survey], answering("contradicts")))
+        .verdict,
+    ).toBe("unsupported");
+    expect(
+      (await verifyClaimText(claim, [survey], answering("partially"))).verdict,
+    ).toBe("weak");
+  });
+});
