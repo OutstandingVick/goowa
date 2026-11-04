@@ -262,6 +262,7 @@ export function Editor({ state }: { state: DocumentState }) {
       <EditsDrawer
         edits={pendingEdits}
         changeSets={state.changeSets}
+        activity={state.activity}
         placedIds={placedIds}
         labelOf={labelOf}
         open={drawerOpen}

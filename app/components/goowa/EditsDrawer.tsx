@@ -8,15 +8,17 @@ import {
 import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import type { ChangeSet, Edit } from "@/lib/goowa";
+import type { Activity, ChangeSet, Edit } from "@/lib/goowa";
 import { scrollBehavior } from "@/lib/goowa";
 import { cn } from "@/lib/utils";
 
+import { ActivityFeed } from "./ActivityFeed";
 import { ActorBadge } from "./ActorBadge";
 
 type Props = {
   edits: Edit[];
   changeSets: ChangeSet[];
+  activity: Activity[];
   placedIds: Set<string>; // edits that still match the body
   labelOf: (claimId: string) => string;
   open: boolean;
@@ -28,6 +30,7 @@ type Props = {
 export function EditsDrawer({
   edits,
   changeSets,
+  activity,
   placedIds,
   labelOf,
   open,
@@ -38,6 +41,12 @@ export function EditsDrawer({
   const rows = useRef(new Map<string, HTMLElement>());
   const decide = useActionMutation("decide-edit");
   const [bulk, setBulk] = useState<string | null>(null);
+  const [tab, setTab] = useState<"edits" | "activity">("edits");
+  const agentBlocked = activity.some(
+    (a) =>
+      a.kind === "publish_blocked" &&
+      Date.now() - new Date(a.createdAt).getTime() < 30 * 60_000,
+  );
 
   // Proposals from one propagation are grouped under their change set.
   const groups = useMemo(() => {
@@ -91,32 +100,72 @@ export function EditsDrawer({
       aria-label="Pending edits"
       className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
     >
-      <button
-        type="button"
-        aria-expanded={open}
-        onClick={() => onOpenChange(!open)}
-        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm font-medium hover:bg-accent/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring md:px-6"
-      >
-        Pending edits
-        <span
-          className={cn(
-            "rounded-full px-1.5 text-xs tabular-nums",
-            edits.length
-              ? "bg-[hsl(var(--g-insert-bg))] text-[hsl(var(--g-insert))]"
-              : "bg-muted text-muted-foreground",
-          )}
+      <div className="flex items-center gap-1 px-2 md:px-4" role="tablist">
+        {(["edits", "activity"] as const).map((t) => (
+          <button
+            key={t}
+            type="button"
+            role="tab"
+            aria-selected={open && tab === t}
+            data-drawer-tab={t}
+            onClick={() => {
+              if (open && tab === t) onOpenChange(false);
+              else {
+                setTab(t);
+                onOpenChange(true);
+              }
+            }}
+            className={cn(
+              "flex items-center gap-2 rounded-md px-2 py-2.5 text-sm font-medium hover:bg-accent/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+              open && tab === t ? "text-foreground" : "text-muted-foreground",
+            )}
+          >
+            {t === "edits" ? "Pending edits" : "Activity"}
+            {t === "edits" ? (
+              <span
+                className={cn(
+                  "rounded-full px-1.5 text-xs tabular-nums",
+                  edits.length
+                    ? "bg-[hsl(var(--g-insert-bg))] text-[hsl(var(--g-insert))]"
+                    : "bg-muted text-muted-foreground",
+                )}
+              >
+                {edits.length}
+              </span>
+            ) : (
+              agentBlocked && (
+                <span
+                  data-status="unsupported"
+                  className="size-2 rounded-full bg-[hsl(var(--tone))]"
+                  aria-label="Agent attempt blocked"
+                />
+              )
+            )}
+          </button>
+        ))}
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-label={open ? "Collapse" : "Expand"}
+          data-drawer-toggle
+          onClick={() => onOpenChange(!open)}
+          className="ml-auto rounded-md p-2 hover:bg-accent/60"
         >
-          {edits.length}
-        </span>
-        <IconChevronDown
-          aria-hidden
-          className={cn(
-            "ml-auto size-4 transition-transform duration-150",
-            open && "rotate-180",
-          )}
-        />
-      </button>
-      {open && (
+          <IconChevronDown
+            aria-hidden
+            className={cn(
+              "size-4 transition-transform duration-150",
+              open && "rotate-180",
+            )}
+          />
+        </button>
+      </div>
+      {open && tab === "activity" && (
+        <div className="max-h-[38vh] overflow-y-auto px-4 pb-4 md:px-6">
+          <ActivityFeed activity={activity} />
+        </div>
+      )}
+      {open && tab === "edits" && (
         <div className="max-h-[38vh] overflow-y-auto px-4 pb-4 md:px-6">
           {edits.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted-foreground">
