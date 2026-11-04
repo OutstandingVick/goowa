@@ -11,7 +11,7 @@ import { CLAIM_STATUSES } from "../shared/machines.js";
 
 export default defineAction({
   description:
-    "Update a claim. Agents may change sourceIds directly; an agent's `text` change becomes a proposed edit for a human to accept. Only humans may set status (including supported), confidence, or dependsOn.",
+    "Update a claim. Agents may change sourceIds directly; an agent's `text` change becomes a proposed edit for a human to accept. Only humans may set status (including supported), confidence, dependsOn, or a note. Verification verdicts are separate and come from verify-claim.",
   errors: goowaErrors,
   mcpTool: true,
   schema: z.object({
@@ -25,6 +25,11 @@ export default defineAction({
     status: z.enum(CLAIM_STATUSES).optional().describe("Human only"),
     confidence: z.number().min(0).max(1).optional().describe("Human only"),
     dependsOn: z.array(z.string()).optional().describe("Human only"),
+    note: z
+      .string()
+      .max(500)
+      .optional()
+      .describe("Human only: why the human set this status"),
   }),
   run: async ({ claimId, reason, ...patch }, ctx) => {
     const actor = actorOf(ctx);
@@ -57,6 +62,7 @@ export default defineAction({
     if (patch.status) fields.status = patch.status;
     if (patch.confidence !== undefined) fields.confidence = patch.confidence;
     if (patch.dependsOn) fields.dependsOn = patch.dependsOn;
+    if (patch.note !== undefined) fields.humanNote = patch.note || null;
     if (Object.keys(fields).length > 0) {
       await db
         .update(schema.claims)

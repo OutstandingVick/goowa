@@ -36,3 +36,14 @@ describe("forbiddenClaimFields", () => {
     ).toEqual(["confidence", "dependsOn"]);
   });
 });
+
+describe("human override note", () => {
+  it("is human only", () => {
+    expect(forbiddenClaimFields("agent", { note: "looks fine" })).toEqual([
+      "note",
+    ]);
+    expect(
+      forbiddenClaimFields("human", { note: "confirmed in the PDF" }),
+    ).toEqual([]);
+  });
+});

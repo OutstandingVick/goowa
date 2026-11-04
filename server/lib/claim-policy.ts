@@ -7,6 +7,7 @@ export type ClaimPatch = {
   status?: ClaimStatus | undefined;
   confidence?: number | undefined;
   dependsOn?: string[] | undefined;
+  note?: string | undefined;
 };
 
 // Agents may change text (as a proposal) and sourceIds. Status, confidence,
