@@ -78,6 +78,21 @@ export default function DocumentsRoute() {
         </Button>
       </form>
 
+      <aside className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-dashed px-4 py-3 text-sm">
+        <span className="font-medium">Use Goowa from Claude or Cursor</span>
+        <span className="text-muted-foreground">
+          Check drafts and receipts over MCP with a personal token you can
+          revoke any time. Agents can verify and propose; only you can accept or
+          publish.
+        </span>
+        <a
+          href="/mcp/connect"
+          className="font-medium underline underline-offset-2"
+        >
+          Connect
+        </a>
+      </aside>
+
       <section aria-label="Your documents">
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Loading…</p>
