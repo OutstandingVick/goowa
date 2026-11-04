@@ -48,6 +48,7 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
   const human = humanStatus(claim);
   const update = useActionMutation("update-claim");
   const [editing, setEditing] = useState(false);
+  const [note, setNote] = useState(claim.humanNote ?? "");
   const [draft, setDraft] = useState(claim.text);
   const [draftSources, setDraftSources] = useState<string[]>(claim.sourceIds);
   const cited = sources.filter((s) => claim.sourceIds.includes(s.id));
@@ -241,6 +242,14 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
             )}
             onClick={(e) => e.stopPropagation()}
           >
+            <input
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Note for your decision (optional)"
+              aria-label="Note for your decision"
+              maxLength={500}
+              className="mb-1 w-full rounded-md border bg-background px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-ring"
+            />
             <span className="mr-1 text-xs text-muted-foreground">Mark</span>
             {HUMAN_STATUSES.map((s) => (
               <button
@@ -249,7 +258,13 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
                 data-status={s}
                 aria-pressed={status === s}
                 disabled={update.isPending}
-                onClick={() => update.mutate({ claimId: claim.id, status: s })}
+                onClick={() =>
+                  update.mutate({
+                    claimId: claim.id,
+                    status: s,
+                    ...(note.trim() ? { note: note.trim() } : {}),
+                  })
+                }
                 className={cn(
                   "inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors hover:bg-[hsl(var(--tone-bg))] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                   status === s &&
