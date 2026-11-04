@@ -15,6 +15,7 @@ import { useParams, useSearchParams } from "react-router";
 import { EvidenceCard } from "@/components/receipt/EvidenceCard";
 import { LivePanel } from "@/components/receipt/LivePanel";
 import { ReceiptArticle } from "@/components/receipt/ReceiptArticle";
+import { ReceiptHistory } from "@/components/receipt/ReceiptHistory";
 import { VerifyPanel } from "@/components/receipt/VerifyPanel";
 import { Button } from "@/components/ui/button";
 
@@ -178,6 +179,7 @@ export default function ReceiptRoute() {
           <LivePanel documentId={documentId} onSelect={setSelected} />
           {params.get("demo") === "1" && <FixtureSwitcher />}
           <SourcesList receipt={receipt} />
+          <ReceiptHistory receipt={receipt} />
         </aside>
       </div>
     </div>
