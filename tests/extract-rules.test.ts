@@ -29,3 +29,10 @@ describe("ruleClaims", () => {
     expect(ruleClaims(many, 10)).toHaveLength(10);
   });
 });
+
+describe("ruleClaims duplicates", () => {
+  it("returns each repeated sentence once", () => {
+    const s = "Circle issues USDC on many chains.";
+    expect(ruleClaims(`${s} ${s}\n\n${s}`)).toEqual([s]);
+  });
+});
