@@ -5,6 +5,7 @@ export type NumberMention = {
   raw: string;
   value: number;
   kind: "percent" | "plain" | "ratio";
+  index: number; // offset of `raw` in the text
 };
 
 const SCALE: Record<string, number> = {
@@ -34,12 +35,17 @@ export function extractNumbers(text: string): NumberMention[] {
     const base = Number(digits!.replace(/,/g, ""));
     if (!Number.isFinite(base)) continue;
     if (ratioRight !== undefined) {
-      out.push({ raw, value: base / Number(ratioRight), kind: "ratio" });
+      out.push({
+        raw,
+        value: base / Number(ratioRight),
+        kind: "ratio",
+        index: m.index,
+      });
     } else if (pct) {
-      out.push({ raw, value: base, kind: "percent" });
+      out.push({ raw, value: base, kind: "percent", index: m.index });
     } else {
       const factor = scale ? (SCALE[scale.toLowerCase()] ?? 1) : 1;
-      out.push({ raw, value: base * factor, kind: "plain" });
+      out.push({ raw, value: base * factor, kind: "plain", index: m.index });
     }
   }
   return out;
