@@ -188,3 +188,85 @@ highlights cannot drift.
   "circular support" warning on its card and in the drawer.
 - A per-claim "Verify" button and a top-bar "Verify all" would call the Phase
   3 actions; results should stream in through the same live sync.
+
+# Phase 3 — verification engine
+
+## Pipeline (`shared/verify/*`, `server/lib/verify.ts`)
+
+1. **Gate**: no sources → `unsupported`; every cited source quarantined or
+   unreadable → `unverifiable`.
+2. **Exact** (deterministic): the claim, or its core after an attribution
+   lead-in like "Circle says", appears verbatim in a source (folding case,
+   curly quotes, dashes, whitespace) → `supported`, matchType `exact`.
+3. **Retrieval** (deterministic): sources split into 1–2 sentence passages,
+   ranked by weighted word overlap (numbers, dates, %, names ×3); top 3 per
+   source.
+4. **Laundered** (deterministic): best overlap < 0.3 on a source that loaded
+   → `laundered`, with the closest passage saved for the side-by-side view.
+5. **Numeric mismatch** (deterministic): best overlap ≥ 0.6 but the claim's
+   figures are not in the passage → `weak`, quoting the conflicting sentence.
+6. **Judgment** (`decide()` from `@agent-native/core/decisions`, the
+   framework's only sanctioned model call in actions): two choice questions,
+   the support level and which candidate sentence is the evidence. The model
+   can only pick ids of sentences taken from the stored text, so it cannot
+   quote text that is not there. Confidence is the chosen answer's
+   probability.
+7. **Snippet check**: every snippet must equal the stored text at its offsets,
+   else `unverifiable` ("Model cited text not in source").
+8. **Numeric guard**: claim figures missing from the evidence (with variants
+   such as 40% / 40 percent / 0.4, $1.2B / 1.2 billion) cap the verdict at
+   `weak`.
+
+Verdicts live in `claims.verdict*`, `evidence`, `closest_passage`,
+`verified_at`, `verifier_kind`; the human `status` is never written by
+verification (tested in `tests/verify-store.test.ts`). The UI shows a
+quarantine lock first, then the human status, then the verdict.
+
+## Injection and quarantine (`server/lib/injection.ts`, `quarantine.ts`)
+
+Deterministic rules on raw HTML and text: instruction phrases aimed at AI,
+hidden elements (display:none, visibility:hidden, zero font, zero opacity,
+off-screen, white text, `hidden`), suspicious `<meta>` and comments,
+zero-width characters. Hidden text only counts when it is instruction-like or
+addressed to an AI (real sites hide menus; Circle's docs hide an `llms.txt`
+notice with `aria-hidden`, which is not a signal). `decide()` can give a
+second opinion. Any finding → `injection_suspected` + `quarantined`; hidden
+spans and instruction sentences are stripped from stored text, and the
+remaining excerpt reaches agents fenced as `⟦UNTRUSTED SOURCE DATA⟧`.
+Proof the drafting agent ignores it: `docs/injection-proof.md`.
+
+## verify:fixture results (3 runs, identical)
+
+Every run: 8/8 claims PASS, injected source quarantined on ingest, all
+evidence snippets found at their offsets in stored text, re-run without force
+skips 8/8. Average verification time per claim: 131–207 ms (deterministic
+paths are a few ms; the one model-judged claim takes about 1 s; wall time for
+8 claims about 1–1.5 s at concurrency 3).
+
+## Flakiness and how it was stabilised
+
+- Only one fixture claim (the paraphrase) reaches the model; its expected
+  verdicts are `supported|weak`. Exact, laundered, numeric mismatch, and
+  quarantine are decided by rules, so they cannot flip.
+- The 38%-vs-45% claim originally went to the model, which could answer "does
+  not support" (mapped to `laundered`). It is now a deterministic numeric
+  mismatch.
+- `decide()` calls pass a `cacheKey` of claim + candidates.
+- Two non-model sources of instability were fixed: a false-positive
+  quarantine of Circle's docs (aria-hidden rule removed), and truncated CLI
+  JSON over pipes in the script (partial writes now retried).
+
+## What Phase 4 needs from this engine
+
+- **Dependency propagation**: `claims.dependsOn` plus the verdict give the
+  graph; a downstream claim's effective trust should be capped by its weakest
+  upstream claim. `verifiedFingerprint` is the hook: clearing it on a claim
+  (as `check-staleness` and quarantine already do) marks it for
+  `verify-document`, so propagation can clear fingerprints downstream.
+- **Publish gate**: block when any claim's effective status is `laundered`,
+  `unsupported`, `quarantined`, or still `unverified`, or when any cited
+  source is `stale`/`quarantined`, unless a human has set the status. Both
+  verdict and human status are on the claim, so the gate is a pure function.
+- **Receipt**: for each claim, verdict, reason, evidence offsets, the source
+  `contentHash` and `fetchedAt` at verification time, `verifiedBy/At`, and the
+  human override and note. `check-staleness` re-checks hashes at publish time.
