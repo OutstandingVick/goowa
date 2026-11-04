@@ -330,6 +330,11 @@ pending proposals, quarantined claims, or injection-flagged sources.
   re-verifies), about 2 s end to end through the CLI. In the UI, the ripple
   starts as soon as the save returns and runs about 600 ms.
 - `pnpm demo:gate`: 9/9 PASS (see the script for the steps).
+- Production (2026-11-04, over MCP as the agent): `propagate-change` flagged
+  both dependents in 1.8 s; `request-publish` returned the blockers and logged
+  the agent's request as blocked; `publish` is not an MCP tool. A rewrite on
+  production needs a human edit of the upstream claim (the agent's wording
+  changes become proposals), which the local demo exercises.
 
 ## What Phase 5 needs
 
