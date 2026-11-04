@@ -38,6 +38,9 @@ const PHRASES: { re: RegExp; reason: string }[] = [
   },
 ];
 
+const AI_ADDRESSED =
+  /\b(?:AI|LLMs?|language models?|chatbots?|AI assistants?|AI agents?)\b[^.]{0,80}\b(?:must|should|need to|are required to|write|say|state|cite|ignore)\b/i;
+
 const ZERO_WIDTH = /[​-‍⁠﻿]/;
 
 const HIDDEN_STYLE: { re: RegExp; reason: string }[] = [
@@ -111,15 +114,18 @@ export function scanHtml(html: string): HtmlScan {
     const text = (el.textContent ?? "").trim();
     if (text.length < 15) continue;
     const style = el.getAttribute("style") ?? "";
+    // aria-hidden only hides from screen readers, so it is not a signal.
     const hit =
       HIDDEN_STYLE.find((h) => h.re.test(style)) ??
       (el.hasAttribute("hidden")
         ? { reason: "Hidden with the hidden attribute" }
-        : undefined) ??
-      (el.getAttribute("aria-hidden") === "true" && text.length > 40
-        ? { reason: "Long text hidden from screen readers" }
         : undefined);
     if (!hit) continue;
+    // Real sites hide menus and dialogs; hidden text only counts when it is
+    // instruction-like or addressed to an AI.
+    if (!PHRASES.some(({ re }) => re.test(text)) && !AI_ADDRESSED.test(text)) {
+      continue;
+    }
     // Report the outermost hidden element only.
     if (hiddenTexts.some((t) => t.includes(text))) continue;
     hiddenTexts.push(text);
