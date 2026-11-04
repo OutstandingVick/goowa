@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
-import { actorOf, goowaErrors } from "../server/lib/actor.js";
+import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { applyBodyEdit } from "../server/lib/apply-body-edit.js";
 import { forbiddenClaimFields } from "../server/lib/claim-policy.js";
 import { loadClaim, loadClaims, now } from "../server/lib/documents.js";
@@ -42,6 +42,7 @@ export default defineAction({
       );
     }
     const { doc, claim } = await loadClaim(claimId, "editor");
+    requireEditable(doc);
     const db = getDb();
 
     if (patch.dependsOn) {

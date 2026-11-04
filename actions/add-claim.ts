@@ -2,7 +2,7 @@ import { defineAction } from "@agent-native/core/action";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
-import { actorOf, goowaErrors } from "../server/lib/actor.js";
+import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { forbiddenClaimFields } from "../server/lib/claim-policy.js";
 import { loadDocument, now } from "../server/lib/documents.js";
 import { CLAIM_STATUSES } from "../shared/machines.js";
@@ -51,6 +51,7 @@ export default defineAction({
       );
     }
     const doc = await loadDocument(args.documentId, "editor");
+    requireEditable(doc);
     const start = locate(doc.body, args.quote, args.spanStart ?? 0);
     if (start === null) {
       return goowaErrors.noWrite(

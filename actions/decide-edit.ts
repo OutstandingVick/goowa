@@ -3,7 +3,11 @@ import { and, eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
-import { goowaErrors, requireHuman } from "../server/lib/actor.js";
+import {
+  goowaErrors,
+  requireHuman,
+  requireEditable,
+} from "../server/lib/actor.js";
 import { applyBodyEdit } from "../server/lib/apply-body-edit.js";
 import { loadClaim, loadEdit, now } from "../server/lib/documents.js";
 import { editState } from "../shared/machines.js";
@@ -24,6 +28,7 @@ export default defineAction({
   run: async ({ editId, decision }, ctx) => {
     requireHuman(ctx, "accept or reject edits");
     const { doc, edit } = await loadEdit(editId, "editor");
+    requireEditable(doc);
     if (!editState.can(editState.parseState(edit.state), decision)) {
       return goowaErrors.noWrite(
         `This edit is already ${edit.state}.`,

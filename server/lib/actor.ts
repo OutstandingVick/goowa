@@ -16,7 +16,20 @@ export const goowaErrors = defineActionErrors(
   "not_found",
   "conflict",
   "invalid_span",
+  "cycle",
+  "published",
 );
+
+/** Published documents are frozen until a human reopens them. */
+export function requireEditable(doc: { status: string }) {
+  if (doc.status === "published") {
+    goowaErrors.noWrite(
+      "This document is published and read-only. A human must reopen it to make changes.",
+      "published",
+      { statusCode: 409 },
+    );
+  }
+}
 
 export function requireHuman(
   ctx: { caller?: string } | undefined,

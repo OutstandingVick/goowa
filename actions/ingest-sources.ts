@@ -2,7 +2,7 @@ import { defineAction } from "@agent-native/core/action";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
-import { goowaErrors } from "../server/lib/actor.js";
+import { goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { loadDocument, now } from "../server/lib/documents.js";
 import { fetchSource, type FetchedPage } from "../server/lib/fetch-source.js";
 import { scanForStorage } from "../server/lib/quarantine.js";
@@ -21,7 +21,7 @@ export default defineAction({
       .describe("Absolute http(s) URLs to ingest, 1 to 10"),
   }),
   run: async ({ documentId, urls }) => {
-    await loadDocument(documentId, "editor");
+    requireEditable(await loadDocument(documentId, "editor"));
     const pages: FetchedPage[] = urls.map(() => ({ html: "", fullText: "" }));
     const results = await Promise.all(
       urls.map((url, i) => fetchSource(url, pages[i])),

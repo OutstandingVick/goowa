@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
-import { actorOf, goowaErrors } from "../server/lib/actor.js";
+import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { loadClaims, loadDocument } from "../server/lib/documents.js";
 import { claimFingerprint, verifyAndStore } from "../server/lib/verify.js";
 
@@ -32,7 +32,7 @@ export default defineAction({
       .describe("Re-verify unchanged claims too; defaults to false"),
   }),
   run: async ({ documentId, force }, ctx) => {
-    await loadDocument(documentId, "editor");
+    requireEditable(await loadDocument(documentId, "editor"));
     const owner =
       ctx?.userEmail ??
       goowaErrors.noWrite("Sign in to verify claims.", "forbidden", {

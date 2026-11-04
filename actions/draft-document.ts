@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
-import { goowaErrors } from "../server/lib/actor.js";
+import { goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { loadClaims, loadDocument, now } from "../server/lib/documents.js";
 
 // The framework keeps LLM calls out of actions: the agent writes the draft
@@ -23,6 +23,7 @@ export default defineAction({
   }),
   run: async ({ documentId, body }) => {
     const doc = await loadDocument(documentId, "editor");
+    requireEditable(doc);
     if (doc.status !== "draft") {
       return goowaErrors.noWrite(
         "Only draft documents can be redrafted.",

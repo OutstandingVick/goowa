@@ -1,7 +1,7 @@
 import { defineAction } from "@agent-native/core/action";
 import { z } from "zod";
 
-import { actorOf, goowaErrors } from "../server/lib/actor.js";
+import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { loadClaim } from "../server/lib/documents.js";
 import { verifyAndStore } from "../server/lib/verify.js";
 
@@ -14,7 +14,8 @@ export default defineAction({
     claimId: z.string().describe("Claim id"),
   }),
   run: async ({ claimId }, ctx) => {
-    const { claim } = await loadClaim(claimId, "editor");
+    const { doc, claim } = await loadClaim(claimId, "editor");
+    requireEditable(doc);
     const ownerEmail =
       ctx?.userEmail ??
       goowaErrors.noWrite("Sign in to verify claims.", "forbidden", {

@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
-import { actorOf, goowaErrors } from "../server/lib/actor.js";
+import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { loadClaims, loadDocument, now } from "../server/lib/documents.js";
 import { locate } from "../shared/spans.js";
 
@@ -41,6 +41,7 @@ export default defineAction({
   }),
   run: async ({ documentId, claims }, ctx) => {
     const doc = await loadDocument(documentId, "editor");
+    requireEditable(doc);
     if (!doc.body) {
       return goowaErrors.noWrite(
         "The document has no body yet. Save a draft first.",

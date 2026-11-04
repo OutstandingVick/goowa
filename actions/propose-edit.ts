@@ -2,7 +2,7 @@ import { defineAction } from "@agent-native/core/action";
 import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
-import { actorOf, goowaErrors } from "../server/lib/actor.js";
+import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { loadClaim, loadDocument, now } from "../server/lib/documents.js";
 import { locate } from "../shared/spans.js";
 
@@ -41,12 +41,14 @@ export default defineAction({
     let spanStart: number;
 
     if (args.targetType === "claim") {
-      const { claim } = await loadClaim(args.targetId, "viewer");
+      const { doc, claim } = await loadClaim(args.targetId, "viewer");
+      requireEditable(doc);
       documentId = claim.documentId;
       before = claim.text;
       spanStart = claim.spanStart;
     } else {
       const doc = await loadDocument(args.targetId, "viewer");
+      requireEditable(doc);
       if (!args.before) {
         return goowaErrors.noWrite(
           "document_body edits need `before`: the exact text to replace.",
