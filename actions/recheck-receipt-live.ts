@@ -122,7 +122,8 @@ export default defineAction({
           })),
         judge,
       );
-      const still = r.verdict === "supported" || r.verdict === "weak";
+      // Weak means the live source no longer fully states the claim.
+      const still = r.verdict === "supported";
       results.push({
         claimId: c.id,
         index: c.index,
@@ -135,15 +136,13 @@ export default defineAction({
     }
 
     const checkedAt = new Date().toISOString();
-    await getDb()
-      .insert(schema.liveChecks)
-      .values({
-        id: crypto.randomUUID(),
-        documentId,
-        revision: receipt.document.revision,
-        results,
-        createdAt: checkedAt,
-      });
+    await getDb().insert(schema.liveChecks).values({
+      id: crypto.randomUUID(),
+      documentId,
+      revision: receipt.document.revision,
+      results,
+      createdAt: checkedAt,
+    });
     return {
       documentId,
       revision: receipt.document.revision,
