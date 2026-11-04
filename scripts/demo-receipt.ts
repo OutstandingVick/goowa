@@ -6,7 +6,8 @@ import { LIVE_CLAIM } from "../fixtures/live-source.js";
 import type { Receipt } from "../shared/receipt.js";
 import { action } from "./lib/cli.js";
 
-const base = process.env.GOOWA_URL ?? "http://localhost:8080";
+// Base URL of the running app (it hosts the live fixture page).
+const base = process.argv[2] ?? "http://localhost:8080";
 const LIVE = `${base}/fixtures/live-source`;
 const BIS = "https://www.bis.org/publ/arpdf/ar2025e3.htm";
 const ESMA =
