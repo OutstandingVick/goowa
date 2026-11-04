@@ -4,11 +4,7 @@ import { z } from "zod";
 
 import { getDb, schema } from "../server/db/index.js";
 import { logActivity } from "../server/lib/activity.js";
-import {
-  goowaErrors,
-  requireHuman,
-  requireEditable,
-} from "../server/lib/actor.js";
+import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { applyBodyEdit } from "../server/lib/apply-body-edit.js";
 import {
   loadClaim,
@@ -20,20 +16,41 @@ import { propagateChange } from "../server/lib/propagate.js";
 import { editState } from "../shared/machines.js";
 import { locate, type TextEdit } from "../shared/spans.js";
 
-// HUMAN ONLY. Hidden from the agent and MCP, and checked again inside run so
-// any other surface (HTTP, A2A, automations) is refused too.
+// HUMAN ONLY. Hidden from the in-app agent; listed for MCP clients so an
+// external agent's attempt is refused here and recorded in the activity feed.
 export default defineAction({
   description:
-    "Accept or reject a proposed edit. Human only: agents and integrations get a forbidden error.",
+    "Accept or reject a proposed edit. Human only: agents and integrations calling it get forbidden and the attempt is logged.",
   errors: goowaErrors,
   agentTool: false,
-  mcpTool: false,
+  mcpTool: true,
   schema: z.object({
     editId: z.string().describe("Edit id"),
     decision: z.enum(["accept", "reject"]).describe('"accept" or "reject"'),
   }),
   run: async ({ editId, decision }, ctx) => {
-    requireHuman(ctx, "accept or reject edits");
+    if (actorOf(ctx) !== "human") {
+      const [attempted] = await getDb()
+        .select({ documentId: schema.edits.documentId })
+        .from(schema.edits)
+        .where(eq(schema.edits.id, editId))
+        .limit(1);
+      if (attempted) {
+        await logActivity(
+          attempted.documentId,
+          "publish_blocked",
+          "agent",
+          `Agent attempted to ${decision} an edit · blocked`,
+          { editId, decision, caller: ctx?.caller ?? "unknown" },
+        );
+      }
+      // Recorded, so a plain failure: the agent must not retry it.
+      return goowaErrors.fail(
+        "Only a human can accept or reject edits.",
+        "forbidden",
+        { statusCode: 403 },
+      );
+    }
     const { doc, edit } = await loadEdit(editId, "editor");
     requireEditable(doc);
     if (!editState.can(editState.parseState(edit.state), decision)) {
