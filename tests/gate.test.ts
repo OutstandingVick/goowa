@@ -166,3 +166,32 @@ describe("applyOverrides", () => {
     expect(r.problems.every((p) => p.startsWith("Cannot override"))).toBe(true);
   });
 });
+
+describe("one claim with several blockers", () => {
+  it("lists each blocker and needs an override for each overridable one", () => {
+    const gate = evaluateGate({
+      claims: [
+        claim({
+          id: "x",
+          verdict: "laundered",
+          reviewState: "needs_review",
+          reviewReason: "upstream changed",
+        }),
+      ],
+      sources: [ok],
+      pendingEdits: [],
+    });
+    expect(gate.blockers.map((b) => b.kind)).toEqual([
+      "claim_laundered",
+      "needs_review",
+    ]);
+    const partial = applyOverrides(gate, [
+      { claimId: "x", kind: "claim_laundered", reason: "Checked by hand." },
+    ]);
+    expect(partial.remaining.map((b) => b.kind)).toEqual(["needs_review"]);
+    const full = applyOverrides(gate, [
+      { claimId: "x", reason: "Reviewed the dependency and the source." },
+    ]);
+    expect(full.remaining).toEqual([]);
+  });
+});
