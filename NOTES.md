@@ -270,3 +270,75 @@ paths are a few ms; the one model-judged claim takes about 1 s; wall time for
 - **Receipt**: for each claim, verdict, reason, evidence offsets, the source
   `contentHash` and `fetchedAt` at verification time, `verifiedBy/At`, and the
   human override and note. `check-staleness` re-checks hashes at publish time.
+
+# Phase 4 — propagation and the publish gate
+
+## Propagation (`server/lib/propagate.ts`, `shared/graph.ts`, `shared/derive.ts`)
+
+Runs inside the actions that change a claim: a human edit of text, sources,
+or status (`update-claim`), an accepted edit (`decide-edit`), the agent's
+source changes, or `propagate-change` by hand.
+
+1. Breadth-first walk of dependents (depth ≤ 5). Each gets
+   `review_state = needs_review`, a reason naming the upstream claim
+   ("Depends on claim #1, which changed from $160 billion to $200 billion"),
+   `last_propagated_from`, and a forced re-verify.
+2. For direct dependents, `deriveRewrite` finds how each figure relates to the
+   old upstream figure (restated, growth from a stated base, ratio to a stated
+   quantity, share of a stated total) and recomputes it from the new one in
+   code, keeping format and precision. Only those figures (and an adjacent
+   a/an) change; every other word is untouched. No model does arithmetic.
+3. Rewrites are proposed with `proposedBy: "agent"` and grouped in a change
+   set (`change_sets`, `edits.change_set_id`). A human accepts or rejects.
+4. Dependents with no computable relation stay `needs_review`; the agent may
+   propose a minimal edit with the change set id.
+5. A second fix before the first proposals are decided supersedes them and
+   recomputes from the text the dependents still reflect
+   (`change_sets.trigger_before_text`).
+
+Cycles are rejected on every `dependsOn` write (`update-claim`,
+`extract-claims`) with errorCode `cycle` and the path ("#1 → #2 → #1").
+
+## Publish gate (`shared/gate.ts`)
+
+`evaluateGate` is a pure function used by `request-publish`, `publish`, and
+the gate panel. Blockers: effective status unsupported, laundered, or
+quarantined; needs_review; any pending proposal; a cited
+`injection_suspected` source; a `stale` source whose citing claims weren't
+re-verified since. Warnings: weak, confidence < 0.6. Humans may override
+unsupported, laundered, needs_review, and stale blockers with a reason; never
+pending proposals, quarantined claims, or injection-flagged sources.
+
+- `request-publish`: any caller; non-forced verify, then the gate. An agent
+  call is logged "Agent requested publish → blocked: human approval
+  required".
+- `publish`: human only (hidden from agent and MCP, checked in `run`); other
+  callers are refused with `forbidden` and logged "Agent attempted to publish
+  · blocked". Overrides go to `publish_overrides`; the body is snapshotted in
+  `document_revisions`.
+- Published documents refuse every write (errorCode `published`) until a
+  human reopens, which starts revision n+1.
+- `activity` records edits, verifications, propagations, publish requests and
+  attempts, overrides, reopen.
+
+## Demo outputs and timings
+
+- `pnpm demo:propagation`: 11/11 PASS. 2 needs_review, 2 re-verified, 2
+  proposals in one change set (25% → 56%, 2.5 → 3.1 times), unrelated claim
+  untouched, cycle rejected, second fix recomputed from the original base
+  (88%, 3.8 times). Propagation 0.6–1.2 s inside the action (2 forced
+  re-verifies), about 2 s end to end through the CLI. In the UI, the ripple
+  starts as soon as the save returns and runs about 600 ms.
+- `pnpm demo:gate`: 9/9 PASS (see the script for the steps).
+
+## What Phase 5 needs
+
+- **Receipt data**: per published revision, from `document_revisions` (body,
+  publishedAt), `publish_overrides` (blocker kind, claim/source, reason), and
+  per claim the verdict, reason, confidence, evidence offsets and snippets,
+  `verifiedAt/By`, the human status and note, and each cited source's
+  `contentHash`/`fetchedAt`/flags at that time.
+- **Activity feed**: `activity` rows (kind, actor, summary, data, createdAt)
+  are the receipt's timeline as-is; publish events carry the gate result.
+- **Staleness at receipt time**: run `check-staleness` per cited source and
+  compare hashes with those recorded at publish.
