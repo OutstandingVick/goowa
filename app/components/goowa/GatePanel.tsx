@@ -71,7 +71,7 @@ export function GatePanel({
           reason: (reasons[blockerKey(b)] ?? "").trim(),
         })),
       },
-      { onSuccess: () => window.setTimeout(() => onOpenChange(false), 900) },
+      {},
     );
   }
 
@@ -203,7 +203,15 @@ export function GatePanel({
               data-status="supported"
               className="mt-4 text-sm font-medium text-[hsl(var(--tone))]"
             >
-              Published revision {publish.data.revision}.
+              Published revision {publish.data.revision}.{" "}
+              <a
+                href={publish.data.receiptUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="underline underline-offset-2"
+              >
+                View the Claim Receipt
+              </a>
             </p>
           )}
         </div>
