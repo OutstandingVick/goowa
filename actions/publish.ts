@@ -41,7 +41,9 @@ export default defineAction({
         "Agent attempted to publish · blocked",
         { caller: ctx?.caller ?? "unknown" },
       );
-      return goowaErrors.noWrite("Only a human can publish.", "forbidden", {
+      // A plain failure (not noWrite): the attempt was recorded, and the
+      // framework stops the agent from retrying it in the same turn.
+      return goowaErrors.fail("Only a human can publish.", "forbidden", {
         statusCode: 403,
       });
     }
