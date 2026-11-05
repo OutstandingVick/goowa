@@ -51,7 +51,7 @@ export function EvidenceCard({
           <IconX className="size-4" />
         </button>
       </header>
-      <p className="font-serif text-[15px] leading-relaxed">{claim.text}</p>
+      <p className="font-serif text-base leading-relaxed">{claim.text}</p>
 
       {verdict && (
         <div className="mt-3 rounded-md bg-muted/50 px-3 py-2 text-sm">
@@ -102,7 +102,7 @@ export function EvidenceCard({
             const Who = ev.verifiedBy === "agent" ? IconSparkles : IconUser;
             return (
               <li key={i} className="rounded-md border p-2">
-                <blockquote className="font-serif text-sm leading-relaxed">
+                <blockquote className="font-serif text-base leading-relaxed">
                   {highlightMatches(ev.snippet, claim.text)}
                 </blockquote>
                 <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
