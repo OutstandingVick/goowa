@@ -1743,3 +1743,221 @@
   background: #fff;
   color: #14091f !important;
 }
+
+/* ── Footer: solid royal purple, copy command, pixel mini game ── */
+.ft {
+  --ft-bg: #5b2fb8;
+  position: relative;
+  overflow: hidden;
+  background: var(--ft-bg);
+  color: #fff;
+  font-family: var(--sans);
+}
+.ft-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 32px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 48px 48px 0;
+}
+.ft-logo {
+  justify-self: start;
+  text-decoration: none;
+}
+.ft-center {
+  text-align: center;
+}
+.ft-cmd {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px 12px 20px;
+  background: #fff;
+  color: #1a0f2b;
+}
+.ft-cmd code {
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ft-cmd button {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
+  color: #1a0f2b;
+  cursor: pointer;
+}
+.ft-cmd svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ft-center p {
+  margin: 14px 0 0;
+  color: rgb(255 255 255 / 0.85);
+  font-size: 15px;
+}
+.ft-center a {
+  color: #fff;
+  text-underline-offset: 3px;
+}
+.ft-copy {
+  justify-self: end;
+  margin: 0;
+  color: rgb(255 255 255 / 0.85);
+  font-size: 15px;
+}
+.ft-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px 32px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 44px 48px 0;
+  font-size: 15px;
+}
+.ft-links a,
+.ft-links span {
+  color: rgb(255 255 255 / 0.85);
+  text-decoration: none;
+}
+.ft-links a:hover {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.ft a:focus-visible,
+.ft button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* Mini game */
+.ft-game {
+  position: relative;
+  margin-top: 40px;
+  font-family: var(--mono);
+}
+.ft-canvas {
+  display: block;
+  width: 100%;
+  height: 220px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ft-score {
+  position: absolute;
+  top: 0;
+  right: 48px;
+  display: flex;
+  gap: 64px;
+  color: rgb(255 255 255 / 0.5);
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.ft-score span {
+  display: grid;
+  gap: 6px;
+  text-align: right;
+}
+.ft-score b {
+  font-weight: 400;
+}
+.ft-game-msg {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+}
+.ft-game-title {
+  margin: 0;
+  font-family: "Chakra Petch", var(--sans);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: 3px 3px 0 rgb(0 0 0 / 0.2);
+}
+.ft-game-hint {
+  margin: 8px 0 0;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ft-caret {
+  margin-left: 6px;
+  animation: ft-blink 1s steps(1) infinite;
+}
+@keyframes ft-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .ft-top {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+  .ft-logo,
+  .ft-copy {
+    justify-self: center;
+  }
+  .ft-cmd {
+    max-width: calc(100vw - 32px);
+  }
+  .ft-links {
+    justify-content: center;
+  }
+}
+@media (max-width: 600px) {
+  .ft-top {
+    padding: 40px 16px 0;
+  }
+  .ft-links {
+    padding: 32px 16px 0;
+  }
+  .ft-score {
+    right: 16px;
+    gap: 24px;
+    font-size: 13px;
+  }
+  .ft-game-msg {
+    top: 54px;
+    width: 100%;
+  }
+  .ft-game-hint {
+    font-size: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ft-caret {
+    animation: none;
+  }
+}
+
+/* Footer matches the page: black with royal-purple glows. */
+.ft {
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+  background:
+    radial-gradient(60% 70% at 50% 100%, rgb(120 81 169 / 0.55), transparent 70%),
+    radial-gradient(40% 50% at 10% 0%, rgb(120 81 169 / 0.25), transparent 70%),
+    #000;
+}

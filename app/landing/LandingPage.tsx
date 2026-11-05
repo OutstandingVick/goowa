@@ -9,6 +9,7 @@ import type { LinksFunction } from "react-router";
 
 import { Logo } from "@/components/brand/Logo";
 
+import { Footer } from "./Footer";
 import { HowItWorks } from "./HowItWorks";
 import { ProofTabs } from "./ProofTabs";
 
@@ -207,15 +208,7 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="l-footer">
-        <span className="l-footer-brand">
-          <Logo variant="onPurple" size={18} />
-          <span>Builder.io Agent-Native Hackathon 2026</span>
-        </span>
-        <a href={GITHUB_URL} target="_blank" rel="noreferrer">
-          GitHub
-        </a>
-      </footer>
+      <Footer />
     </div>
   );
 }
