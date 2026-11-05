@@ -14,7 +14,8 @@ const [josefin, chakra, mark] = await Promise.all([
   fs.readFile(new URL("../public/brand/goowa-mark-white.svg", import.meta.url)),
 ]);
 
-const markData = `data:image/svg+xml;base64,${mark.toString("base64")}`;
+const whiteMark = mark.toString("utf8").replaceAll("#723CD6", "#FCFFFF");
+const markData = `data:image/svg+xml;base64,${Buffer.from(whiteMark).toString("base64")}`;
 const svg = `
 <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
   <defs>
