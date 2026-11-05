@@ -11,7 +11,7 @@
   --line-strong: #c9c1d4;
   --console: #18131f;
   --shadow: 0 24px 70px rgb(43 26 65 / 0.14);
-  --content-width: min(1440px, calc(40vw + 720px));
+  --content-width: min(1584px, calc(64vw + 432px));
   min-height: 100dvh;
   overflow: clip;
   background: var(--paper);
