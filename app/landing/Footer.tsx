@@ -94,7 +94,7 @@ function ClaimRunner() {
     };
     // Player: gold block with a pixel check.
     const player = (x: number, top: number) => {
-      px(x, top, 32, 32, "#ffcc33");
+      px(x, top, 32, 32, "#edb158");
       const ink = "#3b1f6e";
       [
         [6, 16],
