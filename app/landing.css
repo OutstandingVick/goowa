@@ -1426,7 +1426,7 @@
   font-family: var(--sans);
   font-size: clamp(34px, 4.4vw, 56px);
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.01em;
   line-height: 1.08;
 }
 .pt-tabs {
@@ -1467,7 +1467,7 @@
   min-height: 3.4em;
   margin: 22px auto 0;
   color: rgb(255 255 255 / 0.7);
-  font-family: var(--sans);
+  font-family: var(--serif);
   font-size: 17px;
   line-height: 1.6;
 }
@@ -2023,7 +2023,7 @@
   font-family: var(--sans);
   font-size: clamp(36px, 5vw, 64px);
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.01em;
   line-height: 1.08;
 }
 .ft-cta-btns {
