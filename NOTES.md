@@ -459,3 +459,11 @@ Re-run after the fix: one `check-draft` call from Cursor succeeded
 Test token: `tools/list` returned 200 at 19:00:12. Revoked under
 `/mcp/connect` → Existing connections, the same call returned 401 at
 19:01:23. Revocation cuts access immediately.
+
+## Footnote numbers fix (2026-11-05)
+
+Retrieval tokenised numbers as raw digits, so "$40 trillion" matched the
+BIS footnote marker "40" (3x weight) and the claim fell into the
+different-figures path as weak. Number tokens are now quantities
+(`#40000000000000` vs `#40`; 40% and 0.4 share one). The invented claim is
+now laundered. `tests/footnote-numbers.test.ts` covers it.
