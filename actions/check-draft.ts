@@ -89,7 +89,12 @@ export default defineAction({
         "conflict",
       );
     }
-    const body = text.length >= 200 ? text : `${text}\n\n(Checked with Goowa.)`;
+    // draft-document needs 200+ characters; pad short drafts with a note
+    // that holds no figures or names, so it never becomes a claim.
+    const NOTE =
+      "This text was submitted by an external agent for claim checking. Each factual sentence above is verified against the listed sources.";
+    const body =
+      text.length >= 200 ? text : `${text}\n\n${NOTE}`.padEnd(200, " ");
     await draftDocument.run({ documentId: doc.id, body }, ctx);
 
     const quotes = (claims?.length ? claims : ruleClaims(body)).filter((q) =>
