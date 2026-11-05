@@ -152,7 +152,7 @@ export default function ReceiptRoute() {
 
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] md:px-6 md:py-10">
         <main className="min-w-0">
-          <p className="mb-6 text-sm text-muted-foreground">
+          <p className="mb-6 font-serif text-base text-muted-foreground">
             Revision {receipt.document.revision}, published{" "}
             {new Date(receipt.document.publishedAt).toLocaleString()} by a
             human. Select a highlighted claim to see its evidence.
@@ -171,7 +171,7 @@ export default function ReceiptRoute() {
               onClose={() => setSelected(null)}
             />
           ) : (
-            <p className="rounded-xl border border-dashed p-4 text-sm text-muted-foreground">
+            <p className="rounded-xl border border-dashed p-4 font-serif text-base text-muted-foreground">
               Select a highlighted claim to see the source passage that supports
               it, who verified it, and any human decision.
             </p>
