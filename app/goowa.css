@@ -1,5 +1,3 @@
-@import "@fontsource-variable/source-serif-4";
-
 /* Goowa editor tokens. Colour carries status meaning only; every status also
    has an icon and a label in the UI. */
 :root {
@@ -41,7 +39,7 @@
 }
 
 .g-prose {
-  font-family: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
+  font-family: "EB Garamond", Georgia, serif;
   font-size: 1.125rem;
   line-height: 1.8;
   font-optical-sizing: auto;
@@ -50,7 +48,7 @@
 
 .g-prose h2,
 .g-prose h3 {
-  font-family: "Inter Variable", "Inter", sans-serif;
+  font-family: "Josefin Sans", system-ui, sans-serif;
   letter-spacing: -0.01em;
 }
 
