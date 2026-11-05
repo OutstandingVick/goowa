@@ -18,3 +18,8 @@ contradictions inside the surface or against the brand assets in
   active node ring and the footer game player use the brand gold too.
 - **#2 fixed.** "Source" removed from the nav along with its styles,
   including a mobile rule that would otherwise have hidden "Open Goowa".
+- **#3 fixed.** The pill "Try the demo" and its styles are gone; the hero
+  keeps "Try the live demo" as its primary action.
+
+Verified at 1440px and 375px: the nav CTA renders `rgb(237, 177, 88)`, stays
+visible on phones, and the page has no horizontal scroll.
