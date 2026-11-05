@@ -52,7 +52,7 @@ function ClaimRunner() {
     const ctx = canvas.getContext("2d")!;
     const P = 4; // pixel size
     let w = 0;
-    const h = 220;
+    const h = 340;
     const ground = h - 44;
     let raf = 0;
     let visible = false;
@@ -244,9 +244,25 @@ function ClaimRunner() {
 export function Footer() {
   return (
     <footer className="ft">
+      <div className="ft-cta">
+        <h2>Drafts are cheap. Proof isn&rsquo;t.</h2>
+        <div className="ft-cta-btns">
+          <Link className="l-hbtn l-hbtn-gold" to="/app">
+            Open Goowa →
+          </Link>
+          <a
+            className="l-hbtn l-hbtn-light"
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noreferrer"
+          >
+            View source
+          </a>
+        </div>
+      </div>
       <div className="ft-top">
         <Link to="/" aria-label="Goowa home" className="ft-logo">
-          <Logo variant="onPurple" size={40} />
+          <Logo variant="onPurple" size={52} />
         </Link>
         <div className="ft-center">
           <CopyCommand />

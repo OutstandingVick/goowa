@@ -1961,3 +1961,114 @@
     radial-gradient(40% 50% at 10% 0%, rgb(120 81 169 / 0.25), transparent 70%),
     #000;
 }
+
+/* Bigger footer, closer to the reference scale. */
+.ft-top {
+  padding: 88px 72px 0;
+}
+.ft-cmd {
+  padding: 18px 18px 18px 28px;
+}
+.ft-cmd code {
+  font-size: 18px;
+}
+.ft-cmd svg {
+  width: 22px;
+  height: 22px;
+}
+.ft-center p,
+.ft-copy,
+.ft-links {
+  font-size: 18px;
+}
+.ft-links {
+  padding: 72px 72px 0;
+}
+.ft-game {
+  margin-top: 80px;
+}
+.ft-canvas {
+  height: 340px;
+}
+.ft-score {
+  right: 72px;
+  font-size: 24px;
+}
+.ft-game-msg {
+  top: 120px;
+}
+.ft-game-title {
+  font-size: clamp(40px, 5vw, 72px);
+}
+.ft-game-hint {
+  font-size: 22px;
+}
+.ft-score {
+  top: 20px;
+}
+@media (max-width: 600px) {
+  .ft-top {
+    padding: 56px 16px 0;
+  }
+  .ft-cmd code {
+    font-size: 14px;
+  }
+  .ft-center p,
+  .ft-copy,
+  .ft-links {
+    font-size: 15px;
+  }
+  .ft-links {
+    padding: 40px 16px 0;
+  }
+  .ft-game {
+    margin-top: 40px;
+  }
+  .ft-score {
+    right: 16px;
+    font-size: 14px;
+  }
+  .ft-game-msg {
+    top: 90px;
+  }
+  .ft-game-hint {
+    font-size: 13px;
+  }
+}
+
+/* Closing call to action, now the top of the footer. */
+.ft {
+  border-top: 0;
+  background:
+    radial-gradient(70% 22% at 50% 0%, rgb(120 81 169 / 0.5), transparent 75%),
+    radial-gradient(60% 40% at 50% 100%, rgb(120 81 169 / 0.55), transparent 70%),
+    #000;
+}
+.ft-cta {
+  padding: 120px 24px 40px;
+  text-align: center;
+}
+.l-page .ft-cta h2 {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+.ft-cta-btns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+@media (max-width: 600px) {
+  .ft-cta {
+    padding: 80px 16px 16px;
+  }
+}
+.ft-cta .l-hbtn-gold {
+  background: var(--gold);
+  color: #14091f !important;
+}

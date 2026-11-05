@@ -53,19 +53,6 @@ function Eyebrow({ children }: { children: string }) {
   return <p className="l-eyebrow">+ {children}</p>;
 }
 
-function Cta({ dark = true }: { dark?: boolean }) {
-  return (
-    <div className="l-ctas">
-      <Link className={dark ? "l-btn l-btn-dark" : "l-btn"} to="/app">
-        Open Goowa →
-      </Link>
-      <a className="l-btn" href={GITHUB_URL} target="_blank" rel="noreferrer">
-        View source
-      </a>
-    </div>
-  );
-}
-
 /** A real-looking draft with each claim marked by its verdict. */
 function Specimen() {
   return (
@@ -202,10 +189,6 @@ export default function LandingPage() {
 
         <ProofTabs />
 
-        <section className="l-closing">
-          <h2>Drafts are cheap. Proof isn&rsquo;t.</h2>
-          <Cta />
-        </section>
       </main>
 
       <Footer />
