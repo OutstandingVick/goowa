@@ -1712,12 +1712,6 @@
   background: #fff;
   color: #14091f;
 }
-.l-nav-right > a:first-child {
-  color: rgb(255 255 255 / 0.85);
-}
-.l-nav-right > a:first-child:hover {
-  color: #fff;
-}
 .l-nav-start,
 .l-nav-start:hover {
   background: var(--gold);
