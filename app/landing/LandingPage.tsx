@@ -746,13 +746,36 @@ export default function LandingPage() {
                 cannot publish.
               </p>
             </div>
-            <div className="hero-visual">
+            <div className="hero-scene">
               <div className="hero-glow" aria-hidden />
-              <div className="visual-label">
-                <span>LIVE VERIFICATION RUN</span>
-                <span>DEMO DOCUMENT · 12 CLAIMS</span>
+              <div className="hero-artifact artifact-supported" aria-hidden>
+                <IconCircleCheck />
+                <span>
+                  <small>CLAIM 08</small>
+                  Supported
+                </span>
               </div>
-              <AgentConsole />
+              <div className="hero-artifact artifact-quarantine" aria-hidden>
+                <IconShieldLock />
+                <span>
+                  <small>SOURCE 03</small>
+                  Quarantined
+                </span>
+              </div>
+              <div className="hero-artifact artifact-receipt" aria-hidden>
+                <IconFileCheck />
+                <span>
+                  <small>RECEIPT HASH</small>
+                  0x9f3a…c21
+                </span>
+              </div>
+              <div className="hero-visual">
+                <div className="visual-label">
+                  <span>LIVE VERIFICATION RUN</span>
+                  <span>DEMO DOCUMENT · 12 CLAIMS</span>
+                </div>
+                <AgentConsole />
+              </div>
             </div>
           </div>
           <div className="hero-strip" aria-label="Product safeguards">
