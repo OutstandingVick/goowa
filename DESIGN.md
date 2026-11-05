@@ -16,8 +16,11 @@ workspace chrome.
 - Direction name: Quiet conversation library
 - Palette family: neutral ink and semantic surfaces; active rows use the
   existing sidebar accent rather than a separate branded color.
-- Type treatment: dense sans-serif labels with regular-weight conversation
-  titles and restrained section labels.
+- Type treatment: Josefin Sans for headings, navigation, controls, labels,
+  statistics, and application chrome; EB Garamond at 16px or larger for body
+  copy and long-form reading; JetBrains Mono for code, hashes, terminal output,
+  and compact technical labels. Chakra Petch is reserved for the Goowa
+  wordmark.
 - Composition: a persistent conversation library beside a generous chat
   canvas. New chat is the primary rail action, followed by Pinned and Recents.
   Account, workspace, settings, and sign-out controls disclose from one footer
