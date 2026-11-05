@@ -436,3 +436,9 @@ of `/fixtures/live-source`; receipt unchanged afterwards).
 - A first agent turn after deploy can take a few seconds (cold start).
 - Rule-based claim extraction in `check-draft` is coarse; external agents
   should pass `claims`.
+
+## Landing page audit (2026-11-05)
+
+Ran the ui-skills.com Improve UI audit on the landing page; findings and
+fixes are in `docs/ui-audit.md`. One brand gold (`#EDB158`) now, a single
+GitHub link in the nav, and one nav CTA ("Open Goowa") for the app.
