@@ -1,3 +1,9 @@
+import {
+  IconBrandGithub,
+  IconFileCheck,
+  IconLock,
+  IconShieldCheck,
+} from "@tabler/icons-react";
 import { Link } from "react-router";
 import type { LinksFunction } from "react-router";
 
@@ -14,7 +20,7 @@ export const links: LinksFunction = () => [
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap",
   },
   { rel: "stylesheet", href: landingStylesheet },
 ];
@@ -152,40 +158,79 @@ const mcpCmd = `claude mcp add --transport http goowa \\
 export default function LandingPage() {
   return (
     <div className="l-page">
-      <header className="l-nav">
-        <a href="#top" className="l-brand">
-          <span className="l-brand-mark" aria-hidden="true" />
-          Goowa
-        </a>
-        <nav aria-label="Sections">
-          <a href="#how">How it works</a>
-          <a href="#receipt">Receipt</a>
-          <a href="#mcp">MCP</a>
-          <a href={GITHUB_URL} target="_blank" rel="noreferrer">
-            GitHub
-          </a>
-        </nav>
-        <Link className="l-btn l-btn-dark l-btn-sm" to="/app">
-          Open →
-        </Link>
-      </header>
-
       <main id="top">
         <section className="l-hero">
-          <div>
-            <Eyebrow>Research editor</Eyebrow>
-            <h1>Every claim, checked against its source.</h1>
+          <div className="l-hero-glow" aria-hidden="true" />
+          <header className="l-nav">
+            <a href="#top" className="l-brand">
+              <span className="l-brand-mark" aria-hidden="true" />
+              Goowa
+            </a>
+            <nav aria-label="Sections">
+              <a href="#how">How it works</a>
+              <a href="#receipt">Receipt</a>
+              <a href="#mcp">MCP</a>
+              <a href={GITHUB_URL} target="_blank" rel="noreferrer">
+                GitHub
+              </a>
+            </nav>
+            <div className="l-nav-ctas">
+              <a
+                className="l-hbtn l-hbtn-light"
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Source
+              </a>
+              <Link className="l-hbtn l-hbtn-gold" to="/app">
+                Open Goowa
+              </Link>
+            </div>
+          </header>
+
+          <div className="l-hero-copy">
+            <h1>
+              AI drafts the research.
+              <br />
+              You approve every claim.
+            </h1>
             <p className="l-lead">
-              An AI agent drafts. Goowa ties each factual sentence to the
-              passage that supports it, <em>and nothing publishes until a
-              human says so.</em>
+              Goowa ties each factual sentence to the passage that supports
+              it, flags citations that never said it, and publishes only when
+              a human says so.
             </p>
-            <Cta />
-            <p className="l-note">
-              <span className="l-dot" /> Built on Agent-Native · open source
-            </p>
+            <div className="l-hero-ctas">
+              <Link className="l-hbtn l-hbtn-light" to="/app">
+                Try the live demo
+              </Link>
+              <a className="l-hbtn l-hbtn-glass" href="#how">
+                See how it works
+              </a>
+            </div>
           </div>
-          <Specimen />
+
+          <div className="l-tiles" aria-hidden="true">
+            <span className="l-tile l-tile-a">
+              <IconBrandGithub />
+            </span>
+            <span className="l-tile l-tile-b">
+              <IconShieldCheck />
+            </span>
+            <span className="l-tile l-tile-c">
+              <IconFileCheck />
+            </span>
+            <span className="l-tile l-tile-d">
+              <IconLock />
+            </span>
+            <span className="l-chip">
+              <b>Claim 3 · laundered</b>
+              <span>Cited page never says it</span>
+            </span>
+            <div className="l-float-card">
+              <Specimen />
+            </div>
+          </div>
         </section>
 
         <section className="l-band">
