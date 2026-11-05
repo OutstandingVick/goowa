@@ -157,7 +157,7 @@ export function SelectionPopover({
           }}
         >
           <div className="flex items-start gap-2">
-            <p className="line-clamp-2 flex-1 font-serif text-sm italic text-muted-foreground">
+            <p className="line-clamp-2 flex-1 font-serif text-base italic text-muted-foreground">
               “{preview}”
             </p>
             <button

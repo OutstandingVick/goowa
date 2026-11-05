@@ -292,7 +292,7 @@ const EditRow = forwardRef<
           </span>
         )}
       </div>
-      <p className="font-serif text-[15px] leading-relaxed">
+      <p className="font-serif text-base leading-relaxed">
         <del className="g-del">{edit.before}</del>{" "}
         {edit.after ? (
           <ins className="g-ins">{edit.after}</ins>
