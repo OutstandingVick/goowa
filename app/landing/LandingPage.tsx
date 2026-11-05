@@ -5,6 +5,8 @@ import {
   IconShieldCheck,
 } from "@tabler/icons-react";
 import { Link } from "react-router";
+
+import { Logo } from "@/components/brand/Logo";
 import type { LinksFunction } from "react-router";
 
 import landingStylesheet from "../landing.css?url";
@@ -38,7 +40,7 @@ export function meta() {
       property: "og:description",
       content: "Claim-level verification for research drafted with AI.",
     },
-    { property: "og:image", content: "/goowa-og.svg" },
+    { property: "og:image", content: "/goowa-og.png" },
     { name: "twitter:card", content: "summary_large_image" },
   ];
 }
@@ -163,8 +165,7 @@ export default function LandingPage() {
           <div className="l-hero-glow" aria-hidden="true" />
           <header className="l-nav">
             <a href="#top" className="l-brand">
-              <span className="l-brand-mark" aria-hidden="true" />
-              Goowa
+              <Logo variant="onPurple" size={28} />
             </a>
             <nav aria-label="Sections">
               <a href="#how">How it works</a>
@@ -350,7 +351,10 @@ export default function LandingPage() {
       </main>
 
       <footer className="l-footer">
-        <span>Goowa · Builder.io Agent-Native Hackathon 2026</span>
+        <span className="l-footer-brand">
+          <Logo variant="onPurple" size={18} />
+          <span>Builder.io Agent-Native Hackathon 2026</span>
+        </span>
         <a href={GITHUB_URL} target="_blank" rel="noreferrer">
           GitHub
         </a>

@@ -48,6 +48,10 @@ configureTracking({
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&display=swap",
+  },
 ];
 
 const THEME_INIT_SCRIPT = getThemeInitScript();
@@ -78,8 +82,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
           content="black-translucent"
         />
         <meta name="apple-mobile-web-app-title" content={APP_TITLE} />
-        <link rel="icon" type="image/svg+xml" href={appPath("/favicon.svg")} />
-        <link rel="apple-touch-icon" href={appPath("/icon-180.svg")} />
+        <link rel="icon" href={appPath("/favicon.ico")} sizes="any" />
+        <link rel="icon" type="image/png" sizes="32x32" href={appPath("/favicon-32.png")} />
+        <link rel="icon" type="image/png" sizes="16x16" href={appPath("/favicon-16.png")} />
+        <link rel="apple-touch-icon" href={appPath("/apple-touch-icon.png")} />
         <Meta />
         <Links />
       </head>

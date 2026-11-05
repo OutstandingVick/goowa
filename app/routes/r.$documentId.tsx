@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import { useParams, useSearchParams } from "react-router";
 
+import { Logo } from "@/components/brand/Logo";
 import { EvidenceCard } from "@/components/receipt/EvidenceCard";
 import { LivePanel } from "@/components/receipt/LivePanel";
 import { ReceiptArticle } from "@/components/receipt/ReceiptArticle";
@@ -84,8 +85,9 @@ export default function ReceiptRoute() {
       <header className="border-b bg-background/80">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 md:px-6">
           <div className="min-w-0">
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Claim Receipt · Goowa
+            <p className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <Logo variant="onWhite" size={16} />
+              <span>· Claim Receipt</span>
             </p>
             <h1 className="truncate text-lg font-semibold tracking-tight">
               {receipt.document.title}

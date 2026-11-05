@@ -12,7 +12,6 @@ import {
 } from "@agent-native/toolkit/app/chat/ownership-history";
 import { OrgSwitcher } from "@agent-native/toolkit/app/org";
 import { openCommandMenu } from "@agent-native/toolkit/app/shared";
-import { AgentNativeIcon } from "@agent-native/toolkit/app/shared/AgentNativeIcon";
 import {
   IconEdit,
   IconFileText,
@@ -30,6 +29,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Logo, LogoMark } from "@/components/brand/Logo";
 import { APP_TITLE } from "@/lib/app-config";
 import { chatThreadPath, threadIdFromPath } from "@/lib/chat-paths";
 import { cn } from "@/lib/utils";
@@ -362,9 +362,11 @@ export function Sidebar({
                 aria-label={APP_TITLE}
                 className="flex size-8 items-center justify-center rounded outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
               >
-                <AgentNativeIcon
-                  aria-hidden="true"
-                  className="h-3.5 w-6 text-sidebar-accent-foreground"
+                <LogoMark size={22} className="dark:hidden" />
+                <LogoMark
+                  variant="onPurple"
+                  size={22}
+                  className="hidden dark:block"
                 />
               </Link>
             </TooltipTrigger>
@@ -376,13 +378,12 @@ export function Sidebar({
               to="/"
               className="flex min-w-0 flex-1 items-center gap-3 rounded outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring"
             >
-              <AgentNativeIcon
-                aria-hidden="true"
-                className="h-3.5 w-6 shrink-0 text-sidebar-accent-foreground"
+              <Logo size={22} className="dark:hidden" />
+              <Logo
+                variant="onPurple"
+                size={22}
+                className="hidden dark:inline-flex"
               />
-              <span className="truncate text-sm font-semibold text-sidebar-accent-foreground">
-                {APP_TITLE}
-              </span>
             </Link>
           </>
         )}

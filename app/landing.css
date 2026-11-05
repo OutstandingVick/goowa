@@ -1006,3 +1006,10 @@
     margin: 0;
   }
 }
+
+/* Logo lockup in the footer. */
+.l-footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}

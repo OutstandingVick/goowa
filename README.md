@@ -1,3 +1,5 @@
+<p><img src="public/brand/goowa-mark-white.svg" alt="" width="56" height="56"></p>
+
 # Goowa
 
 A research editor where an AI agent drafts a document and every factual claim
