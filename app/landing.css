@@ -839,3 +839,170 @@
     animation: none;
   }
 }
+
+/* ── Brand everywhere: the hero's purple, gold, sans and glass ── */
+.l-page {
+  --ink: #fff;
+  --muted: rgb(255 255 255 / 0.68);
+  --faint: rgb(255 255 255 / 0.45);
+  --line: rgb(255 255 255 / 0.1);
+  --surface: rgb(255 255 255 / 0.04);
+  --green: var(--gold);
+  background:
+    radial-gradient(50% 30% at 85% 30%, rgb(120 81 169 / 0.45), transparent 70%),
+    radial-gradient(40% 25% at 10% 55%, rgb(255 204 51 / 0.08), transparent 70%),
+    radial-gradient(50% 30% at 80% 85%, rgb(120 81 169 / 0.4), transparent 70%),
+    #1c1030;
+  color: #fff;
+}
+.l-page h2,
+.l-steps h3 {
+  font-family: var(--sans);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.l-page h2 {
+  font-size: clamp(32px, 4vw, 48px);
+}
+.l-steps h3 {
+  font-size: 20px;
+}
+.l-body,
+.l-list,
+.l-steps p,
+.l-table {
+  font-family: var(--sans);
+  font-size: 15px;
+}
+.l-eyebrow {
+  color: var(--gold);
+}
+.l-section,
+.l-closing,
+.l-footer {
+  border-color: var(--line);
+}
+
+/* Band: a slim gradient strip echoing the hero. */
+.l-band {
+  border: 0;
+  background: linear-gradient(90deg, rgb(120 81 169 / 0.35), rgb(255 204 51 / 0.12), rgb(120 81 169 / 0.35));
+}
+.l-band p {
+  color: var(--muted);
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(22px, 2.6vw, 32px);
+}
+.l-page em {
+  color: var(--gold);
+}
+
+/* Glass cards. */
+.l-steps,
+.l-table,
+.l-code {
+  border: 1px solid rgb(255 255 255 / 0.12);
+  background: rgb(42 23 69 / 0.45);
+  box-shadow: 0 20px 40px -16px rgb(10 5 20 / 0.6);
+  backdrop-filter: blur(14px);
+  border-radius: 16px;
+}
+.l-steps {
+  overflow: hidden;
+}
+.l-step-n {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgb(255 204 51 / 0.14);
+  color: var(--gold);
+}
+.l-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  padding: 8px 20px;
+}
+.l-table td {
+  border-color: var(--line);
+}
+.l-page .t-ok {
+  color: #4ade80;
+}
+.l-page .t-bad {
+  color: #ff8a7a;
+}
+.l-code {
+  background: rgb(14 7 26 / 0.75);
+}
+.l-code-bar {
+  border-color: var(--line);
+}
+.l-code-bar i:nth-child(1) {
+  background: var(--purple);
+}
+.l-code-bar i:nth-child(2) {
+  background: var(--gold);
+}
+.l-code .t-ok {
+  color: var(--gold);
+}
+.l-body code {
+  color: var(--gold);
+}
+
+/* Closing: a second hero-style panel. */
+.l-closing {
+  position: relative;
+  max-width: none;
+  margin: 12px;
+  border: 0;
+  border-radius: 20px;
+  background:
+    radial-gradient(60% 70% at 50% 0%, rgb(255 204 51 / 0.4), transparent 70%),
+    radial-gradient(70% 80% at 50% 100%, rgb(120 81 169 / 0.9), transparent 75%),
+    #2a1745;
+}
+.l-closing h2 {
+  font-size: clamp(36px, 5vw, 64px);
+}
+.l-closing .l-btn {
+  border: 0;
+  border-radius: 6px;
+  background: #fff;
+  color: #2a1745 !important;
+  font-family: var(--sans);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 14px;
+}
+.l-closing .l-btn-dark {
+  background: var(--gold);
+}
+.l-footer {
+  font-family: var(--sans);
+}
+@media (max-width: 600px) {
+  .l-closing {
+    margin: 8px;
+  }
+}
+
+/* Full-bleed hero: edge to edge, at least one screen tall. */
+.l-hero,
+.l-closing {
+  margin: 0;
+  border-radius: 0;
+}
+.l-hero {
+  min-height: 100dvh;
+}
+@media (max-width: 600px) {
+  .l-hero,
+  .l-closing {
+    margin: 0;
+  }
+}
