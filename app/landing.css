@@ -1630,16 +1630,6 @@
   background: rgb(255 255 255 / 0.08);
   color: #fff;
 }
-.l-hero .l-nav .l-nav-pill .l-nav-pill-cta {
-  margin-left: 6px;
-  background: #fff;
-  color: #14091f;
-  font-weight: 500;
-}
-.l-hero .l-nav .l-nav-pill .l-nav-pill-cta:hover {
-  background: #ece6f7;
-  color: #14091f;
-}
 .l-nav-right {
   display: flex;
   align-items: center;
