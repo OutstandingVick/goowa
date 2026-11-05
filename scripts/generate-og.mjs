@@ -5,7 +5,9 @@ import sharp from "sharp";
 
 const [josefinPath, chakraPath] = process.argv.slice(2);
 if (!josefinPath || !chakraPath) {
-  throw new Error("Usage: node scripts/generate-og.mjs <JosefinSans.ttf> <ChakraPetch-Bold.ttf>");
+  throw new Error(
+    "Usage: node scripts/generate-og.mjs <JosefinSans.ttf> <ChakraPetch-Bold.ttf>",
+  );
 }
 
 const [josefin, chakra, mark] = await Promise.all([

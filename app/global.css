@@ -298,6 +298,10 @@
 .dark body {
   background-image:
     radial-gradient(60% 40% at 50% 0%, rgb(120 81 169 / 0.16), transparent 70%),
-    radial-gradient(50% 35% at 100% 100%, rgb(120 81 169 / 0.1), transparent 70%);
+    radial-gradient(
+      50% 35% at 100% 100%,
+      rgb(120 81 169 / 0.1),
+      transparent 70%
+    );
   background-attachment: fixed;
 }

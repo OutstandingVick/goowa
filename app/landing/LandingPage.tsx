@@ -172,7 +172,6 @@ export default function LandingPage() {
         <HowItWorks />
 
         <ProofTabs />
-
       </main>
 
       <Footer />
