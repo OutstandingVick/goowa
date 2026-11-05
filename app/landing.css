@@ -1091,8 +1091,8 @@
   font-family: var(--sans);
   font-size: clamp(40px, 5.6vw, 76px);
   font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1.02;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
 }
 /* Second line: strokes cut into segments, like a stencil. */
 .hw-seg {
@@ -1111,7 +1111,7 @@
   max-width: 58ch;
   margin: 28px 0 0;
   color: rgb(255 255 255 / 0.72);
-  font-family: var(--sans);
+  font-family: var(--serif);
   font-size: 18px;
   line-height: 1.7;
 }
@@ -1279,7 +1279,7 @@
   font-family: var(--sans);
   font-size: 24px;
   font-weight: 500;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   text-align: left;
   cursor: pointer;
 }
@@ -1291,7 +1291,7 @@
   margin: -8px 0 0;
   padding: 0 28px 28px;
   color: rgb(255 255 255 / 0.72);
-  font-family: var(--sans);
+  font-family: var(--serif);
   font-size: 16px;
   line-height: 1.65;
 }
@@ -1334,7 +1334,7 @@
   font-family: var(--sans);
   font-size: clamp(40px, 4.2vw, 60px);
   font-weight: 500;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.01em;
   line-height: 1.1;
 }
 .hw-stats dd {
