@@ -1768,6 +1768,242 @@
   border-color: rgb(252 255 255 / 0.24);
 }
 
+/* Hero: a centered, atmospheric product stage inspired by the supplied
+   composition, rebuilt entirely with Goowa's purple and gold system. */
+.hero-section {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background-color: var(--brand);
+  background-image:
+    radial-gradient(circle at 50% 42%, rgb(237 177 88 / 0.58), transparent 28%),
+    radial-gradient(
+      ellipse at 50% 68%,
+      rgb(237 177 88 / 0.28),
+      transparent 44%
+    ),
+    radial-gradient(circle at 10% 22%, rgb(141 98 224 / 0.72), transparent 35%),
+    radial-gradient(circle at 88% 18%, rgb(91 44 171 / 0.9), transparent 34%),
+    linear-gradient(180deg, #5b2cab 0%, #723cd6 45%, #4c238e 100%);
+  background-size: auto;
+}
+.hero-section::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image:
+    repeating-radial-gradient(
+      circle at 48% 46%,
+      rgb(252 255 255 / 0.1) 0 1px,
+      transparent 1px 4px
+    ),
+    linear-gradient(
+      110deg,
+      transparent 18%,
+      rgb(237 177 88 / 0.12) 48%,
+      transparent 78%
+    );
+  background-size:
+    7px 7px,
+    auto;
+  mix-blend-mode: soft-light;
+  opacity: 0.42;
+}
+.hero-grid {
+  min-height: 880px;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  gap: 1.5rem;
+  padding-block: 5.5rem 4rem;
+}
+.hero-copy {
+  position: relative;
+  z-index: 3;
+  width: min(100%, 980px);
+  margin-inline: auto;
+  text-align: center;
+}
+.hero-copy .eyebrow::before {
+  display: none;
+}
+.hero-copy h1 {
+  max-width: 980px;
+  margin-inline: auto;
+  font-size: clamp(3.4rem, 6.4vw, 6.6rem);
+  line-height: 0.94;
+  letter-spacing: -0.07em;
+}
+.hero-copy h1 span {
+  color: var(--gold);
+}
+.hero-sub {
+  max-width: 660px;
+  margin: 1.5rem auto 1.8rem;
+  line-height: 1.55;
+}
+.hero-copy .button-row {
+  justify-content: center;
+}
+.hero-note {
+  justify-content: center;
+}
+.hero-scene {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 1120px);
+  height: 410px;
+  margin-block-start: 1rem;
+}
+.hero-glow {
+  inset: -30% -12%;
+  background:
+    radial-gradient(circle at 50% 46%, rgb(237 177 88 / 0.64), transparent 30%),
+    radial-gradient(circle at 50% 58%, rgb(173 139 237 / 0.58), transparent 56%);
+  filter: blur(68px);
+}
+.hero-visual {
+  position: relative;
+  z-index: 2;
+  width: min(72%, 790px);
+  margin-inline: auto;
+  transform: rotate(1.2deg);
+  transform-origin: center top;
+}
+.visual-label {
+  color: var(--paper);
+  text-shadow: 0 1px 12px rgb(76 35 142 / 0.55);
+}
+.console-shell {
+  min-height: 360px;
+  border-radius: 18px;
+  box-shadow:
+    0 34px 90px rgb(76 35 142 / 0.42),
+    0 0 0 1px rgb(252 255 255 / 0.32);
+}
+.console-body {
+  min-height: 240px;
+}
+.hero-artifact {
+  position: absolute;
+  z-index: 3;
+  min-width: 172px;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgb(252 255 255 / 0.48);
+  border-radius: 14px;
+  background: rgb(252 255 255 / 0.92);
+  color: var(--ink);
+  box-shadow: 0 22px 55px rgb(76 35 142 / 0.34);
+  backdrop-filter: blur(14px);
+  font-size: 0.76rem;
+  font-weight: 680;
+}
+.hero-artifact svg {
+  width: 24px;
+  height: 24px;
+  color: var(--brand);
+}
+.hero-artifact span {
+  display: grid;
+  gap: 0.2rem;
+}
+.hero-artifact small {
+  color: var(--muted);
+  font:
+    650 0.55rem ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+}
+.artifact-supported {
+  inset-block-start: 18%;
+  inset-inline-start: 1.5%;
+  transform: rotate(-8deg);
+}
+.artifact-supported svg {
+  color: hsl(var(--g-supported));
+}
+.artifact-quarantine {
+  inset-block-start: 3%;
+  inset-inline-end: 1.5%;
+  transform: rotate(8deg);
+}
+.artifact-quarantine svg {
+  color: hsl(var(--g-quarantined));
+}
+.artifact-receipt {
+  inset-block-end: 4%;
+  inset-inline-start: 5%;
+  transform: rotate(5deg);
+}
+.artifact-receipt svg {
+  color: #9a651c;
+}
+.hero-strip {
+  position: relative;
+  z-index: 3;
+  background: rgb(76 35 142 / 0.42);
+  backdrop-filter: blur(12px);
+}
+
+@media (max-width: 900px) {
+  .hero-grid {
+    min-height: 0;
+    gap: 2.5rem;
+    padding-block: 5rem 3.5rem;
+  }
+  .hero-copy {
+    max-width: 760px;
+  }
+  .hero-scene {
+    height: 430px;
+  }
+  .hero-visual {
+    width: min(84%, 680px);
+  }
+  .artifact-supported {
+    inset-inline-start: 0;
+  }
+  .artifact-quarantine {
+    inset-inline-end: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero-grid {
+    padding-block: 4.25rem 2.5rem;
+    gap: 2rem;
+  }
+  .hero-copy h1 {
+    font-size: clamp(2.75rem, 13vw, 4rem);
+  }
+  .hero-copy .button-row {
+    width: 100%;
+  }
+  .hero-scene {
+    width: 100%;
+    height: auto;
+    margin-block-start: 0;
+  }
+  .hero-artifact {
+    display: none;
+  }
+  .hero-visual {
+    width: 100%;
+    transform: none;
+  }
+  .console-shell {
+    min-height: 460px;
+    border-radius: 14px;
+  }
+  .console-body {
+    min-height: 340px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .landing-page *,
   .landing-page *::before,
