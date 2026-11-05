@@ -5,11 +5,12 @@ import {
   IconShieldCheck,
 } from "@tabler/icons-react";
 import { Link } from "react-router";
+import type { LinksFunction } from "react-router";
 
 import { Logo } from "@/components/brand/Logo";
 
 import { HowItWorks } from "./HowItWorks";
-import type { LinksFunction } from "react-router";
+import { ProofTabs } from "./ProofTabs";
 
 import landingStylesheet from "../landing.css?url";
 
@@ -99,8 +100,7 @@ function Specimen() {
         <li>
           <b className="t-bad">3 · laundered</b>
           <span>
-            cited page never says this. The figure traces to a blog it
-            copied.
+            cited page never says this. The figure traces to a blog it copied.
           </span>
         </li>
       </ol>
@@ -112,34 +112,6 @@ function Specimen() {
   );
 }
 
-const permissions = [
-  ["Draft and propose edits", true, true],
-  ["Verify claims against sources", true, true],
-  ["Accept or reject an edit", false, true],
-  ["Set a final claim status", false, true],
-  ["Override a blocker, with a reason", false, true],
-  ["Publish", false, true],
-] as const;
-
-const receiptJson = `{
-  "document": { "title": "Stablecoins 2024", "revision": 1,
-                "publishedBy": "human" },
-  "claims": [{
-    "index": 1, "status": "supported",
-    "evidence": [{
-      "snippet": "USDC is a digital dollar issued by Circle",
-      "startOffset": 412, "endOffset": 455,
-      "sourceContentHash": "901d7b2a85a0…"
-    }]
-  }],
-  "summary": { "claims": 3, "agentPublishAttemptsBlocked": 1 },
-  "receiptHash": "e21ffc82d7e4…"
-}`;
-
-const mcpCmd = `claude mcp add --transport http goowa \\
-  https://goowa.vercel.app/mcp \\
-  --header "Authorization: Bearer <token>"`;
-
 export default function LandingPage() {
   return (
     <div className="l-page">
@@ -148,7 +120,7 @@ export default function LandingPage() {
           <div className="l-hero-glow" aria-hidden="true" />
           <header className="l-nav">
             <a href="#top" className="l-brand">
-              <Logo variant="onPurple" size={28} />
+              <Logo variant="onWhite" size={28} />
             </a>
             <nav aria-label="Sections">
               <a href="#how">How it works</a>
@@ -180,9 +152,9 @@ export default function LandingPage() {
               You approve every claim.
             </h1>
             <p className="l-lead">
-              Goowa ties each factual sentence to the passage that supports
-              it, flags citations that never said it, and publishes only when
-              a human says so.
+              Goowa ties each factual sentence to the passage that supports it,
+              flags citations that never said it, and publishes only when a
+              human says so.
             </p>
             <div className="l-hero-ctas">
               <Link className="l-hbtn l-hbtn-light" to="/app">
@@ -226,94 +198,7 @@ export default function LandingPage() {
 
         <HowItWorks />
 
-        <section className="l-section l-split">
-          <div>
-            <Eyebrow>Permissions</Eyebrow>
-            <h2>The agent proposes. You publish.</h2>
-            <p className="l-body">
-              Enforced on the server, not in a prompt. Every refused attempt is
-              logged in the activity feed and counted on the receipt. External
-              agents connecting over MCP get the same rules.
-            </p>
-          </div>
-          <table className="l-table">
-            <thead>
-              <tr>
-                <th scope="col">Action</th>
-                <th scope="col">Agent</th>
-                <th scope="col">Human</th>
-              </tr>
-            </thead>
-            <tbody>
-              {permissions.map(([label, agent, human]) => (
-                <tr key={label}>
-                  <td>{label}</td>
-                  <td className={agent ? "t-ok" : "t-bad"}>
-                    {agent ? "yes" : "blocked"}
-                  </td>
-                  <td className={human ? "t-ok" : "t-bad"}>
-                    {human ? "yes" : "no"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-
-        <section id="receipt" className="l-section l-split">
-          <div>
-            <Eyebrow>Claim receipt</Eyebrow>
-            <h2>Proof that travels with the article.</h2>
-            <ul className="l-list">
-              <li>
-                <b>Tamper-evident.</b> A canonical SHA-256 hash covers the
-                body, every claim and every evidence span.
-              </li>
-              <li>
-                <b>Checkable by anyone.</b> Paste a receipt into the verifier;
-                a single edited character is pinpointed.
-              </li>
-              <li>
-                <b>Live re-check.</b> Re-fetch the sources later and see which
-                claims they still support.
-              </li>
-            </ul>
-          </div>
-          <pre className="l-code" aria-label="Example receipt JSON">
-            <div className="l-code-bar">
-              <i />
-              <i />
-              <i />
-              <span>receipt.json</span>
-            </div>
-            <code>{receiptJson}</code>
-          </pre>
-        </section>
-
-        <section id="mcp" className="l-section l-split">
-          <div>
-            <Eyebrow>MCP</Eyebrow>
-            <h2>Check a draft from any agent.</h2>
-            <p className="l-body">
-              Connect Claude, Cursor or any MCP client and call{" "}
-              <code>check-draft</code> on text written anywhere. You get counts
-              by verdict, the blockers, and an editor link for the human
-              decision. Tokens are per user and revocable.
-            </p>
-          </div>
-          <pre className="l-code" aria-label="Command to add Goowa to Claude Code">
-            <div className="l-code-bar">
-              <i />
-              <i />
-              <i />
-              <span>terminal</span>
-            </div>
-            <code>
-              <span className="t-ok">$ </span>
-              {mcpCmd}
-            </code>
-          </pre>
-        </section>
+        <ProofTabs />
 
         <section className="l-closing">
           <h2>Drafts are cheap. Proof isn&rsquo;t.</h2>
