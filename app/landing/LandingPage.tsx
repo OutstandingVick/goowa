@@ -1,41 +1,33 @@
-import {
-  IconArrowRight,
-  IconCheck,
-  IconCircleCheck,
-  IconCircleX,
-  IconCode,
-  IconExternalLink,
-  IconFileCheck,
-  IconGitBranch,
-  IconLinkOff,
-  IconLock,
-  IconPlayerPlay,
-  IconShieldLock,
-  IconSparkles,
-} from "@tabler/icons-react";
-import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import type { LinksFunction } from "react-router";
 
 import landingStylesheet from "../landing.css?url";
 
-export const DEMO_VIDEO_URL = "#demo-video";
 export const GITHUB_URL = "https://github.com/OutstandingVick/goowa";
+
 export const links: LinksFunction = () => [
+  { rel: "preconnect", href: "https://fonts.googleapis.com" },
+  {
+    rel: "preconnect",
+    href: "https://fonts.gstatic.com",
+    crossOrigin: "anonymous",
+  },
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&display=swap",
+  },
   { rel: "stylesheet", href: landingStylesheet },
 ];
+
 export function meta() {
   return [
-    { title: "Goowa — AI drafts. Goowa checks every claim." },
+    { title: "Goowa · Every claim, checked against its source" },
     {
       name: "description",
       content:
-        "A research editor that verifies every factual claim, catches citation laundering, and publishes tamper-evident proof.",
+        "A research editor where an AI agent drafts, every factual claim is verified against its source, and only a human can publish.",
     },
-    {
-      property: "og:title",
-      content: "Goowa — AI drafts. Goowa checks every claim.",
-    },
+    { property: "og:title", content: "Goowa · Every claim, checked." },
     {
       property: "og:description",
       content: "Claim-level verification for research drafted with AI.",
@@ -45,761 +37,279 @@ export function meta() {
   ];
 }
 
-function Wordmark() {
-  return (
-    <span className="wordmark" aria-label="Goowa">
-      <span className="wordmark-mark" aria-hidden="true">
-        <span />
-      </span>
-      <span>Goowa</span>
-    </span>
-  );
+function Eyebrow({ children }: { children: string }) {
+  return <p className="l-eyebrow">+ {children}</p>;
 }
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return <p className="eyebrow">{children}</p>;
-}
-const consoleLines = [
-  ["goowa> ingest 4 sources", "command"],
-  ["✓ 3 fetched · ⚠ 1 quarantined", "warn"],
-  ["goowa> extract claims", "command"],
-  ["✓ 12 claims", "success"],
-  ["goowa> verify", "command"],
-  ["✓ 9 supported · ⚠ 1 weak", "success"],
-  ["✕ 1 laundered · ✕ 1 unsupported", "danger"],
-  ["agent> publish", "command"],
-  ["✕ blocked: human approval required", "danger"],
-  ["you> approve", "command"],
-  ["✓ published · receipt 0x9f3a…c21", "gold"],
-] as const;
-function AgentConsole() {
+
+function Cta({ dark = true }: { dark?: boolean }) {
   return (
-    <div
-      className="console-shell"
-      aria-label="Example of Goowa checking a draft"
-    >
-      <div className="console-bar">
-        <span className="console-dots" aria-hidden>
-          <i />
-          <i />
-          <i />
-        </span>
-        <span>verification.run</span>
-        <span className="console-live">
-          <i /> LIVE
-        </span>
-      </div>
-      <div className="console-body">
-        {consoleLines.map(([text, tone], index) => (
-          <div
-            className={`console-line ${tone}`}
-            style={{ "--line": index } as React.CSSProperties}
-            key={text}
-          >
-            {text}
-          </div>
-        ))}
-      </div>
-      <div className="console-summary">
-        <span>
-          <IconCircleCheck aria-hidden /> 9 supported
-        </span>
-        <span>
-          <IconShieldLock aria-hidden /> 1 quarantined
-        </span>
-        <span>
-          <IconLock aria-hidden /> publish gated
-        </span>
-      </div>
+    <div className="l-ctas">
+      <Link className={dark ? "l-btn l-btn-dark" : "l-btn"} to="/app">
+        Open Goowa →
+      </Link>
+      <a className="l-btn" href={GITHUB_URL} target="_blank" rel="noreferrer">
+        View source
+      </a>
     </div>
   );
 }
-function Navigation() {
-  return (
-    <header className="landing-nav">
-      <a className="skip-link" href="#main">
-        Skip to content
-      </a>
-      <nav className="nav-inner" aria-label="Main navigation">
-        <a href="#top" className="nav-brand">
-          <Wordmark />
-        </a>
-        <div className="nav-links">
-          <a href="#how">How it works</a>
-          <a href="#features">Features</a>
-          <a href="#receipt">Receipt</a>
-          <a href={GITHUB_URL} target="_blank" rel="noreferrer">
-            GitHub
-          </a>
-        </div>
-        <div className="nav-actions">
-          <Link className="button button-primary button-small" to="/app">
-            Open Goowa <IconArrowRight aria-hidden />
-          </Link>
-        </div>
-      </nav>
-    </header>
-  );
-}
 
-function ProblemSection() {
+/** A real-looking draft with each claim marked by its verdict. */
+function Specimen() {
   return (
-    <section className="section problem-section" id="problem">
-      <div className="section-heading split-heading">
-        <div>
-          <Eyebrow>THE PROBLEM</Eyebrow>
-          <h2>A citation link isn’t evidence.</h2>
-        </div>
-        <p>
-          AI can attach a real source to a claim the source never made. The link
-          works. The sentence sounds certain. The evidence still isn’t there.
-        </p>
+    <figure className="l-specimen" aria-label="A draft with verified claims">
+      <div className="l-specimen-bar">
+        <span>draft · stablecoins-2024.md</span>
+        <span className="l-dot-live">verifying</span>
       </div>
-      <div className="comparison-grid">
-        <article className="draft-card typical-draft">
-          <div className="card-label">
-            <span>Typical AI draft</span>
-            <span className="status-quiet">Looks cited</span>
-          </div>
-          <h3>Remote work and productivity</h3>
-          <p>
-            Recent research shows that remote work increases productivity by{" "}
-            <mark>45%</mark>, while improving employee retention across
-            knowledge-work teams.<sup>[1]</sup>
-          </p>
-          <div className="fake-source">
-            <IconExternalLink aria-hidden /> workplace-study.org/remote-work
-          </div>
-        </article>
-        <article className="draft-card goowa-draft">
-          <div className="card-label">
-            <span>Same draft in Goowa</span>
-            <span className="status-supported">
-              <IconCheck aria-hidden /> Checked
-            </span>
-          </div>
-          <h3>Remote work and productivity</h3>
-          <p>
-            Recent research shows that remote work increases productivity by{" "}
-            <span className="claim-bad" tabIndex={0}>
-              45%
-              <span className="claim-tooltip" role="tooltip">
-                Cited page doesn’t contain this figure
-              </span>
-            </span>
-            , while{" "}
-            <span className="claim-good">improving employee retention</span>{" "}
-            across knowledge-work teams.<sup>[1]</sup>
-          </p>
-          <div className="verification-row">
-            <span className="status-laundered">
-              <IconLinkOff aria-hidden /> Laundered citation
-            </span>
-            <span>Closest source figure: 38%</span>
-          </div>
-        </article>
+      <p className="l-specimen-body">
+        <mark className="v-ok">
+          USDC is a digital dollar issued by Circle.
+          <sup>1</sup>
+        </mark>{" "}
+        <mark className="v-ok">
+          Over 99% of stablecoins are US dollar-denominated.
+          <sup>2</sup>
+        </mark>{" "}
+        <mark className="v-bad">
+          Stablecoins processed $27.6 trillion in 2024, more than Visa and
+          Mastercard combined.
+          <sup>3</sup>
+        </mark>
+      </p>
+      <ol className="l-verdicts">
+        <li>
+          <b className="t-ok">1 · supported</b>
+          <span>exact quote, developers.circle.com</span>
+        </li>
+        <li>
+          <b className="t-ok">2 · supported</b>
+          <span>paraphrase, bis.org annual report</span>
+        </li>
+        <li>
+          <b className="t-bad">3 · laundered</b>
+          <span>
+            cited page never says this. The figure traces to a blog it
+            copied.
+          </span>
+        </li>
+      </ol>
+      <div className="l-specimen-foot">
+        <span>agent → publish</span>
+        <span className="t-bad">blocked · human approval required</span>
       </div>
-      <div className="pain-grid">
-        <div>
-          <span>01</span>
-          <h3>Confident and wrong</h3>
-          <p>Fluent prose can hide a claim that no source supports.</p>
-        </div>
-        <div>
-          <span>02</span>
-          <h3>Walls of text you can’t steer</h3>
-          <p>
-            Corrections get lost when claims and dependencies stay invisible.
-          </p>
-        </div>
-        <div>
-          <span>03</span>
-          <h3>Agents that publish as you</h3>
-          <p>
-            Automation crosses a line when review and approval are optional.
-          </p>
-        </div>
-      </div>
-    </section>
+    </figure>
   );
 }
 
 const steps = [
   [
-    "01",
-    "Ingest & draft",
-    "Bring your sources. Goowa fetches them, quarantines injected instructions, and gives the agent only safe material.",
-    IconShieldLock,
+    "Ingest",
+    "Sources are fetched and scanned. Pages carrying prompt injections are quarantined, never used as evidence.",
   ],
   [
-    "02",
-    "Every claim becomes a card",
-    "Each factual statement is checked against the exact passage it cites—not merely whether a link exists.",
-    IconFileCheck,
+    "Extract",
+    "Every sentence with a figure, a date, or a name becomes a claim, tied to the sources it cites.",
   ],
   [
-    "03",
-    "Correct once, it ripples",
-    "Edit one claim and every dependent claim is flagged with a proposal for you to accept or reject.",
-    IconGitBranch,
+    "Verify",
+    "Each claim is matched against the source text: exact quote, paraphrase, or numbers that disagree. Weak and laundered claims are flagged.",
   ],
   [
-    "04",
-    "Publish with proof",
-    "The agent can prepare and verify. Only you can approve publication and export the Claim Receipt.",
-    IconLock,
+    "Decide",
+    "The agent proposes fixes. You accept or reject them. Change one claim and everything depending on it is re-checked.",
   ],
 ] as const;
-function WorkflowDiagram() {
-  return (
-    <div
-      className="workflow-diagram"
-      aria-label="Sources flow through verification to human approval and a receipt"
-    >
-      <div className="diagram-top">
-        <span>GOOWA / DRAFT 04</span>
-        <span className="diagram-state">
-          <i /> VERIFYING
-        </span>
-      </div>
-      <div className="source-stack">
-        <div>
-          <IconFileCheck aria-hidden />
-          <span>
-            <strong>Source 01</strong>
-            <small>Fetched · clean</small>
-          </span>
-          <IconCheck className="ok" aria-hidden />
-        </div>
-        <div>
-          <IconFileCheck aria-hidden />
-          <span>
-            <strong>Source 02</strong>
-            <small>Fetched · clean</small>
-          </span>
-          <IconCheck className="ok" aria-hidden />
-        </div>
-        <div className="quarantined">
-          <IconShieldLock aria-hidden />
-          <span>
-            <strong>Source 03</strong>
-            <small>Hidden instructions found</small>
-          </span>
-          <IconLock aria-hidden />
-        </div>
-      </div>
-      <div className="diagram-flow">
-        <span>extract</span>
-        <i />
-        <span>verify</span>
-        <i />
-        <span>approve</span>
-      </div>
-      <div className="claim-stack">
-        <div data-status="supported">
-          <span>
-            <IconCircleCheck aria-hidden /> Claim 08
-          </span>
-          <b>Supported</b>
-        </div>
-        <div data-status="weak">
-          <span>⚠ Claim 09</span>
-          <b>Weak</b>
-        </div>
-        <div data-status="laundered">
-          <span>
-            <IconLinkOff aria-hidden /> Claim 10
-          </span>
-          <b>Laundered</b>
-        </div>
-      </div>
-      <div className="diagram-gate">
-        <IconLock aria-hidden />
-        <span>
-          <strong>Human approval gate</strong>
-          <small>Agent publish attempt blocked</small>
-        </span>
-        <button type="button">Approve</button>
-      </div>
-    </div>
-  );
-}
-function HowSection() {
-  return (
-    <section className="section how-section" id="how">
-      <div className="section-heading">
-        <Eyebrow>HOW IT WORKS</Eyebrow>
-        <h2>Draft, verify, correct, prove.</h2>
-        <p>
-          Four steps keep the speed of an agent without handing it editorial
-          control.
-        </p>
-      </div>
-      <div className="how-grid">
-        <div className="steps-list">
-          {steps.map(([number, title, text, Icon]) => (
-            <article className="step" key={number}>
-              <span className="step-number">{number}</span>
-              <div>
-                <Icon className="step-icon" aria-hidden />
-                <h3>{title}</h3>
-                <p>{text}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-        <div className="diagram-sticky">
-          <WorkflowDiagram />
-        </div>
-      </div>
-    </section>
-  );
-}
 
-function FeatureVisual({ type }: { type: number }) {
-  if (type === 1)
-    return (
-      <div className="mini-ui mismatch-ui">
-        <div>
-          <span>CLAIM</span>
-          <p>
-            Productivity increased <mark>45%</mark>.
-          </p>
-        </div>
-        <div>
-          <span>CLOSEST PASSAGE</span>
-          <p>
-            Participants reported a <mark>38%</mark> increase.
-          </p>
-        </div>
-        <p className="mini-alert">
-          <IconLinkOff aria-hidden /> Figure not found in cited passage
-        </p>
-      </div>
-    );
-  if (type === 2)
-    return (
-      <div className="mini-ui quarantine-ui">
-        <div className="source-chip">
-          <IconCode aria-hidden />
-          <span>
-            research-notes.html<small>Scanning source…</small>
-          </span>
-        </div>
-        <div className="scan-line">
-          <span />
-          <span />
-          <span />
-        </div>
-        <p>
-          <IconShieldLock aria-hidden /> Hidden instructions found
-        </p>
-      </div>
-    );
-  if (type === 3)
-    return (
-      <div className="mini-ui numeric-ui">
-        <div>
-          <span>CLAIM SAYS</span>
-          <strong>45%</strong>
-        </div>
-        <div className="not-equal">≠</div>
-        <div>
-          <span>SOURCE SAYS</span>
-          <strong>38%</strong>
-        </div>
-        <p>
-          ⚠ Verdict capped at <b>Weak</b>
-        </p>
-      </div>
-    );
-  if (type === 4)
-    return (
-      <div className="mini-ui ripple-ui">
-        <div className="ripple-source">
-          <IconSparkles aria-hidden /> Claim 04 · edited
-        </div>
-        <div className="ripple-lines">
-          <i />
-          <i />
-        </div>
-        <div className="ripple-targets">
-          <span>
-            Claim 07 <b>Needs review</b>
-          </span>
-          <span>
-            Claim 11 <b>Needs review</b>
-          </span>
-        </div>
-      </div>
-    );
-  if (type === 5)
-    return (
-      <div className="mini-ui select-ui">
-        <p>
-          The trial included <mark>2,400 participants</mark> across six regions.
-        </p>
-        <div className="selection-pop">
-          <IconSparkles aria-hidden /> Ask agent to fix <span>⌘↵</span>
-        </div>
-      </div>
-    );
-  return (
-    <div className="mini-ui gate-ui">
-      <div>
-        <span>agent&gt; publish</span>
-        <b>
-          <IconCircleX aria-hidden /> Blocked
-        </b>
-      </div>
-      <ul>
-        <li>
-          <IconCircleX aria-hidden /> 1 laundered citation
-        </li>
-        <li>⚠ 1 weak claim</li>
-        <li>
-          <IconLock aria-hidden /> Human approval required
-        </li>
-      </ul>
-    </div>
-  );
-}
-const features = [
-  [
-    "Citation laundering detection",
-    "A real link must support the exact claim—not just look credible.",
-  ],
-  [
-    "Injection quarantine",
-    "Suspicious source instructions are fenced off before the agent can use them.",
-  ],
-  ["Numeric guard", "A mismatched number cannot receive a supported verdict."],
-  [
-    "Dependency ripple",
-    "One correction marks every affected downstream claim for review.",
-  ],
-  [
-    "Select-to-correct",
-    "Highlight a sentence and ask the agent for a scoped proposal.",
-  ],
-  ["Publish gate", "Agents can request publication. They cannot approve it."],
+const permissions = [
+  ["Draft and propose edits", true, true],
+  ["Verify claims against sources", true, true],
+  ["Accept or reject an edit", false, true],
+  ["Set a final claim status", false, true],
+  ["Override a blocker, with a reason", false, true],
+  ["Publish", false, true],
 ] as const;
-function FeaturesSection() {
-  return (
-    <section className="section features-section" id="features">
-      <div className="section-heading split-heading">
-        <div>
-          <Eyebrow>FEATURES</Eyebrow>
-          <h2>Built for the moment the agent is confident and wrong.</h2>
-        </div>
-        <p>
-          Goowa turns editorial safeguards into visible, inspectable product
-          behavior.
-        </p>
-      </div>
-      <div className="feature-grid">
-        {features.map(([title, text], index) => (
-          <article className="feature-card" key={title}>
-            <div className="feature-meta">
-              <span>0{index + 1}</span>
-              <span>LIVE CAPABILITY</span>
-            </div>
-            <FeatureVisual type={index + 1} />
-            <h3>{title}</h3>
-            <p>{text}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
 
-function ReceiptDemo() {
-  const [verified, setVerified] = useState(false);
-  const [tampered, setTampered] = useState(false);
+const receiptJson = `{
+  "document": { "title": "Stablecoins 2024", "revision": 1,
+                "publishedBy": "human" },
+  "claims": [{
+    "index": 1, "status": "supported",
+    "evidence": [{
+      "snippet": "USDC is a digital dollar issued by Circle",
+      "startOffset": 412, "endOffset": 455,
+      "sourceContentHash": "901d7b2a85a0…"
+    }]
+  }],
+  "summary": { "claims": 3, "agentPublishAttemptsBlocked": 1 },
+  "receiptHash": "e21ffc82d7e4…"
+}`;
+
+const mcpCmd = `claude mcp add --transport http goowa \\
+  https://goowa.vercel.app/mcp \\
+  --header "Authorization: Bearer <token>"`;
+
+export default function LandingPage() {
   return (
-    <div className="receipt-demo">
-      <div className="receipt-head">
-        <div>
-          <span className="receipt-logo">
-            <IconFileCheck aria-hidden />
-          </span>
-          <span>
-            <small>CLAIM RECEIPT</small>
-            <strong>Remote work and productivity</strong>
-          </span>
-        </div>
-        <span className="receipt-revision">REV. 04</span>
-      </div>
-      <div className="receipt-claim">
-        <small>CLAIM 08</small>
-        <p>Structured remote work policies improved employee retention.</p>
-        <span className="status-supported">
-          <IconCircleCheck aria-hidden /> Supported
-        </span>
-      </div>
-      <dl className="receipt-fields">
-        <div>
-          <dt>Evidence snippet</dt>
-          <dd>
-            “Retention rose among teams with documented asynchronous practices…”
-          </dd>
-        </div>
-        <div>
-          <dt>Source</dt>
-          <dd>workplace-study.org / p. 14</dd>
-        </div>
-        <div>
-          <dt>Verified by</dt>
-          <dd>Goowa verifier · Human approved</dd>
-        </div>
-        <div>
-          <dt>Timestamp</dt>
-          <dd>2026-10-18 · 14:32 UTC</dd>
-        </div>
-      </dl>
-      <div className="receipt-hash">
-        <span>
-          <small>receiptHash</small>
-          <code>0x9f3a7d82b410…c21</code>
-        </span>
-        <IconCheck aria-hidden />
-      </div>
-      <div
-        className={`receipt-checks ${verified ? "is-verified" : ""} ${tampered ? "is-tampered" : ""}`}
-        aria-live="polite"
-      >
-        <span>
-          <IconCircleCheck aria-hidden /> Document hash
-        </span>
-        <span>
-          <IconCircleCheck aria-hidden /> Claims
-        </span>
-        <span>
-          <IconCircleCheck aria-hidden /> Evidence
-        </span>
-      </div>
-      <div className="receipt-actions">
-        <button type="button" onClick={() => setVerified(true)}>
-          <IconFileCheck aria-hidden />{" "}
-          {verified ? "Receipt verified" : "Verify receipt"}
-        </button>
-        <label>
-          <span>Tamper demo</span>
-          <input
-            type="checkbox"
-            checked={tampered}
-            onChange={(e) => {
-              setTampered(e.target.checked);
-              setVerified(true);
-            }}
-          />
-          <i />
-        </label>
-      </div>
-    </div>
-  );
-}
-function ProofSection() {
-  return (
-    <section className="section proof-section" id="receipt">
-      <div className="section-heading">
-        <Eyebrow>PROOF</Eyebrow>
-        <h2>Every article ships with a receipt.</h2>
-        <p>
-          A tamper-evident record of the source, passage, verdict, human
-          decision, and hash behind every claim.
-        </p>
-      </div>
-      <div className="proof-grid">
-        <ReceiptDemo />
-        <div className="action-proof">
-          <Eyebrow>AGENT-NATIVE</Eyebrow>
-          <h3>One action, everywhere.</h3>
-          <p>
-            The verifier is defined once. The interface, in-app agent, and
-            external agents all call the same capability with the same rules.
-          </p>
-          <div className="code-labels">
-            <span>React UI</span>
-            <span>In-app agent</span>
-            <span>MCP · Claude / Cursor</span>
-          </div>
-          <pre>
-            <code>
-              <span className="code-purple">export default</span> defineAction(
-              {`{`}\n description:{" "}
-              <span className="code-gold">&quot;Verify one claim…&quot;</span>
-              ,\n mcpTool: <span className="code-purple">true</span>,\n schema:
-              z.object({`{`}\n claimId: z.string(),\n {`}`}),\n run:{" "}
-              <span className="code-purple">async</span> ({`{`} claimId {`}`},
-              ctx) =&gt; {`{`}\n <span className="code-purple">const</span>{" "}
-              result = <span className="code-purple">await</span>{" "}
-              verifyAndStore(\n claim, actorOf(ctx)\n );\n{" "}
-              <span className="code-purple">return</span> result;\n {`}`},\n
-              {`}`});
-            </code>
-          </pre>
-          <p className="agent-rule">
-            <IconLock aria-hidden /> External agents get the same rules: they
-            can propose and verify, never publish.
-          </p>
-        </div>
-      </div>
-    </section>
-  );
-}
-function FinalSection() {
-  return (
-    <section className="final-section">
-      <div className="final-glow" aria-hidden />
-      <div className="final-content">
-        <Eyebrow>KEEP THE SPEED. ADD THE PROOF.</Eyebrow>
-        <h2>Stop publishing claims you haven’t checked.</h2>
-        <p>
-          Draft with an agent. Verify against the source. Keep the final
-          decision human.
-        </p>
-        <div className="button-row">
-          <Link className="button button-primary" to="/app">
-            Open Goowa <IconArrowRight aria-hidden />
-          </Link>
-          <a
-            className="button button-secondary"
-            href={GITHUB_URL}
-            target="_blank"
-            rel="noreferrer"
-          >
-            View on GitHub <IconExternalLink aria-hidden />
-          </a>
-        </div>
-        <small>
-          Built for the Builder.io Agent-Native Hackathon · by Victor Ogbonna
-          (Outstandingvick)
-        </small>
-      </div>
-    </section>
-  );
-}
-function Footer() {
-  return (
-    <footer className="landing-footer">
-      <div className="footer-inner">
-        <div>
-          <Wordmark />
-          <p>Claim-level verification for research drafted with AI.</p>
-        </div>
-        <nav aria-label="Footer navigation">
-          <Link to="/app">App</Link>
+    <div className="l-page">
+      <header className="l-nav">
+        <a href="#top" className="l-brand">
+          <span className="l-brand-mark" aria-hidden="true" />
+          Goowa
+        </a>
+        <nav aria-label="Sections">
+          <a href="#how">How it works</a>
+          <a href="#receipt">Receipt</a>
+          <a href="#mcp">MCP</a>
           <a href={GITHUB_URL} target="_blank" rel="noreferrer">
             GitHub
           </a>
-          <a href={DEMO_VIDEO_URL}>Demo video</a>
-          <a href="#receipt">Receipt example</a>
         </nav>
-      </div>
-      <div className="footer-bottom">
-        <span>© 2026 Goowa</span>
-        <span>Human approval required.</span>
-      </div>
-    </footer>
-  );
-}
-export default function LandingPage() {
-  useEffect(() => {
-    document.body.classList.add("landing-body");
-    const url = new URL(window.location.href);
-    if (url.searchParams.has("landing")) {
-      url.searchParams.delete("landing");
-      window.history.replaceState(
-        window.history.state,
-        "",
-        `${url.pathname}${url.search}${url.hash}`,
-      );
-    }
-    return () => document.body.classList.remove("landing-body");
-  }, []);
-  return (
-    <div className="landing-page" id="top">
-      <Navigation />
-      <main id="main">
-        <section className="hero-section">
-          <div className="hero-grid">
-            <div className="hero-copy">
-              <Eyebrow>AGENT-NATIVE RESEARCH EDITOR</Eyebrow>
-              <h1>
-                AI drafts. Goowa checks every claim. <span>You approve.</span>
-              </h1>
-              <p className="hero-sub">
-                Verify every claim against its source, catch citations that
-                don’t support the text, and publish with tamper-evident proof.
-              </p>
-              <div className="button-row">
-                <Link className="button button-primary" to="/app">
-                  Try the live demo <IconArrowRight aria-hidden />
-                </Link>
-                <a className="button button-secondary" href={DEMO_VIDEO_URL}>
-                  <IconPlayerPlay aria-hidden /> Watch the 2-min demo
-                </a>
-              </div>
-              <p className="hero-note">
-                <IconLock aria-hidden /> The agent can draft and verify. It
-                cannot publish.
-              </p>
-            </div>
-            <div className="hero-scene">
-              <div className="hero-glow" aria-hidden />
-              <div className="hero-artifact artifact-supported" aria-hidden>
-                <IconCircleCheck />
-                <span>
-                  <small>CLAIM 08</small>
-                  Supported
-                </span>
-              </div>
-              <div className="hero-artifact artifact-quarantine" aria-hidden>
-                <IconShieldLock />
-                <span>
-                  <small>SOURCE 03</small>
-                  Quarantined
-                </span>
-              </div>
-              <div className="hero-artifact artifact-receipt" aria-hidden>
-                <IconFileCheck />
-                <span>
-                  <small>RECEIPT HASH</small>
-                  0x9f3a…c21
-                </span>
-              </div>
-              <div className="hero-visual">
-                <div className="visual-label">
-                  <span>LIVE VERIFICATION RUN</span>
-                  <span>DEMO DOCUMENT · 12 CLAIMS</span>
-                </div>
-                <AgentConsole />
-              </div>
-            </div>
+        <Link className="l-btn l-btn-dark l-btn-sm" to="/app">
+          Open →
+        </Link>
+      </header>
+
+      <main id="top">
+        <section className="l-hero">
+          <div>
+            <Eyebrow>Research editor</Eyebrow>
+            <h1>Every claim, checked against its source.</h1>
+            <p className="l-lead">
+              An AI agent drafts. Goowa ties each factual sentence to the
+              passage that supports it, <em>and nothing publishes until a
+              human says so.</em>
+            </p>
+            <Cta />
+            <p className="l-note">
+              <span className="l-dot" /> Built on Agent-Native · open source
+            </p>
           </div>
-          <div className="hero-strip" aria-label="Product safeguards">
-            <span>
-              <IconCircleCheck aria-hidden /> Claim-level verification
-            </span>
-            <span>
-              <IconLinkOff aria-hidden /> Citation laundering detection
-            </span>
-            <span>
-              <IconShieldLock aria-hidden /> Injection quarantine
-            </span>
-            <span>
-              <IconFileCheck aria-hidden /> Tamper-evident receipts
-            </span>
-          </div>
+          <Specimen />
         </section>
-        <ProblemSection />
-        <HowSection />
-        <FeaturesSection />
-        <ProofSection />
-        <FinalSection />
+
+        <section className="l-band">
+          <p>
+            AI writes fluent research with confident citations.{" "}
+            <em>Some of those citations never said it.</em>
+          </p>
+        </section>
+
+        <section id="how" className="l-section">
+          <Eyebrow>How it works</Eyebrow>
+          <h2>Draft. Check. Decide.</h2>
+          <ol className="l-steps">
+            {steps.map(([title, body], i) => (
+              <li key={title}>
+                <span className="l-step-n">0{i + 1}</span>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="l-section l-split">
+          <div>
+            <Eyebrow>Permissions</Eyebrow>
+            <h2>The agent proposes. You publish.</h2>
+            <p className="l-body">
+              Enforced on the server, not in a prompt. Every refused attempt is
+              logged in the activity feed and counted on the receipt. External
+              agents connecting over MCP get the same rules.
+            </p>
+          </div>
+          <table className="l-table">
+            <thead>
+              <tr>
+                <th scope="col">Action</th>
+                <th scope="col">Agent</th>
+                <th scope="col">Human</th>
+              </tr>
+            </thead>
+            <tbody>
+              {permissions.map(([label, agent, human]) => (
+                <tr key={label}>
+                  <td>{label}</td>
+                  <td className={agent ? "t-ok" : "t-bad"}>
+                    {agent ? "yes" : "blocked"}
+                  </td>
+                  <td className={human ? "t-ok" : "t-bad"}>
+                    {human ? "yes" : "no"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        <section id="receipt" className="l-section l-split">
+          <div>
+            <Eyebrow>Claim receipt</Eyebrow>
+            <h2>Proof that travels with the article.</h2>
+            <ul className="l-list">
+              <li>
+                <b>Tamper-evident.</b> A canonical SHA-256 hash covers the
+                body, every claim and every evidence span.
+              </li>
+              <li>
+                <b>Checkable by anyone.</b> Paste a receipt into the verifier;
+                a single edited character is pinpointed.
+              </li>
+              <li>
+                <b>Live re-check.</b> Re-fetch the sources later and see which
+                claims they still support.
+              </li>
+            </ul>
+          </div>
+          <pre className="l-code" aria-label="Example receipt JSON">
+            <div className="l-code-bar">
+              <i />
+              <i />
+              <i />
+              <span>receipt.json</span>
+            </div>
+            <code>{receiptJson}</code>
+          </pre>
+        </section>
+
+        <section id="mcp" className="l-section l-split">
+          <div>
+            <Eyebrow>MCP</Eyebrow>
+            <h2>Check a draft from any agent.</h2>
+            <p className="l-body">
+              Connect Claude, Cursor or any MCP client and call{" "}
+              <code>check-draft</code> on text written anywhere. You get counts
+              by verdict, the blockers, and an editor link for the human
+              decision. Tokens are per user and revocable.
+            </p>
+          </div>
+          <pre className="l-code" aria-label="Command to add Goowa to Claude Code">
+            <div className="l-code-bar">
+              <i />
+              <i />
+              <i />
+              <span>terminal</span>
+            </div>
+            <code>
+              <span className="t-ok">$ </span>
+              {mcpCmd}
+            </code>
+          </pre>
+        </section>
+
+        <section className="l-closing">
+          <h2>Drafts are cheap. Proof isn&rsquo;t.</h2>
+          <Cta />
+        </section>
       </main>
-      <Footer />
+
+      <footer className="l-footer">
+        <span>Goowa · Builder.io Agent-Native Hackathon 2026</span>
+        <a href={GITHUB_URL} target="_blank" rel="noreferrer">
+          GitHub
+        </a>
+      </footer>
     </div>
   );
 }
