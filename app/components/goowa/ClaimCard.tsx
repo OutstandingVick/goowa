@@ -133,7 +133,7 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
             onChange={(e) => setDraft(e.target.value)}
             rows={4}
             aria-label="Claim text"
-            className="w-full resize-y rounded-md border bg-background p-2 font-serif text-[15px] leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full resize-y rounded-md border bg-background p-2 font-serif text-base leading-relaxed focus:outline-none focus:ring-2 focus:ring-ring"
           />
           <fieldset className="grid gap-1.5">
             <legend className="mb-1 text-xs font-medium text-muted-foreground">
@@ -176,7 +176,7 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
         </div>
       ) : (
         <>
-          <p className="font-serif text-[15px] leading-relaxed">{claim.text}</p>
+          <p className="font-serif text-base leading-relaxed">{claim.text}</p>
 
           {cited.length > 0 ? (
             <ul className="mt-3 grid grid-cols-[minmax(0,1fr)] gap-1">
