@@ -208,7 +208,7 @@ export function Editor({ state }: { state: DocumentState }) {
                 publishedAt={doc.publishedAt}
               />
             )}
-            <p className="mb-8 text-sm leading-relaxed text-muted-foreground">
+            <p className="mb-8 font-serif text-base leading-relaxed text-muted-foreground">
               {doc.topic}
             </p>
             {sources.length === 0 ? (
