@@ -1593,3 +1593,153 @@
     animation: none;
   }
 }
+
+/* ── Nav: logo · centred pill · sign-in style link + pill CTA ── */
+.l-page .l-nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  max-width: none;
+  padding: 16px 40px;
+}
+.l-nav .l-brand {
+  justify-self: start;
+}
+.l-nav-pill {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+  padding: 5px;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 0.06);
+  backdrop-filter: blur(12px);
+}
+.l-hero .l-nav .l-nav-pill a {
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: rgb(255 255 255 / 0.85);
+  font-family: var(--sans);
+  font-size: 15px;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: none;
+}
+.l-hero .l-nav .l-nav-pill a:hover {
+  background: rgb(255 255 255 / 0.08);
+  color: #fff;
+}
+.l-hero .l-nav .l-nav-pill .l-nav-pill-cta {
+  margin-left: 6px;
+  background: #fff;
+  color: #14091f;
+  font-weight: 500;
+}
+.l-hero .l-nav .l-nav-pill .l-nav-pill-cta:hover {
+  background: #ece6f7;
+  color: #14091f;
+}
+.l-nav-right {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 24px;
+  font-family: var(--sans);
+  font-size: 15px;
+}
+.l-nav-right > a:first-child {
+  color: rgb(255 255 255 / 0.85);
+  text-decoration: none;
+}
+.l-nav-right > a:first-child:hover {
+  color: #fff;
+}
+.l-nav-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px 11px 22px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: #14091f !important;
+  font-weight: 500;
+  text-decoration: none;
+  transition: filter 0.15s;
+}
+.l-nav-start:hover {
+  filter: brightness(1.07);
+}
+.l-nav-start svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.l-page .l-nav a:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+@media (max-width: 1000px) {
+  .l-page .l-nav {
+    display: flex;
+    padding: 14px 16px;
+  }
+  .l-nav-pill {
+    display: none;
+  }
+  .l-nav-right {
+    margin-left: auto;
+  }
+}
+@media (max-width: 600px) {
+  .l-nav-right > a:first-child {
+    display: none;
+  }
+}
+
+/* Nav sits on the hero gradient: transparent bar, glass pill. */
+.l-page .l-nav {
+  min-height: 0;
+  border-bottom: 0;
+  background: transparent;
+}
+.l-nav-pill {
+  border-color: rgb(255 255 255 / 0.12);
+  background: rgb(255 255 255 / 0.06);
+  backdrop-filter: blur(12px);
+}
+.l-hero .l-nav .l-nav-pill a {
+  color: rgb(255 255 255 / 0.85);
+}
+.l-hero .l-nav .l-nav-pill a:hover {
+  background: rgb(255 255 255 / 0.08);
+  color: #fff;
+}
+.l-hero .l-nav .l-nav-pill .l-nav-pill-cta,
+.l-hero .l-nav .l-nav-pill .l-nav-pill-cta:hover {
+  background: #fff;
+  color: #14091f;
+}
+.l-nav-right > a:first-child {
+  color: rgb(255 255 255 / 0.85);
+}
+.l-nav-right > a:first-child:hover {
+  color: #fff;
+}
+.l-nav-start,
+.l-nav-start:hover {
+  background: var(--gold);
+  color: #14091f !important;
+}
+.l-nav-start:hover {
+  filter: brightness(1.07);
+}
+/* Hero primary button: solid white again. */
+.l-hbtn-light {
+  background: #fff;
+  color: #14091f !important;
+}

@@ -120,27 +120,28 @@ export default function LandingPage() {
           <div className="l-hero-glow" aria-hidden="true" />
           <header className="l-nav">
             <a href="#top" className="l-brand">
-              <Logo variant="onWhite" size={28} />
+              <Logo variant="onPurple" size={28} />
             </a>
-            <nav aria-label="Sections">
+            <nav className="l-nav-pill" aria-label="Sections">
               <a href="#how">How it works</a>
               <a href="#receipt">Receipt</a>
               <a href="#mcp">MCP</a>
               <a href={GITHUB_URL} target="_blank" rel="noreferrer">
                 GitHub
               </a>
+              <Link className="l-nav-pill-cta" to="/app">
+                Try the demo
+              </Link>
             </nav>
-            <div className="l-nav-ctas">
-              <a
-                className="l-hbtn l-hbtn-light"
-                href={GITHUB_URL}
-                target="_blank"
-                rel="noreferrer"
-              >
+            <div className="l-nav-right">
+              <a href={GITHUB_URL} target="_blank" rel="noreferrer">
                 Source
               </a>
-              <Link className="l-hbtn l-hbtn-gold" to="/app">
+              <Link className="l-nav-start" to="/app">
                 Open Goowa
+                <svg viewBox="0 0 16 16" aria-hidden="true">
+                  <path d="M6 3.5 10.5 8 6 12.5" />
+                </svg>
               </Link>
             </div>
           </header>
