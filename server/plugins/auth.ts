@@ -1,9 +1,7 @@
-import { createToolkitAuthPlugin } from "@agent-native/toolkit/app/auth/server";
+import { createAuthPlugin } from "@agent-native/core/server";
 
-export default createToolkitAuthPlugin({
-  workspaceAppPublicPaths: ["/"],
-  rootAuth: true,
-  marketing: false,
+export default createAuthPlugin({
+  rootAuth: false,
   // Published receipts are proof for anyone with the link: the receipt page
   // and its read/verify actions work signed out. The actions only answer
   // for published documents.
