@@ -451,3 +451,5 @@ drafts under 200 characters were padded too little for `draft-document`.
 Fixed (short drafts are now padded with a claim-free note). Rough edge: the
 made-up "$40 trillion" figure came back weak, not unsupported, because number
 matching counted BIS footnote markers (39, 40, 41).
+Re-run after the fix: one `check-draft` call from Cursor succeeded
+(1 supported, 1 weak, editor link returned).
