@@ -183,13 +183,13 @@ export function VerdictPanel({
             <figcaption className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               The claim
             </figcaption>
-            <p className="font-serif text-sm leading-relaxed">{claim.text}</p>
+            <p className="font-serif text-base leading-relaxed">{claim.text}</p>
           </figure>
           <figure className="rounded-md border border-dashed p-2">
             <figcaption className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               Closest passage in {closestSource?.domain ?? "the source"}
             </figcaption>
-            <p className="line-clamp-6 font-serif text-sm leading-relaxed text-muted-foreground">
+            <p className="line-clamp-6 font-serif text-base leading-relaxed text-muted-foreground">
               {closest.snippet}
             </p>
           </figure>
@@ -219,7 +219,7 @@ export function VerdictPanel({
                 const src = sourceLabel(sources, ev.sourceId);
                 return (
                   <li key={i} className="rounded-md border p-2">
-                    <blockquote className="font-serif text-sm leading-relaxed">
+                    <blockquote className="font-serif text-base leading-relaxed">
                       {highlightMatches(ev.snippet, claim.text)}
                     </blockquote>
                     <p className="mt-1.5 flex flex-wrap items-center gap-x-2 text-[11px] text-muted-foreground">
