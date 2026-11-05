@@ -122,9 +122,6 @@ export default function LandingPage() {
               </Link>
             </nav>
             <div className="l-nav-right">
-              <a href={GITHUB_URL} target="_blank" rel="noreferrer">
-                Source
-              </a>
               <Link className="l-nav-start" to="/app">
                 Open Goowa
                 <svg viewBox="0 0 16 16" aria-hidden="true">

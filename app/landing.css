@@ -1695,11 +1695,6 @@
     margin-left: auto;
   }
 }
-@media (max-width: 600px) {
-  .l-nav-right > a:first-child {
-    display: none;
-  }
-}
 
 /* Nav sits on the hero gradient: transparent bar, glass pill. */
 .l-page .l-nav {
