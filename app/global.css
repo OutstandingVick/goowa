@@ -68,7 +68,13 @@
   color: hsl(var(--foreground));
   font-size: 1.5rem;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+}
+
+.agentkit-message-content {
+  font-family: "EB Garamond", Georgia, serif;
+  font-size: 1rem;
+  line-height: 1.55;
 }
 
 .agent-kit-chat-footer-stack {
