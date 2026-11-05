@@ -506,7 +506,7 @@
 .l-page {
   --purple: #7851a9;
   --purple-deep: #2a1745;
-  --gold: #ffcc33;
+  --gold: #edb158; /* brand gold, matches the logo segment */
   --sans: "Inter", system-ui, sans-serif;
 }
 .l-hero {
