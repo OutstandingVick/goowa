@@ -123,8 +123,10 @@ function AppContent() {
   const location = useLocation();
   const isChatThread = threadIdFromPath(location.pathname) !== null;
   useCommandMenuShortcut(useCallback(() => setCmdkOpen(true), []));
-  // Public receipt pages stand alone: no app chrome, sidebar, or agent.
-  if (location.pathname.startsWith("/r/")) return <Outlet />;
+  // Public marketing and receipt pages stand alone: no app chrome or agent.
+  if (location.pathname === "/" || location.pathname.startsWith("/r/")) {
+    return <Outlet />;
+  }
   return (
     <>
       <CommandMenu
@@ -182,14 +184,16 @@ export default function Root() {
   // The path, not the visitor, picks the shell, so the SSR shell stays one
   // cached page per URL.
   const { pathname } = useLocation();
+  const isPublicPath = pathname === "/" || pathname.startsWith("/r/");
   return (
     <AppToolkitProvider>
       <AppProviders
         queryClient={queryClient}
+        isPublicPath={isPublicPath}
         skeletonLayout={skeletonLayoutForPath(pathname)}
         i18n={{ catalog: i18nCatalog }}
       >
-        <DbSyncSetup />
+        {!isPublicPath && <DbSyncSetup />}
         <AppContent />
       </AppProviders>
     </AppToolkitProvider>
