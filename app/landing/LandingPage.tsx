@@ -117,9 +117,6 @@ export default function LandingPage() {
               <a href={GITHUB_URL} target="_blank" rel="noreferrer">
                 GitHub
               </a>
-              <Link className="l-nav-pill-cta" to="/app">
-                Try the demo
-              </Link>
             </nav>
             <div className="l-nav-right">
               <Link className="l-nav-start" to="/app">
