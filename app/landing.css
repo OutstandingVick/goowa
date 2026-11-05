@@ -41,7 +41,7 @@
   gap: 24px;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 14px clamp(24px, 5vw, 80px);
+  padding: 14px 48px;
   background: rgb(255 255 255 / 0.92);
   backdrop-filter: blur(8px);
 }
@@ -185,7 +185,7 @@
 .l-closing {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 96px clamp(24px, 5vw, 80px);
+  padding: 96px 48px;
 }
 .l-hero {
   display: grid;
@@ -299,7 +299,7 @@
 .l-band p {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 56px clamp(24px, 5vw, 80px);
+  padding: 56px 48px;
   color: var(--muted);
   font-family: var(--serif);
   font-size: clamp(26px, 3.2vw, 38px);
@@ -317,7 +317,7 @@
   list-style: none;
 }
 .l-steps li {
-  padding: 24px clamp(24px, 5vw, 80px);
+  padding: 24px;
 }
 .l-steps li + li {
   border-left: 1px solid var(--line);
@@ -431,7 +431,7 @@
   gap: 16px;
   max-width: 1440px;
   margin: 0 auto;
-  padding: 24px clamp(24px, 5vw, 80px);
+  padding: 24px;
   border-top: 1px solid var(--line);
   color: var(--faint);
   font-size: 12px;
