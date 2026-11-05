@@ -1239,7 +1239,7 @@
   border-color: var(--hw-accent);
   color: #fff;
   box-shadow:
-    0 0 0 4px rgb(255 204 51 / 0.12),
+    0 0 0 4px rgb(237 177 88 / 0.12),
     0 0 40px -6px rgb(120 81 169 / 0.8);
 }
 .hw-pod.is-on {
