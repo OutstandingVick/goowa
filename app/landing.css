@@ -39,9 +39,9 @@
   display: flex;
   align-items: center;
   gap: 24px;
-  max-width: 1160px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 14px 24px;
+  padding: 14px clamp(24px, 5vw, 80px);
   background: rgb(255 255 255 / 0.92);
   backdrop-filter: blur(8px);
 }
@@ -183,9 +183,9 @@
 .l-hero,
 .l-section,
 .l-closing {
-  max-width: 1160px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 96px 24px;
+  padding: 96px clamp(24px, 5vw, 80px);
 }
 .l-hero {
   display: grid;
@@ -297,9 +297,9 @@
   background: var(--surface);
 }
 .l-band p {
-  max-width: 1160px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 56px 24px;
+  padding: 56px clamp(24px, 5vw, 80px);
   color: var(--muted);
   font-family: var(--serif);
   font-size: clamp(26px, 3.2vw, 38px);
@@ -317,7 +317,7 @@
   list-style: none;
 }
 .l-steps li {
-  padding: 24px;
+  padding: 24px clamp(24px, 5vw, 80px);
 }
 .l-steps li + li {
   border-left: 1px solid var(--line);
@@ -429,9 +429,9 @@
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  max-width: 1160px;
+  max-width: 1440px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 24px clamp(24px, 5vw, 80px);
   border-top: 1px solid var(--line);
   color: var(--faint);
   font-size: 12px;
