@@ -18,7 +18,7 @@
   --g-insert: 152 55% 34%;
   --g-insert-bg: 145 60% 90%;
   --g-delete: 0 68% 46%;
-  --g-paper: 40 33% 99%;
+  --g-paper: 265 30% 99%;
 }
 
 .dark {
@@ -37,7 +37,7 @@
   --g-insert: 150 50% 60%;
   --g-insert-bg: 152 40% 20%;
   --g-delete: 0 80% 68%;
-  --g-paper: 0 0% 13%;
+  --g-paper: 265 30% 5%;
 }
 
 .g-prose {

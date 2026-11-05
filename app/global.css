@@ -8,33 +8,33 @@
 
 :root {
   --background: 0 0% 100%;
-  --foreground: 0 0% 10%;
+  --foreground: 265 30% 9%;
   --card: 0 0% 100%;
-  --card-foreground: 0 0% 10%;
+  --card-foreground: 265 30% 9%;
   --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 10%;
-  --primary: 0 0% 15%;
+  --popover-foreground: 265 30% 9%;
+  --primary: 262 66% 54%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 95%;
-  --secondary-foreground: 0 0% 15%;
-  --muted: 0 0% 95%;
-  --muted-foreground: 0 0% 43%;
-  --accent: 0 0% 95%;
-  --accent-foreground: 0 0% 15%;
+  --secondary: 265 30% 96%;
+  --secondary-foreground: 265 30% 15%;
+  --muted: 265 20% 96%;
+  --muted-foreground: 265 8% 42%;
+  --accent: 265 40% 95%;
+  --accent-foreground: 262 55% 35%;
   --destructive: 0 91% 71%;
   --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 90%;
-  --input: 0 0% 90%;
-  --ring: 0 0% 40%;
+  --border: 265 15% 90%;
+  --input: 265 15% 88%;
+  --ring: 262 66% 54%;
   --radius: 0.5rem;
-  --sidebar-background: 0 0% 97%;
-  --sidebar-foreground: 0 0% 43%;
-  --sidebar-primary: 0 0% 15%;
+  --sidebar-background: 265 25% 97%;
+  --sidebar-foreground: 265 8% 40%;
+  --sidebar-primary: 262 66% 54%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 0 0% 95%;
-  --sidebar-accent-foreground: 0 0% 15%;
-  --sidebar-border: 0 0% 90%;
-  --sidebar-ring: 0 0% 40%;
+  --sidebar-accent: 265 40% 94%;
+  --sidebar-accent-foreground: 262 55% 30%;
+  --sidebar-border: 265 15% 90%;
+  --sidebar-ring: 262 66% 54%;
   --chat-sidebar-width: 17.5rem;
   --chat-sidebar-content-inset: 0.5rem;
   --chat-sidebar-row-padding: 0.75rem;
@@ -230,34 +230,34 @@
 }
 
 .dark {
-  --background: 0 0% 13%;
-  --foreground: 0 0% 90%;
-  --card: 0 0% 16.47%;
-  --card-foreground: 0 0% 90%;
-  --popover: 0 0% 15%;
-  --popover-foreground: 0 0% 90%;
-  --primary: 0 0% 75%;
-  --primary-foreground: 0 0% 10%;
-  --secondary: 0 0% 18%;
-  --secondary-foreground: 0 0% 90%;
-  --muted: 0 0% 16%;
-  --muted-foreground: 0 0% 60%;
-  --accent: 0 0% 18%;
-  --accent-foreground: 0 0% 90%;
+  --background: 265 30% 5%;
+  --foreground: 265 10% 92%;
+  --card: 265 25% 8%;
+  --card-foreground: 265 10% 92%;
+  --popover: 265 25% 9%;
+  --popover-foreground: 265 10% 92%;
+  --primary: 262 75% 68%;
+  --primary-foreground: 265 40% 8%;
+  --secondary: 265 20% 13%;
+  --secondary-foreground: 265 10% 92%;
+  --muted: 265 20% 11%;
+  --muted-foreground: 265 8% 62%;
+  --accent: 265 30% 15%;
+  --accent-foreground: 265 10% 95%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 24%;
-  --input: 0 0% 24%;
-  --ring: 0 0% 60%;
+  --border: 265 15% 17%;
+  --input: 265 15% 19%;
+  --ring: 262 75% 68%;
   --radius: 0.5rem;
-  --sidebar-background: 0 0% 10%;
-  --sidebar-foreground: 0 0% 60%;
-  --sidebar-primary: 0 0% 75%;
-  --sidebar-primary-foreground: 0 0% 10%;
-  --sidebar-accent: 0 0% 16%;
-  --sidebar-accent-foreground: 0 0% 90%;
-  --sidebar-border: 0 0% 20%;
-  --sidebar-ring: 0 0% 60%;
+  --sidebar-background: 265 35% 3%;
+  --sidebar-foreground: 265 8% 62%;
+  --sidebar-primary: 262 75% 68%;
+  --sidebar-primary-foreground: 265 40% 8%;
+  --sidebar-accent: 265 30% 13%;
+  --sidebar-accent-foreground: 265 10% 95%;
+  --sidebar-border: 265 15% 13%;
+  --sidebar-ring: 262 75% 68%;
 }
 
 @layer base {
@@ -281,4 +281,12 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.34);
+}
+
+/* Brand atmosphere, matching the landing page: a faint royal-purple glow. */
+.dark body {
+  background-image:
+    radial-gradient(60% 40% at 50% 0%, rgb(120 81 169 / 0.16), transparent 70%),
+    radial-gradient(50% 35% at 100% 100%, rgb(120 81 169 / 0.1), transparent 70%);
+  background-attachment: fixed;
 }
