@@ -7,6 +7,8 @@ import {
 import { Link } from "react-router";
 
 import { Logo } from "@/components/brand/Logo";
+
+import { HowItWorks } from "./HowItWorks";
 import type { LinksFunction } from "react-router";
 
 import landingStylesheet from "../landing.css?url";
@@ -109,25 +111,6 @@ function Specimen() {
     </figure>
   );
 }
-
-const steps = [
-  [
-    "Ingest",
-    "Sources are fetched and scanned. Pages carrying prompt injections are quarantined, never used as evidence.",
-  ],
-  [
-    "Extract",
-    "Every sentence with a figure, a date, or a name becomes a claim, tied to the sources it cites.",
-  ],
-  [
-    "Verify",
-    "Each claim is matched against the source text: exact quote, paraphrase, or numbers that disagree. Weak and laundered claims are flagged.",
-  ],
-  [
-    "Decide",
-    "The agent proposes fixes. You accept or reject them. Change one claim and everything depending on it is re-checked.",
-  ],
-] as const;
 
 const permissions = [
   ["Draft and propose edits", true, true],
@@ -241,19 +224,7 @@ export default function LandingPage() {
           </p>
         </section>
 
-        <section id="how" className="l-section">
-          <Eyebrow>How it works</Eyebrow>
-          <h2>Draft. Check. Decide.</h2>
-          <ol className="l-steps">
-            {steps.map(([title, body], i) => (
-              <li key={title}>
-                <span className="l-step-n">0{i + 1}</span>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
+        <HowItWorks />
 
         <section className="l-section l-split">
           <div>
