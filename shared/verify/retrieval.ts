@@ -1,3 +1,4 @@
+import { extractNumbers, type NumberMention } from "./numbers.js";
 // Deterministic retrieval: split a source into passages and rank them by
 // lexical overlap with a claim. No model is involved here.
 
@@ -78,19 +79,27 @@ export function normalizeWord(word: string): string {
 /** Content tokens with weights: numbers, dates, %, and Names count 3x. */
 export function weightedTokens(text: string): Map<string, number> {
   const tokens = new Map<string, number>();
-  const re = /\$?\d[\d,.]*%?|[A-Za-z][A-Za-z’'-]*/g;
+  // Numbers become quantity tokens, so "$40 trillion" only matches the same
+  // quantity, never a bare "40" such as a footnote marker.
+  for (const n of extractNumbers(text)) {
+    tokens.set(quantityToken(n), 3);
+  }
+  const re = /[A-Za-z][A-Za-z’'-]*/g;
   for (const m of text.matchAll(re)) {
     const raw = m[0];
-    const isNumber = /\d/.test(raw);
-    const token = isNumber
-      ? raw.replace(/[,$]/g, "").replace(/\.$/, "")
-      : normalizeWord(raw);
-    if (!isNumber && (token.length < 2 || STOP.has(token))) continue;
-    const isName = !isNumber && /^[A-Z]/.test(raw) && m.index !== 0;
-    const weight = isNumber ? 3 : isName || /^[A-Z]{2,}$/.test(raw) ? 3 : 1;
+    const token = normalizeWord(raw);
+    if (token.length < 2 || STOP.has(token)) continue;
+    const isName = /^[A-Z]/.test(raw) && m.index !== 0;
+    const weight = isName || /^[A-Z]{2,}$/.test(raw) ? 3 : 1;
     tokens.set(token, Math.max(tokens.get(token) ?? 0, weight));
   }
   return tokens;
+}
+
+/** One token per quantity: 40% and 0.4 share a token, $40 and 40tn do not. */
+function quantityToken(n: NumberMention): string {
+  const value = n.kind === "percent" ? n.value / 100 : n.value;
+  return `#${Number(value.toPrecision(12))}`;
 }
 
 /** Share of the claim's weighted tokens that appear in the passage (0–1). */

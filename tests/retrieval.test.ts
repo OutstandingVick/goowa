@@ -28,7 +28,7 @@ describe("splitSentences", () => {
 describe("weightedTokens", () => {
   it("weights numbers and names 3x and drops stop words", () => {
     const t = weightedTokens("Circle says USDC is backed 100% by cash");
-    expect(t.get("100%")).toBe(3);
+    expect(t.get("#1")).toBe(3); // 100% as a quantity
     expect(t.get("usdc")).toBe(3);
     expect(t.get("cash")).toBe(1);
     expect(t.has("is")).toBe(false);
