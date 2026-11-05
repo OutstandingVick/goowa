@@ -442,3 +442,12 @@ of `/fixtures/live-source`; receipt unchanged afterwards).
 Ran the ui-skills.com Improve UI audit on the landing page; findings and
 fixes are in `docs/ui-audit.md`. One brand gold (`#EDB158`) now, a single
 GitHub link in the nav, and one nav CTA ("Open Goowa") for the app.
+
+## MCP real-client test (2026-11-05)
+
+Cursor connected with a personal token and checked a two-sentence draft
+(`docs/screenshots/15-mcp-cursor.webp`). The first `check-draft` call failed:
+drafts under 200 characters were padded too little for `draft-document`.
+Fixed (short drafts are now padded with a claim-free note). Rough edge: the
+made-up "$40 trillion" figure came back weak, not unsupported, because number
+matching counted BIS footnote markers (39, 40, 41).
