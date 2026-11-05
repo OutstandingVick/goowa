@@ -453,3 +453,9 @@ made-up "$40 trillion" figure came back weak, not unsupported, because number
 matching counted BIS footnote markers (39, 40, 41).
 Re-run after the fix: one `check-draft` call from Cursor succeeded
 (1 supported, 1 weak, editor link returned).
+
+## MCP revocation test (2026-11-05)
+
+Test token: `tools/list` returned 200 at 19:00:12. Revoked under
+`/mcp/connect` → Existing connections, the same call returned 401 at
+19:01:23. Revocation cuts access immediately.
