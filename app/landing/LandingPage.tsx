@@ -9,13 +9,10 @@ import {
   IconGitBranch,
   IconLinkOff,
   IconLock,
-  IconMoon,
   IconPlayerPlay,
   IconShieldLock,
   IconSparkles,
-  IconSun,
 } from "@tabler/icons-react";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import type { LinksFunction } from "react-router";
@@ -56,21 +53,6 @@ function Wordmark() {
       </span>
       <span>Goowa</span>
     </span>
-  );
-}
-function ThemeButton({ compact = false }: { compact?: boolean }) {
-  const { resolvedTheme, setTheme } = useTheme();
-  const dark = resolvedTheme === "dark";
-  return (
-    <button
-      type="button"
-      className={compact ? "theme-button compact" : "theme-button"}
-      onClick={() => setTheme(dark ? "light" : "dark")}
-      aria-label={`Switch to ${dark ? "light" : "dark"} theme`}
-    >
-      {dark ? <IconSun aria-hidden /> : <IconMoon aria-hidden />}
-      {!compact && <span>{dark ? "Light" : "Dark"}</span>}
-    </button>
   );
 }
 function Eyebrow({ children }: { children: React.ReactNode }) {
@@ -150,7 +132,6 @@ function Navigation() {
           </a>
         </div>
         <div className="nav-actions">
-          <ThemeButton compact />
           <Link className="button button-primary button-small" to="/app">
             Open Goowa <IconArrowRight aria-hidden />
           </Link>
@@ -715,7 +696,6 @@ function Footer() {
           <a href={DEMO_VIDEO_URL}>Demo video</a>
           <a href="#receipt">Receipt example</a>
         </nav>
-        <ThemeButton />
       </div>
       <div className="footer-bottom">
         <span>© 2026 Goowa</span>

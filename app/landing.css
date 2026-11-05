@@ -19,17 +19,6 @@
   font-family: "Inter Variable", Inter, sans-serif;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
-.dark .landing-page {
-  --paper: #100c17;
-  --ink: #f9f6ff;
-  --surface: #17111f;
-  --muted: #aaa1b6;
-  --line: #30263c;
-  --line-strong: #4a3d59;
-  --brand-soft: #2a1941;
-  --console: #0a080e;
-  --shadow: 0 28px 80px rgb(0 0 0 / 0.38);
-}
 .landing-body {
   background: var(--paper);
 }
@@ -124,28 +113,6 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-}
-.theme-button {
-  min-height: 42px;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--line);
-  border-radius: 0.6rem;
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
-  cursor: pointer;
-}
-.theme-button svg {
-  width: 17px;
-  height: 17px;
-}
-.theme-button.compact {
-  min-width: 42px;
-  justify-content: center;
-  padding: 0.6rem;
 }
 .button {
   min-height: 48px;
@@ -1440,10 +1407,6 @@
   .footer-inner nav {
     grid-row: 2;
   }
-  .footer-inner > .theme-button {
-    grid-column: 2;
-    grid-row: 1;
-  }
 }
 @media (max-width: 600px) {
   .nav-inner,
@@ -1455,9 +1418,6 @@
   }
   .nav-inner {
     min-height: 64px;
-  }
-  .nav-actions .theme-button {
-    display: none;
   }
   .button-small {
     padding-inline: 0.75rem;
@@ -1571,11 +1531,6 @@
     grid-template-columns: 1fr;
     gap: 2rem;
   }
-  .footer-inner > .theme-button {
-    grid-column: 1;
-    grid-row: 3;
-    justify-self: start;
-  }
   .footer-inner nav {
     grid-row: 2;
   }
@@ -1584,6 +1539,235 @@
     font-size: 0.55rem;
   }
 }
+/* Purple-led landing hierarchy. Product status colors remain scoped to the
+   white mockup cards and continue to mirror the application tokens. */
+.landing-page {
+  --brand: #723cd6;
+  --brand-bright: #5b2cab;
+  --brand-soft: #eee7fb;
+  --gold: #edb158;
+  --ink: #14111c;
+  --paper: #fcffff;
+  --surface: #fcffff;
+  --muted: #5a4b70;
+  --line: #d8c8f4;
+  --line-strong: #b99ce9;
+  --console: #fcffff;
+  --shadow: 0 24px 70px rgb(91 44 171 / 0.2);
+}
+.landing-nav {
+  border-color: rgb(252 255 255 / 0.2);
+  background: rgb(114 60 214 / 0.94);
+  color: var(--paper);
+}
+.landing-nav .nav-links a,
+.landing-nav .nav-brand {
+  color: var(--paper);
+}
+.landing-nav .nav-links a:hover {
+  color: var(--gold);
+}
+.landing-nav .wordmark-mark,
+.landing-footer .wordmark-mark {
+  background: rgb(252 255 255 / 0.18);
+}
+.landing-nav .button-primary,
+.hero-section .button-primary,
+.final-section .button-primary {
+  background: var(--gold);
+  color: var(--ink);
+  box-shadow: 0 8px 24px rgb(20 17 28 / 0.18);
+}
+.landing-nav .button-primary:hover,
+.hero-section .button-primary:hover,
+.final-section .button-primary:hover {
+  background: #f4c777;
+}
+.hero-section {
+  border-color: rgb(252 255 255 / 0.22);
+  background-color: var(--brand);
+  background-image:
+    linear-gradient(rgb(252 255 255 / 0.14) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(252 255 255 / 0.14) 1px, transparent 1px);
+  color: var(--paper);
+}
+.hero-section .eyebrow,
+.how-section .eyebrow,
+.proof-section .eyebrow,
+.final-section .eyebrow {
+  color: var(--gold);
+}
+.hero-copy h1 span {
+  color: var(--paper);
+}
+.hero-sub,
+.hero-note,
+.visual-label,
+.hero-strip span {
+  color: rgb(252 255 255 / 0.82);
+}
+.hero-glow,
+.final-glow {
+  background:
+    radial-gradient(circle at 68% 32%, rgb(237 177 88 / 0.72), transparent 31%),
+    radial-gradient(circle at 42% 58%, rgb(184 156 239 / 0.64), transparent 57%);
+  opacity: 0.95;
+}
+.hero-section .button-secondary,
+.final-section .button-secondary {
+  border-color: rgb(252 255 255 / 0.55);
+  background: rgb(252 255 255 / 0.1);
+  color: var(--paper);
+}
+.hero-section .button-secondary:hover,
+.final-section .button-secondary:hover {
+  border-color: var(--gold);
+}
+.hero-strip {
+  border-color: rgb(252 255 255 / 0.22);
+}
+.hero-strip span,
+.hero-strip span:first-child {
+  border-color: rgb(252 255 255 / 0.22);
+}
+.hero-strip svg {
+  color: var(--gold);
+}
+.console-shell {
+  border-color: var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+}
+.console-bar,
+.console-summary {
+  border-color: var(--line);
+  color: var(--muted);
+}
+.console-dots i {
+  background: var(--line-strong);
+}
+.console-line.command {
+  color: var(--ink);
+}
+.console-summary span {
+  border-color: var(--line);
+  color: var(--muted);
+}
+.console-line.gold {
+  color: #6d4813;
+  background: rgb(237 177 88 / 0.2);
+}
+.problem-section,
+.features-section {
+  background: var(--paper);
+  color: var(--ink);
+}
+.how-section {
+  border-color: #8d62e0;
+  background: var(--brand);
+  color: var(--paper);
+}
+.how-section .section-heading > p,
+.how-section .step p {
+  color: rgb(252 255 255 / 0.82);
+}
+.how-section .steps-list,
+.how-section .step {
+  border-color: rgb(252 255 255 / 0.24);
+}
+.how-section .step-number,
+.how-section .step-icon {
+  color: var(--gold);
+}
+.workflow-diagram {
+  color: var(--ink);
+}
+.proof-section {
+  background: var(--brand);
+  color: var(--paper);
+}
+.proof-section .section-heading > p,
+.action-proof > p {
+  color: rgb(252 255 255 / 0.82);
+}
+.receipt-demo {
+  border-color: var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 25px 70px rgb(91 44 171 / 0.28);
+}
+.receipt-head,
+.receipt-claim,
+.receipt-fields div,
+.receipt-fields div:nth-child(odd) {
+  border-color: var(--line);
+}
+.receipt-head small,
+.receipt-claim small,
+.receipt-hash small,
+.receipt-fields dt,
+.receipt-fields dd,
+.receipt-actions label {
+  color: var(--muted);
+}
+.receipt-revision {
+  border-color: var(--line);
+  color: var(--muted);
+}
+.receipt-logo,
+.receipt-actions button {
+  background: var(--brand);
+  color: var(--paper);
+}
+.receipt-checks span {
+  color: var(--muted);
+}
+.receipt-actions label i {
+  background: var(--line-strong);
+}
+.code-labels span {
+  border-color: rgb(252 255 255 / 0.35);
+  color: var(--paper);
+}
+.action-proof pre {
+  border-color: #8d62e0;
+  background: var(--brand-bright);
+  color: var(--paper);
+}
+.code-purple {
+  color: #d9c8f5;
+}
+.agent-rule {
+  color: var(--paper) !important;
+}
+.final-section {
+  border-color: rgb(252 255 255 / 0.22);
+  background: var(--brand);
+  color: var(--paper);
+}
+.final-content p,
+.final-content small {
+  color: rgb(252 255 255 / 0.82);
+}
+.landing-footer {
+  background: var(--brand);
+  color: var(--paper);
+}
+.footer-inner {
+  grid-template-columns: 1fr auto;
+}
+.landing-footer .footer-inner > div > p,
+.landing-footer nav a,
+.footer-bottom {
+  color: rgb(252 255 255 / 0.82);
+}
+.landing-footer nav a:hover {
+  color: var(--gold);
+}
+.footer-bottom {
+  border-color: rgb(252 255 255 / 0.24);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .landing-page *,
   .landing-page *::before,
@@ -1620,7 +1804,6 @@
 }
 @media (forced-colors: active) {
   .button,
-  .theme-button,
   .mini-ui,
   .draft-card {
     border: 1px solid ButtonText;
