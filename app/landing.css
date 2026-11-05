@@ -1696,11 +1696,6 @@
   background: rgb(255 255 255 / 0.08);
   color: #fff;
 }
-.l-hero .l-nav .l-nav-pill .l-nav-pill-cta,
-.l-hero .l-nav .l-nav-pill .l-nav-pill-cta:hover {
-  background: #fff;
-  color: #14091f;
-}
 .l-nav-start,
 .l-nav-start:hover {
   background: var(--gold);
