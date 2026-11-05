@@ -653,17 +653,17 @@
   font-family: var(--sans);
   font-size: clamp(38px, 5.4vw, 68px);
   font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.08;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
   text-shadow: 0 2px 30px rgb(42 23 69 / 0.4);
 }
 .l-hero .l-lead {
   max-width: 52ch;
   margin: 28px auto 0;
   color: rgb(255 255 255 / 0.72);
-  font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.5;
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 1.55;
 }
 .l-hero-ctas {
   display: flex;
@@ -890,7 +890,7 @@
 .l-steps h3 {
   font-family: var(--sans);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   line-height: 1.1;
 }
 .l-page h2 {
@@ -901,7 +901,10 @@
 }
 .l-body,
 .l-list,
-.l-steps p,
+.l-steps p {
+  font-family: var(--serif);
+  font-size: 16px;
+}
 .l-table {
   font-family: var(--sans);
   font-size: 15px;
@@ -927,7 +930,7 @@
 }
 .l-band p {
   color: var(--muted);
-  font-family: var(--sans);
+  font-family: var(--serif);
   font-weight: 500;
   font-size: clamp(22px, 2.6vw, 32px);
 }
