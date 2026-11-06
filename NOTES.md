@@ -467,3 +467,25 @@ BIS footnote marker "40" (3x weight) and the claim fell into the
 different-figures path as weak. Number tokens are now quantities
 (`#40000000000000` vs `#40`; 40% and 0.4 share one). The invented claim is
 now laundered. `tests/footnote-numbers.test.ts` covers it.
+
+## Phase 6: polish and demo prep (2026-11-06)
+
+Rough edges fixed: empty header band over the editor (agent toggle moved
+into the editor top bar), "Checked · requested by you" label, no empty
+change sets or "0 rewrites" summaries, Settings says Goowa, plain error
+messages, one name for unchecked claims ("Not checked").
+
+Speed: model answers are cached by claim + candidate sentence text
+(`goowa-judge:*` settings, `JUDGE_VERSION` to expire), and ingest caches
+fetched pages for 6h (`goowa-fetch:*`; live re-checks and staleness stay
+live; the live-source fixture is never cached).
+
+Demo: `fixtures/demo-flow.ts`, `reset-demo` (human only), `pnpm demo:reset`,
+hidden `/demo`. `pnpm demo:full` runs reset → verify → select-to-correct →
+ripple → drop quarantined source → re-verify → agent publish (blocked) →
+human publish → receipt verify + tamper, 3×: ALL PASS, identical verdicts.
+Warm timings per step 9–89 ms; reset 57–162 ms warm, ~2 s with cold fetches.
+`verify:fixture` 8/8 (148 ms per claim with the cache).
+
+Still dev-only: React warns about the theme/locale init `<script>` tags in
+`root.tsx` (framework template); production logs no errors.
