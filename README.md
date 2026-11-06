@@ -2,83 +2,100 @@
 
 # Goowa
 
-A research editor where an AI agent drafts a document and every factual claim
-becomes an editable claim card, verified against its source. Humans correct
-claims, the agent proposes edits, and only a human can publish.
+**AI drafts the research. You approve every claim.**
 
-Built on [Agent-Native](https://www.agent-native.com/docs/) for the Builder.io
-Agent-Native Hackathon.
+Goowa is a research editor built on [Agent-Native](https://www.agent-native.com).
+An agent drafts a document; every factual sentence becomes a claim tied to the
+passage that supports it; a human corrects, accepts, and publishes; and
+publishing produces a tamper-evident Claim Receipt anyone can check.
 
-**Status: Phase 5** — Claim Receipts and MCP. See [NOTES.md](NOTES.md).
+Live: https://goowa.vercel.app · Demo video: _coming soon_
 
-![Editor overview](docs/screenshots/1-overview.png)
+## The problem
 
-## What's here
+AI writes fluent research with confident citations, and some of those
+citations never said it. Checking means opening every source and hunting for
+the sentence, so nobody does, and "laundered" citations (a real, reputable
+URL attached to a claim it does not support) slip into reports, posts, and
+pitch decks. Agents make this worse at scale. Goowa makes the check the
+default: each claim carries its evidence, wrong figures ripple to everything
+derived from them, an agent can never publish, and the published article
+ships with proof.
 
-- `actions/ping.ts` — echoes text; reports whether the UI or the agent called it.
-- `actions/fetch-source.ts` — fetches a URL server-side, returns title, a
-  2,000-char readable excerpt, a sha256 of the readable text, or a typed error.
-- `/spike` — page that calls both actions from the UI.
-- Documents, sources, claims, and edits with the human-only rules
-  (see AGENTS.md for the action list).
-- `/docs/:id` — the editor: colour-coded claim highlights, claim cards,
-  select-to-correct (flag or ask the agent), tracked-change proposals, and a
-  pending edits drawer where only a human can accept.
-- `/debug/:id` — the Phase 1 debug view (hidden from the nav).
+## The loop
 
-## Verification
-
-Each claim is checked against the full text of its cited sources. Exact
-matches, laundered citations (the source loads but never says it), and changed
-numbers are decided by rules; only paraphrases go to a model, which can only
-choose among real sentences from the source. Prompt-injected pages are
-quarantined on ingest.
-
-```bash
-AGENT_ORG_ID=<workspace id> pnpm verify:fixture   # PASS/FAIL per seeded claim
+```mermaid
+flowchart LR
+  A[Agent drafts] --> B[Ingest sources<br/>quarantine injections]
+  B --> C[Extract claims]
+  C --> D[Verify each claim<br/>supported · weak · unsupported<br/>laundered · unverifiable]
+  D --> E[Human selects and corrects<br/>agent proposes edits]
+  E --> F[Fix ripples to<br/>dependent claims]
+  F --> D
+  D --> G{Publish gate}
+  G -- agent --> X[Blocked and logged]
+  G -- human --> H[Published + Claim Receipt]
+  H --> I[Anyone verifies,<br/>tamper-checks, re-checks live]
 ```
 
-![Laundered claim](docs/screenshots/4-laundered-card.png)
+![The Goowa editor: claims highlighted by verdict, with evidence and agent verdicts beside the draft](docs/screenshots/19-editor-demo.jpg)
 
-## Propagation and publishing
+## How it uses Agent-Native
 
-Fix one claim and everything that depends on it is flagged, re-verified, and
-given code-computed rewrites in one change set. Publishing is human only and
-passes a gate (unsupported, laundered, quarantined, needs-review claims,
-pending proposals); a human can override some blockers with a reason.
+Every operation is a `defineAction` in [`actions/`](actions). The same action
+serves the UI (client hooks), Goowa's in-app agent (as a tool), external
+agents (over MCP at `/mcp`), and scripts (the CLI). Human-only rules are
+enforced inside the actions from `ctx.caller`, not in prompts.
 
-```bash
-AGENT_ORG_ID=<workspace id> pnpm demo:propagation
-AGENT_ORG_ID=<workspace id> pnpm demo:gate
-```
+| Action | UI | In-app agent | MCP | Notes |
+| --- | :-: | :-: | :-: | --- |
+| `create-document`, `list-documents`, `get-document-state` | ✓ | ✓ | ✓ | |
+| `ingest-sources`, `fetch-source`, `get-source-text`, `scan-source-for-injection` | ✓ | ✓ | ✓ | Pages with prompt injections are quarantined |
+| `draft-document`, `extract-claims`, `add-claim` | ✓ | ✓ | ✓ | Claims are exact quotes; the server finds spans |
+| `verify-claim`, `verify-document` | ✓ | ✓ | ✓ | Deterministic checks first, model only picks among real sentences |
+| `update-claim`, `propagate-change` | ✓ | ✓ | ✓ | Agents' text changes become proposals |
+| `propose-edit` | ✓ | ✓ | ✓ | Select-to-correct answers with this |
+| `request-publish` | ✓ | ✓ | ✓ | Runs the publish gate |
+| `check-draft` | | ✓ | ✓ | For external agents: check outside text |
+| `get-receipt`, `verify-receipt`, `recheck-receipt-live` | ✓ | ✓ | ✓ | Public, read-only |
+| `decide-edit`, `publish` | ✓ | | refuses | **Human only.** Agent attempts are logged |
+| `mark-reviewed`, `set-document-status`, `set-live-fixture-version`, `reset-demo` | ✓ | | | **Human only** |
 
-![Change set](docs/screenshots/8-change-set.png)
+Framework pieces used: `defineAction` and action errors, `useActionQuery` /
+`useActionMutation`, live sync (`useDbSync`), progress runs, sharing and
+access control (`ownableColumns`, `assertAccess`), `decide()` for the only
+model call, `ssrfSafeFetch`, the agent chat and its MCP server, settings
+storage, and the auth plugin's public paths for receipts.
+
+## Permission model
+
+- **The agent proposes; a human decides.** Agents (in-app or over MCP) can
+  draft, ingest, extract, verify, and propose edits. Only a human can accept or
+  reject an edit, set a final claim status, clear a review flag, override a
+  blocker (with a reason), or publish.
+- **Enforced on the server.** `ctx.caller` `frontend` or `cli` is human;
+  everything else, including MCP, is the agent. `publish` and `decide-edit`
+  are listed for MCP so an attempt can be refused and logged ("Agent attempted
+  to publish · blocked"), and counted on the receipt.
+- **Personal, revocable MCP access.** Tokens come from `/mcp/connect` and stop
+  working the moment they are revoked under "Existing connections".
+- **Quarantine is not overridable.** A claim backed only by a source with a
+  prompt injection cannot be published until the human re-sources it.
 
 ## Claim Receipt
 
-Every published revision ships with an immutable receipt at `/r/<documentId>`,
-readable without signing in: the article with claim highlights, each claim's
-evidence, human decisions and overrides, and a receipt hash. Anyone can
-**verify** it (hashes and every snippet against the source text frozen at
-publish) or **re-check** it against the live sources.
-
-```bash
-AGENT_ORG_ID=<workspace id> pnpm demo:receipt
-```
-
-![Receipt](docs/screenshots/11-receipt-page.png)
+Publishing freezes a receipt: the body, every claim with its verdict,
+evidence spans, source content hashes, human decisions and override reasons,
+and a canonical SHA-256 hash over all of it. The public page at `/r/<id>`
+verifies the hashes in the browser, pinpoints a single edited character, and
+re-checks the sources live. Spec: [docs/receipt-spec.md](docs/receipt-spec.md).
 
 ## Use Goowa from Claude or Cursor
 
-Goowa is an MCP server at `https://goowa.vercel.app/mcp`. Connect with a
-**personal token, not your password**: open **/mcp/connect** (or Settings ›
-MCP server), create a token, and revoke it there under "Existing connections"
-whenever you like. The token only reaches Goowa's actions, and external agents
-get the same rules as Goowa's own agent: they can check drafts, verify claims,
-propose edits, and read or verify receipts, but `publish` and `decide-edit`
-refuse them and the attempt is logged.
+Goowa is an MCP server at `https://goowa.vercel.app/mcp`. Create a personal
+token at **/mcp/connect** (revoke it there any time).
 
-**Cursor** (`~/.cursor/mcp.json` or `.cursor/mcp.json` in a project):
+**Cursor** (`~/.cursor/mcp.json`):
 
 ```json
 {
@@ -91,8 +108,8 @@ refuse them and the attempt is logged.
 }
 ```
 
-**Claude Desktop / claude.ai**: Customize → Connectors → Add custom connector,
-URL `https://goowa.vercel.app/mcp`, then approve on Goowa's consent page.
+**Claude Desktop / claude.ai**: Customize → Connectors → Add custom connector →
+`https://goowa.vercel.app/mcp`, then approve.
 
 **Claude Code**:
 
@@ -100,22 +117,9 @@ URL `https://goowa.vercel.app/mcp`, then approve on Goowa's consent page.
 claude mcp add --transport http goowa https://goowa.vercel.app/mcp
 ```
 
-Clients that support remote MCP OAuth (Claude connectors, Claude Code) only
-need the URL; they open a consent page instead of using a token, and the grant
-shows up (and can be revoked) under the same "Existing connections". Try: *"Use
-check-draft on this paragraph with these sources"*. It returns counts,
-blockers, and an editor link where you decide.
-
-## Demo fixture
-
-Runs create → ingest → draft → extract for a stablecoin explainer and checks
-the result (needs a model provider connected in Settings › Model):
-
-```bash
-AGENT_ORG_ID=<workspace id> pnpm demo
-```
-
-The agent chat (`/chat`) calls the same two actions as tools.
+Then: *"Use Goowa's check-draft on this paragraph with these sources …"*. Pass
+`claims` (exact quotes) for precise extraction; otherwise every sentence with a
+figure, date, or name is checked.
 
 ## Run locally
 
@@ -123,49 +127,32 @@ Requires Node 22.22+ and pnpm.
 
 ```bash
 pnpm install
-cp .env.example .env   # add a provider key, e.g. ANTHROPIC_API_KEY
-pnpm dev
+cp .env.example .env   # add a model provider key, e.g. ANTHROPIC_API_KEY
+pnpm dev               # http://localhost:8080
 ```
 
-Try it from the terminal:
+Demo and checks (with the dev server running):
 
 ```bash
-pnpm action ping --text hello
-pnpm action fetch-source --url https://en.wikipedia.org/wiki/Fact-checking
-```
-
-Actions on a document from the terminal run as you only when they know your
-identity and workspace (otherwise ownership checks refuse them):
-
-```bash
-AGENT_USER_EMAIL=dev@local.test AGENT_ORG_ID=<workspace id> pnpm action get-document-state --documentId <id>
-```
-
-Run the tests:
-
-```bash
+pnpm demo:reset                      # fresh demo document in <1s; or open /demo
+pnpm demo:full                       # whole flow 3×, timings, identical verdicts
+AGENT_ORG_ID=<workspace id> pnpm verify:fixture   # one claim per verdict
 pnpm test
 ```
 
-## Choosing the model
-
-Set `AGENT_ENGINE` and `AGENT_MODEL` in `.env` (see `.env.example`). Supported
-engines: `anthropic`, `ai-sdk:openai`, `ai-sdk:anthropic`, `ai-sdk:google`,
-`ai-sdk:groq`, `ai-sdk:mistral`, `ai-sdk:cohere`, `ai-sdk:openrouter`,
-`ai-sdk:ollama`, `builder`. A default set in Settings › Model takes precedence.
-
 ## Deploy
 
-Live: https://goowa.vercel.app (Vercel + Neon Postgres). Follows the
-[Vercel guide](https://www.agent-native.com/docs/vercel/):
+Live on Vercel with Neon Postgres. Pushes to `main` build automatically
+(`vercel.json`). Run migrations before pushing a schema change:
 
 ```bash
-pnpm migrate:production          # with DATABASE_URL exported
-NITRO_PRESET=vercel pnpm build
-npx vercel deploy --prebuilt --prod
+pnpm migrate:production   # with the production DATABASE_URL exported
 ```
 
-Production env: `DATABASE_URL` (from the Neon integration), `BETTER_AUTH_SECRET`,
-`CRON_SECRET`, `AGENT_ENGINE`, `AGENT_NATIVE_VERCEL_CRON_SCHEDULE` (daily on
-Hobby), and optionally `ACCESS_TOKEN` for MCP clients. Connect Builder.io (or
-add a key) in Settings › Model on the deployed app.
+Production env: `DATABASE_URL` (Neon integration), `BETTER_AUTH_SECRET`,
+`CRON_SECRET`, `AGENT_ENGINE`. Connect a model provider in Settings › Model on
+the deployed app. On production, open `/demo` (signed in) to reset the demo
+document.
+
+Built for the Builder.io Agent-Native Hackathon, 2026. See
+[SUBMISSION.md](SUBMISSION.md).
