@@ -18,7 +18,8 @@
     "verify:fixture": "tsx scripts/verify-fixture.ts",
     "demo:propagation": "tsx scripts/demo-propagation.ts",
     "demo:gate": "tsx scripts/demo-gate.ts",
-    "demo:receipt": "tsx scripts/demo-receipt.ts"
+    "demo:receipt": "tsx scripts/demo-receipt.ts",
+    "demo:reset": "tsx scripts/demo-reset.ts"
   },
   "dependencies": {
     "@agent-native/agentkit": "^0.222.2",
