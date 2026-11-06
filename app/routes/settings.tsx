@@ -25,6 +25,7 @@ export default function SettingsRoute() {
       account={<AccountSettingsCard />}
       extraTabs={agentSettingsTabs}
       whatsNewMarkdown={changelog}
+      appName="Goowa"
     />
   );
 }
