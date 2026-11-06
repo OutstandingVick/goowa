@@ -1,4 +1,5 @@
 import { useActionMutation } from "@agent-native/core/client/hooks";
+import { AgentToggleButton } from "@agent-native/toolkit/app/chat";
 import { IconLockOpen, IconSend } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
@@ -117,6 +118,7 @@ export function TopBar({
             Publish
           </Button>
         )}
+        <AgentToggleButton />
       </div>
     </header>
   );

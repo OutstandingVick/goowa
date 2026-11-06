@@ -49,6 +49,8 @@ function routeOwnsToolbar(pathname: string): boolean {
     pathname === HOME_PATH ||
     isChatPathname(pathname) ||
     pathname === "/database" ||
+    // The editor has its own top bar (title, status, actions, agent toggle).
+    /^\/docs\/[^/]+$/.test(pathname) ||
     pathname.startsWith("/extensions")
   );
 }
