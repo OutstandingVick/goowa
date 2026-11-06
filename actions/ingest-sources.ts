@@ -4,7 +4,8 @@ import { z } from "zod";
 import { getDb, schema } from "../server/db/index.js";
 import { goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { loadDocument, now } from "../server/lib/documents.js";
-import { fetchSource, type FetchedPage } from "../server/lib/fetch-source.js";
+import { cachedFetchSource } from "../server/lib/fetch-cache.js";
+import { type FetchedPage } from "../server/lib/fetch-source.js";
 import { scanForStorage } from "../server/lib/quarantine.js";
 
 export default defineAction({
@@ -24,7 +25,7 @@ export default defineAction({
     requireEditable(await loadDocument(documentId, "editor"));
     const pages: FetchedPage[] = urls.map(() => ({ html: "", fullText: "" }));
     const results = await Promise.all(
-      urls.map((url, i) => fetchSource(url, pages[i])),
+      urls.map((url, i) => cachedFetchSource(url, pages[i]!)),
     );
     const rows = results.map((result, i) => {
       if (!result.ok) {
