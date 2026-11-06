@@ -152,7 +152,9 @@ export function VerdictPanel({
         )}
         <p className="mt-1.5 flex items-center gap-1 text-[11px] text-muted-foreground">
           <VerifierIcon className="size-3" aria-hidden />
-          Verified by {claim.verifiedBy === "agent" ? "agent" : "you"}
+          {claim.verifiedBy === "agent"
+            ? "Checked by the agent"
+            : "Checked · requested by you"}
           {claim.verifiedAt ? ` · ${timeAgo(claim.verifiedAt)}` : ""}
           <button
             type="button"
