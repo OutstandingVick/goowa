@@ -9,7 +9,7 @@ import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import type { Activity, ChangeSet, Edit } from "@/lib/goowa";
-import { scrollBehavior } from "@/lib/goowa";
+import { scrollBehavior, errorText } from "@/lib/goowa";
 import { cn } from "@/lib/utils";
 
 import { ActivityFeed } from "./ActivityFeed";
@@ -250,7 +250,7 @@ export function EditsDrawer({
           )}
           {decide.error && (
             <p className="mt-2 text-sm text-destructive">
-              {decide.error.message}
+              {errorText(decide.error)}
             </p>
           )}
         </div>

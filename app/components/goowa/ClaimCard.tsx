@@ -18,6 +18,7 @@ import {
   type Claim,
   type ClaimStatus,
   type Source,
+  errorText,
 } from "@/lib/goowa";
 import { cn } from "@/lib/utils";
 
@@ -163,7 +164,9 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
             ))}
           </fieldset>
           {update.error && (
-            <p className="text-sm text-destructive">{update.error.message}</p>
+            <p className="text-sm text-destructive">
+              {errorText(update.error)}
+            </p>
           )}
           <div className="flex justify-end gap-2">
             <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>
@@ -339,7 +342,7 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
           </div>
           {update.error && !editing && (
             <p className="mt-2 text-xs text-destructive">
-              {update.error.message}
+              {errorText(update.error)}
             </p>
           )}
         </>

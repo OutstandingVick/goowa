@@ -19,6 +19,7 @@ import { ReceiptArticle } from "@/components/receipt/ReceiptArticle";
 import { ReceiptHistory } from "@/components/receipt/ReceiptHistory";
 import { VerifyPanel } from "@/components/receipt/VerifyPanel";
 import { Button } from "@/components/ui/button";
+import { errorText } from "@/lib/goowa";
 
 import type { Receipt } from "../../shared/receipt";
 import { receiptToMarkdown } from "../../shared/receipt-markdown";
@@ -66,7 +67,8 @@ export default function ReceiptRoute() {
       <main className="mx-auto flex min-h-dvh max-w-sm flex-col items-center justify-center gap-2 px-5 text-center">
         <h1 className="text-base font-semibold">No receipt here</h1>
         <p className="text-sm text-muted-foreground">
-          {error?.message ?? "This document has not been published."}
+          {(error ? errorText(error) : null) ??
+            "This document has not been published."}
         </p>
       </main>
     );
@@ -235,7 +237,7 @@ function FixtureSwitcher() {
         ))}
       </div>
       {set.error && (
-        <p className="mt-2 text-xs text-destructive">{set.error.message}</p>
+        <p className="mt-2 text-xs text-destructive">{errorText(set.error)}</p>
       )}
     </section>
   );

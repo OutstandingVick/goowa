@@ -4,6 +4,7 @@ import { IconFlag, IconSparkles, IconX } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { errorText } from "@/lib/goowa";
 import type { Claim } from "@/lib/goowa";
 import type { BodySelection } from "@/lib/selection";
 
@@ -203,7 +204,9 @@ export function SelectionPopover({
                   ? `Marks ${claims.length === 1 ? "this claim" : `${claims.length} claims`} unsupported.`
                   : "Adds this passage as an unsupported claim."}
           </p>
-          {error && <p className="text-xs text-destructive">{error.message}</p>}
+          {error && (
+            <p className="text-xs text-destructive">{errorText(error)}</p>
+          )}
           <div className="flex justify-end gap-2">
             <Button
               type="button"

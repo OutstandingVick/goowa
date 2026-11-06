@@ -16,6 +16,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { errorText } from "@/lib/goowa";
 import { cn } from "@/lib/utils";
 
 import { blockerKey, type Blocker } from "../../../shared/gate";
@@ -97,7 +98,7 @@ export function GatePanel({
             </p>
           )}
           {check.error && (
-            <p className="text-sm text-destructive">{check.error.message}</p>
+            <p className="text-sm text-destructive">{errorText(check.error)}</p>
           )}
 
           {gate && blockers.length === 0 && (
@@ -195,7 +196,7 @@ export function GatePanel({
           )}
           {publish.error && (
             <p className="mt-4 text-sm text-destructive">
-              {publish.error.message}
+              {errorText(publish.error)}
             </p>
           )}
           {publish.isSuccess && (

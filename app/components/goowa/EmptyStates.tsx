@@ -10,7 +10,7 @@ import {
 import { useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
-import { domainOf, type Source } from "@/lib/goowa";
+import { domainOf, type Source, errorText } from "@/lib/goowa";
 
 function Shell({
   icon,
@@ -62,7 +62,7 @@ export function NoSources({ documentId }: { documentId: string }) {
           className="w-full rounded-md border bg-background p-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         />
         {ingest.error && (
-          <p className="text-sm text-destructive">{ingest.error.message}</p>
+          <p className="text-sm text-destructive">{errorText(ingest.error)}</p>
         )}
         <Button type="submit" disabled={!list.length || ingest.isPending}>
           {ingest.isPending ? (

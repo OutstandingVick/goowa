@@ -8,6 +8,7 @@ import { Link, useNavigate } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { errorText } from "@/lib/goowa";
 
 export function meta() {
   return [{ title: "Goowa - Documents" }];
@@ -62,7 +63,7 @@ export default function DocumentsRoute() {
           required
         />
         {create.error && (
-          <p className="text-sm text-destructive">{create.error.message}</p>
+          <p className="text-sm text-destructive">{errorText(create.error)}</p>
         )}
         <Button
           type="submit"

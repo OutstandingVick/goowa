@@ -45,3 +45,11 @@ export function scrollBehavior(): ScrollBehavior {
     ? "auto"
     : "smooth";
 }
+
+/** User-facing text for an action error, without the "Action x failed:" prefix. */
+export function errorText(
+  error: { message?: string } | null | undefined,
+): string {
+  const message = error?.message ?? "Something went wrong. Try again.";
+  return message.replace(/^Action [\w-]+ failed:\s*/i, "");
+}

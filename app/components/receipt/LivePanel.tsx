@@ -10,6 +10,7 @@ import {
 } from "@tabler/icons-react";
 
 import { Button } from "@/components/ui/button";
+import { errorText } from "@/lib/goowa";
 
 const LABEL: Record<string, { text: string; status: string; Icon: Icon }> = {
   unchanged: {
@@ -70,7 +71,9 @@ export function LivePanel({
         publish. The receipt itself never changes.
       </p>
       {recheck.error && (
-        <p className="mt-2 text-sm text-destructive">{recheck.error.message}</p>
+        <p className="mt-2 text-sm text-destructive">
+          {errorText(recheck.error)}
+        </p>
       )}
       {data && (
         <ul className="mt-3 grid gap-1.5">

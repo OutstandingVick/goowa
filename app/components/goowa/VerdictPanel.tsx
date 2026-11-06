@@ -18,6 +18,7 @@ import {
   type ClaimStatus,
   type Source,
   type Verdict,
+  errorText,
 } from "@/lib/goowa";
 import { cn } from "@/lib/utils";
 
@@ -171,7 +172,7 @@ export function VerdictPanel({
         </p>
         {verify.error && (
           <p className="mt-1 text-xs text-destructive">
-            {verify.error.message}
+            {errorText(verify.error)}
           </p>
         )}
       </div>
