@@ -23,7 +23,7 @@ export const STATUS_LABEL: Record<ClaimStatus, string> = {
   weak: "Weak",
   unsupported: "Unsupported",
   laundered: "Laundered",
-  unverified: "Unverified",
+  unverified: "Not checked",
   quarantined: "Quarantined",
 };
 

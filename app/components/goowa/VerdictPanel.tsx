@@ -87,7 +87,7 @@ export function VerdictPanel({
   if (!verdict) {
     return (
       <div className="mt-3 flex items-center justify-between gap-2 rounded-md border border-dashed px-3 py-2 text-xs text-muted-foreground">
-        Not verified yet.
+        Not checked yet.
         <Button
           size="sm"
           variant="outline"

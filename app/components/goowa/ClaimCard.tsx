@@ -354,13 +354,8 @@ export const ClaimCard = forwardRef<HTMLElement, Props>(function ClaimCard(
 function ConfidenceBar({ value }: { value: number }) {
   const pct = Math.round(value * 100);
   // 0 means no verification has scored the claim yet (Phase 3 fills it in).
-  if (pct === 0) {
-    return (
-      <span className="ml-auto text-[11px] text-muted-foreground">
-        Not scored
-      </span>
-    );
-  }
+  // No confidence until the claim has been checked; the status chip says so.
+  if (pct === 0) return null;
   return (
     <span
       className="ml-auto flex items-center gap-1.5 text-[11px] tabular-nums text-muted-foreground"
