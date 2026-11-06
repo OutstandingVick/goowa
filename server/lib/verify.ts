@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 import { decide } from "@agent-native/core/decisions";
+import { getSetting, putSetting } from "@agent-native/core/settings";
 import { and, eq, inArray } from "drizzle-orm";
 
 import {
@@ -42,7 +43,53 @@ const SUPPORT_CHOICES: {
  * The model step, through the framework's decide(): it can only pick a
  * verdict and one candidate sentence id, so it cannot invent a quotation.
  */
+/** Bump when the judge prompt or choices change, so cached answers expire. */
+const JUDGE_VERSION = 1;
+
+type CachedAnswer = Omit<JudgeAnswer, "evidenceIds"> & { evidence: number[] };
+
+/**
+ * The same claim against the same candidate sentences always gets the same
+ * answer: answers are stored by content (not ids), so re-runs and fresh
+ * copies of a document are instant and repeatable.
+ */
 export function decisionJudge(ownerEmail: string): Judge {
+  const judge = modelJudge(ownerEmail);
+  return async (claim, candidates) => {
+    if (candidates.length === 0) return null;
+    const key = `goowa-judge:${createHash("sha256")
+      .update(
+        `v${JUDGE_VERSION}\n${claim}\n${candidates.map((c) => c.sentence.text).join("\n")}`,
+      )
+      .digest("hex")}`;
+    const hit = (await getSetting(key).catch(
+      () => null,
+    )) as CachedAnswer | null;
+    if (hit?.support) {
+      return {
+        support: hit.support,
+        confidence: hit.confidence,
+        evidenceIds: hit.evidence
+          .map((i) => candidates[i]?.id)
+          .filter((id): id is string => Boolean(id)),
+      };
+    }
+    const answer = await judge(claim, candidates);
+    if (answer) {
+      const cached: CachedAnswer = {
+        support: answer.support,
+        confidence: answer.confidence,
+        evidence: answer.evidenceIds
+          .map((id) => candidates.findIndex((c) => c.id === id))
+          .filter((i) => i >= 0),
+      };
+      await putSetting(key, cached).catch(() => undefined);
+    }
+    return answer;
+  };
+}
+
+function modelJudge(ownerEmail: string): Judge {
   return async (claim, candidates) => {
     if (candidates.length === 0) return null;
     const listing = candidates
