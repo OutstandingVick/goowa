@@ -216,7 +216,7 @@ async function runOnce(n: number) {
   return { verdicts, ok: checks.every(([, ok]) => ok), times };
 }
 
-const results = [];
+const results: Awaited<ReturnType<typeof runOnce>>[] = [];
 for (let i = 1; i <= runs; i++) results.push(await runOnce(i));
 const signature = (r: (typeof results)[number]) => JSON.stringify(r.verdicts);
 const identical = results.every((r) => signature(r) === signature(results[0]!));
