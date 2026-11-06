@@ -178,7 +178,15 @@ export async function propagateChange(opts: {
 
   const n = result.affected.length;
   const p = result.proposals.length;
-  result.summary = `${opts.actor === "human" ? "You" : "The agent"} changed claim ${label(trigger.id)} → ${n} claim${n === 1 ? "" : "s"} affected → ${p} rewrite${p === 1 ? "" : "s"} proposed`;
+  const who = opts.actor === "human" ? "You" : "The agent";
+  const affectedText = `${n} claim${n === 1 ? "" : "s"} affected`;
+  result.summary =
+    p > 0
+      ? `${who} changed claim ${label(trigger.id)} → ${affectedText} → ${p} rewrite${p === 1 ? "" : "s"} proposed`
+      : `${who} changed claim ${label(trigger.id)} → ${affectedText}, marked for review`;
+  result.durationMs = Date.now() - started;
+  // Nothing depends on this claim: no change set, no feed entry.
+  if (n === 0) return result;
   await db.insert(schema.changeSets).values({
     id: changeSetId,
     documentId: trigger.documentId,
@@ -188,7 +196,6 @@ export async function propagateChange(opts: {
     summary: result.summary,
     createdAt: now(),
   });
-  result.durationMs = Date.now() - started;
   await logActivity(
     trigger.documentId,
     "propagated",
