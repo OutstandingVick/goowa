@@ -17,6 +17,7 @@ type Claim = {
   reviewState: string;
   reviewReason: string | null;
   verdict: string | null;
+  verifiedFingerprint: string | null;
 };
 type Edit = {
   id: string;
@@ -63,7 +64,12 @@ const result = action<{
   propagation: {
     changeSetId: string;
     summary: string;
-    affected: { label: string; verdict: string; depth: number }[];
+    affected: {
+      claimId: string;
+      label: string;
+      verdict: string | null;
+      depth: number;
+    }[];
     proposals: { claimId: string; after: string; reason: string }[];
     durationMs: number;
   };
@@ -84,7 +90,17 @@ for (const x of p.proposals) {
   console.log(`    reason: ${x.reason}`);
 }
 
-const after = action<State>("get-document-state", { documentId: doc.id });
+// Re-verification runs after the response; wait for it to land.
+let after = action<State>("get-document-state", { documentId: doc.id });
+const pendingIds = p.affected.map((a) => a.claimId);
+let reverified = false;
+for (let i = 0; i < 20 && !reverified; i++) {
+  after = action<State>("get-document-state", { documentId: doc.id });
+  reverified = pendingIds.every(
+    (cid) => after.claims.find((c) => c.id === cid)?.verifiedFingerprint,
+  );
+  if (!reverified) await new Promise((r) => setTimeout(r, 500));
+}
 const set = after.pendingEdits.filter((e) => e.changeSetId === p.changeSetId);
 const claim = (cid: string) => after.claims.find((c) => c.id === cid)!;
 const checks: [string, boolean][] = [
@@ -97,8 +113,8 @@ const checks: [string, boolean][] = [
       .join() === [growthId, ratioId].sort().join(),
   ],
   [
-    "both dependents re-verified",
-    p.affected.length === 2 && p.affected.every((a) => a.verdict),
+    "both dependents re-verified (in the background)",
+    p.affected.length === 2 && reverified,
   ],
   [
     "exactly 2 proposals, all in one change set",
