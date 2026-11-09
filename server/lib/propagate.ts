@@ -5,6 +5,7 @@ import { downstream } from "../../shared/graph.js";
 import { getDb, schema } from "../db/index.js";
 import { logActivity } from "./activity.js";
 import type { Actor } from "./actor.js";
+import { afterResponse, mapLimit } from "./background.js";
 import { loadClaims, now } from "./documents.js";
 import { verifyAndStore } from "./verify.js";
 
@@ -16,7 +17,8 @@ export type PropagationResult = {
     claimId: string;
     label: string;
     depth: number;
-    verdict: string;
+    /** Null until the background re-check stores a verdict. */
+    verdict: string | null;
   }[];
   proposals: {
     editId: string;
@@ -131,13 +133,13 @@ export async function propagateChange(opts: {
         ),
       );
 
-    // Forced re-check: the fingerprint was just cleared.
-    const verdict = await verifyAndStore(claim, opts.actor, opts.ownerEmail);
+    // The re-check runs after the response (see below); the fingerprint was
+    // just cleared, so the claim reads as pending until then.
     result.affected.push({
       claimId: claim.id,
       label: label(claim.id),
       depth: a.depth,
-      verdict: verdict.verdict,
+      verdict: null,
     });
 
     // Only direct dependents can be recomputed from the changed figure.
@@ -209,5 +211,37 @@ export async function propagateChange(opts: {
       durationMs: result.durationMs,
     },
   );
+  // Proposals and the change set are saved above, so a failed re-check
+  // cannot lose them. Re-verify the affected claims in the background.
+  reverifyInBackground(
+    result.affected.map((a) => a.claimId),
+    opts.actor,
+    opts.ownerEmail,
+  );
   return result;
+}
+
+/**
+ * Re-verify claims after the response, at most three at a time, from the
+ * stored source text (nothing is re-fetched). Each claim stores its own
+ * verdict, so one failure does not stop the others.
+ */
+export function reverifyInBackground(
+  claimIds: string[],
+  actor: Actor,
+  ownerEmail: string,
+) {
+  if (claimIds.length === 0 || !ownerEmail) return;
+  return afterResponse("re-verify", async () => {
+    const rows = await getDb()
+      .select()
+      .from(schema.claims)
+      .where(inArray(schema.claims.id, claimIds));
+    const settled = await mapLimit(rows, 3, (claim) =>
+      verifyAndStore(claim, actor, ownerEmail),
+    );
+    for (const r of settled)
+      if (r.status === "rejected")
+        console.error("[goowa] re-verify failed:", r.reason);
+  });
 }
