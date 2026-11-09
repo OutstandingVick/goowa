@@ -12,7 +12,10 @@ import {
   loadEdit,
   now,
 } from "../server/lib/documents.js";
-import { propagateChange } from "../server/lib/propagate.js";
+import {
+  propagateChange,
+  reverifyInBackground,
+} from "../server/lib/propagate.js";
 import { editState } from "../shared/machines.js";
 import { locate, type TextEdit } from "../shared/spans.js";
 
@@ -141,6 +144,23 @@ export default defineAction({
         after: edit.after,
       },
     );
+    // The edited claims themselves are re-checked after the response too.
+    if (changedClaims.length > 0 && ctx?.userEmail) {
+      await getDb()
+        .update(schema.claims)
+        .set({ verifiedFingerprint: null })
+        .where(
+          inArray(
+            schema.claims.id,
+            changedClaims.map((c) => c.id),
+          ),
+        );
+      reverifyInBackground(
+        changedClaims.map((c) => c.id),
+        "human",
+        ctx.userEmail,
+      );
+    }
     const propagations = [];
     for (const c of changedClaims) {
       const p = await propagateChange({

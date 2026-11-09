@@ -8,8 +8,10 @@ import { actorOf, goowaErrors, requireEditable } from "../server/lib/actor.js";
 import { applyBodyEdit } from "../server/lib/apply-body-edit.js";
 import { forbiddenClaimFields } from "../server/lib/claim-policy.js";
 import { loadClaim, loadClaims, now } from "../server/lib/documents.js";
-import { propagateChange } from "../server/lib/propagate.js";
-import { verifyAndStore } from "../server/lib/verify.js";
+import {
+  propagateChange,
+  reverifyInBackground,
+} from "../server/lib/propagate.js";
 import { cycleIfDepends } from "../shared/graph.js";
 import { CLAIM_STATUSES } from "../shared/machines.js";
 
@@ -142,11 +144,13 @@ export default defineAction({
       patch.status !== undefined && patch.status !== claim.status;
     // The edited claim itself is re-checked too, so its verdict is current.
     if ((textChanged || sourcesChanged) && ctx?.userEmail) {
-      const [fresh] = await db
-        .select()
-        .from(schema.claims)
+      // Cleared now, stored by the background re-check: the claim reads as
+      // pending until its new verdict lands.
+      await db
+        .update(schema.claims)
+        .set({ verifiedFingerprint: null })
         .where(eq(schema.claims.id, claimId));
-      if (fresh) await verifyAndStore(fresh, actor, ctx.userEmail);
+      reverifyInBackground([claimId], actor, ctx.userEmail);
     }
 
     let propagation = null;
