@@ -19,6 +19,7 @@ import {
   type Source,
   type Verdict,
   errorText,
+  recheckPending,
 } from "@/lib/goowa";
 import { cn } from "@/lib/utils";
 
@@ -138,10 +139,14 @@ export function VerdictPanel({
               <>Agent verdict: {VERDICT_LABEL[verdict]}</>
             )}
           </span>
-          {pct > 0 && (
-            <span className="text-xs tabular-nums text-muted-foreground">
-              {pct}% confidence
-            </span>
+          {recheckPending(claim) ? (
+            <span className="text-xs text-muted-foreground">Re-checking…</span>
+          ) : (
+            pct > 0 && (
+              <span className="text-xs tabular-nums text-muted-foreground">
+                {pct}% confidence
+              </span>
+            )
           )}
         </p>
         <p className="mt-1 text-muted-foreground">{claim.verdictReason}</p>

@@ -53,3 +53,11 @@ export function errorText(
   const message = error?.message ?? "Something went wrong. Try again.";
   return message.replace(/^Action [\w-]+ failed:\s*/i, "");
 }
+
+/** A claim whose re-check (after a fix) has not stored a verdict yet. */
+export function recheckPending(claim: {
+  verdict?: string | null;
+  verifiedFingerprint?: string | null;
+}): boolean {
+  return Boolean(claim.verdict) && !claim.verifiedFingerprint;
+}

@@ -2,11 +2,11 @@ import { useActionQuery, useDbSync } from "@agent-native/core/client/hooks";
 import { acquireCollabPollBoost } from "@agent-native/core/client/use-db-sync";
 import { IconLoader2 } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Link, useParams } from "react-router";
 
 import { Editor } from "@/components/goowa/Editor";
-import { errorText } from "@/lib/goowa";
+import { errorText, recheckPending, type Claim } from "@/lib/goowa";
 
 export function meta() {
   return [{ title: "Goowa" }];
@@ -15,10 +15,25 @@ export function meta() {
 export default function DocumentRoute() {
   const { documentId = "" } = useParams();
   const queryClient = useQueryClient();
+  // Re-checks after a fix run in the background; poll briefly until the new
+  // verdicts land (stops after 60 s so a failed re-check cannot poll forever).
+  const pendingSince = useRef<number | null>(null);
   const state = useActionQuery(
     "get-document-state",
     { documentId },
-    { enabled: Boolean(documentId) },
+    {
+      enabled: Boolean(documentId),
+      refetchInterval: (query) => {
+        const claims = (query.state.data as { claims?: Claim[] } | undefined)
+          ?.claims;
+        if (!claims?.some(recheckPending)) {
+          pendingSince.current = null;
+          return false;
+        }
+        pendingSince.current ??= Date.now();
+        return Date.now() - pendingSince.current < 60_000 ? 1500 : false;
+      },
+    },
   );
 
   // The in-app agent's tool calls already refresh this query. Agents over MCP
